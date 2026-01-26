@@ -144,61 +144,61 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PUBL-01 | TBD | Pending |
-| PUBL-02 | TBD | Pending |
-| AUTH-01 | TBD | Pending |
-| AUTH-02 | TBD | Pending |
-| AUTH-03 | TBD | Pending |
-| AUTH-04 | TBD | Pending |
-| AUTH-05 | TBD | Pending |
-| DASH-01 | TBD | Pending |
-| DASH-02 | TBD | Pending |
-| DASH-03 | TBD | Pending |
-| VIDC-01 | TBD | Pending |
-| VIDC-02 | TBD | Pending |
-| VIDC-03 | TBD | Pending |
-| VIDC-04 | TBD | Pending |
-| VIDC-05 | TBD | Pending |
-| VIDC-06 | TBD | Pending |
-| VIDC-07 | TBD | Pending |
-| VIDC-08 | TBD | Pending |
-| VIDC-09 | TBD | Pending |
-| VIDC-10 | TBD | Pending |
-| VIDL-01 | TBD | Pending |
-| VIDL-02 | TBD | Pending |
-| VIDL-03 | TBD | Pending |
-| VIDL-04 | TBD | Pending |
-| VIDL-05 | TBD | Pending |
-| VIDL-06 | TBD | Pending |
-| VIDL-07 | TBD | Pending |
-| CRED-01 | TBD | Pending |
-| CRED-02 | TBD | Pending |
-| CRED-03 | TBD | Pending |
-| CRED-04 | TBD | Pending |
-| CRED-05 | TBD | Pending |
-| CRED-06 | TBD | Pending |
-| SUBS-01 | TBD | Pending |
-| SUBS-02 | TBD | Pending |
-| SUBS-03 | TBD | Pending |
-| SUBS-04 | TBD | Pending |
-| SUBS-05 | TBD | Pending |
-| SUBS-06 | TBD | Pending |
-| SUBS-07 | TBD | Pending |
-| SUBS-08 | TBD | Pending |
-| ACCT-01 | TBD | Pending |
-| EMAL-01 | TBD | Pending |
-| EMAL-02 | TBD | Pending |
-| EMAL-03 | TBD | Pending |
-| EMAL-04 | TBD | Pending |
-| INTG-01 | TBD | Pending |
-| INTG-02 | TBD | Pending |
-| INTG-03 | TBD | Pending |
+| PUBL-01 | Phase 7 | Pending |
+| PUBL-02 | Phase 7 | Pending |
+| AUTH-01 | Phase 2 | Pending |
+| AUTH-02 | Phase 2 | Pending |
+| AUTH-03 | Phase 2 | Pending |
+| AUTH-04 | Phase 2 | Pending |
+| AUTH-05 | Phase 2 | Pending |
+| DASH-01 | Phase 5 | Pending |
+| DASH-02 | Phase 5 | Pending |
+| DASH-03 | Phase 5 | Pending |
+| VIDC-01 | Phase 4 | Pending |
+| VIDC-02 | Phase 4 | Pending |
+| VIDC-03 | Phase 4 | Pending |
+| VIDC-04 | Phase 4 | Pending |
+| VIDC-05 | Phase 4 | Pending |
+| VIDC-06 | Phase 4 | Pending |
+| VIDC-07 | Phase 4 | Pending |
+| VIDC-08 | Phase 4 | Pending |
+| VIDC-09 | Phase 4 | Pending |
+| VIDC-10 | Phase 4 | Pending |
+| VIDL-01 | Phase 5 | Pending |
+| VIDL-02 | Phase 5 | Pending |
+| VIDL-03 | Phase 5 | Pending |
+| VIDL-04 | Phase 5 | Pending |
+| VIDL-05 | Phase 5 | Pending |
+| VIDL-06 | Phase 5 | Pending |
+| VIDL-07 | Phase 5 | Pending |
+| CRED-01 | Phase 3 | Pending |
+| CRED-02 | Phase 3 | Pending |
+| CRED-03 | Phase 3 | Pending |
+| CRED-04 | Phase 3 | Pending |
+| CRED-05 | Phase 3 | Pending |
+| CRED-06 | Phase 3 | Pending |
+| SUBS-01 | Phase 3 | Pending |
+| SUBS-02 | Phase 3 | Pending |
+| SUBS-03 | Phase 3 | Pending |
+| SUBS-04 | Phase 3 | Pending |
+| SUBS-05 | Phase 3 | Pending |
+| SUBS-06 | Phase 3 | Pending |
+| SUBS-07 | Phase 3 | Pending |
+| SUBS-08 | Phase 3 | Pending |
+| ACCT-01 | Phase 2 | Pending |
+| EMAL-01 | Phase 6 | Pending |
+| EMAL-02 | Phase 6 | Pending |
+| EMAL-03 | Phase 6 | Pending |
+| EMAL-04 | Phase 6 | Pending |
+| INTG-01 | Phase 4 | Pending |
+| INTG-02 | Phase 4 | Pending |
+| INTG-03 | Phase 3 | Pending |
 
 **Coverage:**
-- v1 requirements: 37 total
-- Mapped to phases: 0
-- Unmapped: 37
+- v1 requirements: 50 total
+- Mapped to phases: 50
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-01-26*
-*Last updated: 2026-01-26 after initial definition*
+*Last updated: 2026-01-26 after roadmap creation*
