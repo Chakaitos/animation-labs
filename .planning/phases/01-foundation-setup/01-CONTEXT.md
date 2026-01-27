@@ -6,12 +6,24 @@
 <domain>
 ## Phase Boundary
 
-Project scaffolding and infrastructure — Next.js 14+ app with TypeScript, Tailwind CSS, shadcn/ui, Supabase setup, database schema, and configuration. This phase delivers the technical foundation that all other phases build upon.
+Project scaffolding and infrastructure — Next.js app with TypeScript, Tailwind CSS, shadcn/ui, Supabase setup, database schema, and configuration. This phase delivers the technical foundation that all other phases build upon.
 
 </domain>
 
 <decisions>
 ## Implementation Decisions
+
+### Version Requirements
+
+**Use latest stable versions of all tools and frameworks:**
+- Next.js 15.x (latest stable, not 14)
+- TypeScript 5.x
+- Tailwind CSS 4.x (if stable) or 3.x (if 4 not production-ready)
+- shadcn/ui latest
+- Supabase JS client latest
+- React 19.x (ships with Next.js 15)
+
+Research phase will verify current stable versions before planning.
 
 ### Skill Usage Requirements (Project-Wide)
 
@@ -44,9 +56,9 @@ These skills MUST be used at the appropriate times throughout all phases:
 <specifics>
 ## Specific Ideas
 
-No specific requirements — open to standard approaches for Next.js + Supabase + shadcn/ui stack.
-
-User trusts Claude's judgment on technical implementation details.
+- Use latest stable versions of all frameworks and tools (not outdated versions like Next.js 14)
+- Open to standard approaches for Next.js + Supabase + shadcn/ui stack
+- User trusts Claude's judgment on technical implementation details
 
 </specifics>
 
