@@ -10,28 +10,28 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 2 of 7 (Authentication & Account) — IN PROGRESS
-Plan: 1 of 5 complete (Form Dependencies & Validation)
+Plan: 2 of 5 complete (Auth Server Actions)
 Status: In progress
-Last activity: 2026-01-27 — Completed 02-01-PLAN.md
+Last activity: 2026-01-27 — Completed 02-02-PLAN.md
 
-Progress: [██░░░░░░░░] 19%
+Progress: [██░░░░░░░░] 24%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 4
-- Average duration: 2.4 minutes
-- Total execution time: 0.15 hours
+- Total plans completed: 5
+- Average duration: 2.0 minutes
+- Total execution time: 0.17 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01-foundation-setup | 3 | 8m | 2.7m |
-| 02-authentication-account | 1 | 1.6m | 1.6m |
+| 02-authentication-account | 2 | 3m | 1.5m |
 
 **Recent Trend:**
-- Last 5 plans: 01-01 (4m), 01-02 (2m), 01-03 (2m), 02-01 (1.6m)
+- Last 5 plans: 01-02 (2m), 01-03 (2m), 02-01 (1.6m), 02-02 (1.4m)
 - Trend: Accelerating
 
 *Updated after each plan completion*
@@ -64,6 +64,14 @@ Recent decisions affecting current work:
 - Sonner for toasts (D-02-01-002) — shadcn/ui recommended, lightweight, accessible
 - Strong password requirements (D-02-01-003) — 8+ chars, uppercase, lowercase, number
 
+**From 02-02:**
+- Dynamic site URL from headers (D-02-02-001) — Works in dev and prod without config
+- Generic login errors (D-02-02-002) — Prevents user enumeration
+- Reset always returns success (D-02-02-003) — Prevents email enumeration
+- Verify current password on change (D-02-02-004) — Security requirement
+- Global signout after password change (D-02-02-005) — Forces re-auth everywhere
+- Open redirect prevention (D-02-02-006) — Only allow internal paths
+
 ### Pending Todos
 
 None yet.
@@ -75,6 +83,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-27
-Stopped at: Completed 02-01-PLAN.md
+Stopped at: Completed 02-02-PLAN.md
 Resume file: None
-Next: Execute 02-02-PLAN.md (Auth Error Page)
+Next: Execute 02-03-PLAN.md (Auth Forms)
