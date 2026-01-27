@@ -42,6 +42,13 @@ animatelabs/
 └── .env.local             # Local secrets (gitignored)
 ```
 
+## Branding Assets
+
+**Logo:** `/public/logo.svg` (transparent SVG, 127KB)
+- Use in navigation, marketing pages, and any branded UI elements
+- Access in components: `/logo.svg` (Next.js serves from public root)
+- Example: `<Image src="/logo.svg" alt="AnimateLabs" width={150} height={40} />`
+
 ## Commands
 
 ```bash
