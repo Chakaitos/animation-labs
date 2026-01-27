@@ -37,7 +37,7 @@ animatelabs/
 │   └── utils.ts           # shadcn/ui utilities (cn function)
 ├── supabase/              # Database
 │   └── migrations/        # SQL migrations
-├── middleware.ts          # Auth token refresh
+├── proxy.ts               # Auth token refresh (Next.js 16 convention)
 ├── .env.example           # Env var template (committed)
 └── .env.local             # Local secrets (gitignored)
 ```
