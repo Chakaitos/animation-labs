@@ -27,16 +27,17 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Depends on**: Nothing (first phase)
 **Requirements**: No explicit requirements (foundational work)
 **Success Criteria** (what must be TRUE):
-  1. Next.js 14+ project with TypeScript, Tailwind CSS, and shadcn/ui is initialized
+  1. Next.js 16 project with TypeScript, Tailwind CSS 4, and shadcn/ui is initialized
   2. Supabase project exists with database schema deployed
-  3. Database tables for users, subscriptions, credits, videos are created
+  3. Database tables for profiles, subscriptions, credits, videos are created
   4. Environment variables and configuration files are set up
   5. Development server runs without errors
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: TBD
-- [ ] 01-02: TBD
+- [ ] 01-01-PLAN.md — Initialize Next.js 16, Tailwind 4, shadcn/ui, environment setup
+- [ ] 01-02-PLAN.md — Create Supabase client utilities and auth middleware
+- [ ] 01-03-PLAN.md — Database schema migration and CLAUDE.md documentation
 
 ### Phase 2: Authentication & Account
 **Goal**: Users can securely create accounts and manage authentication
@@ -148,7 +149,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Setup | 0/TBD | Not started | - |
+| 1. Foundation & Setup | 0/3 | Not started | - |
 | 2. Authentication & Account | 0/TBD | Not started | - |
 | 3. Subscription & Credits | 0/TBD | Not started | - |
 | 4. Core Video Creation | 0/TBD | Not started | - |
