@@ -50,11 +50,15 @@ Plans:
   4. User can log out from any page
   5. User can reset forgotten password via email link
   6. User can change their password from account settings
-**Plans**: TBD
+**Plans**: 6 plans
 
 Plans:
-- [ ] 02-01: TBD
-- [ ] 02-02: TBD
+- [ ] 02-01-PLAN.md — Install deps, add shadcn components, validation schemas, Toaster
+- [ ] 02-02-PLAN.md — Server Actions for auth operations and email verification callback
+- [ ] 02-03-PLAN.md — Sign-up, login, and verify-email pages with forms
+- [ ] 02-04-PLAN.md — Password reset request and update pages
+- [ ] 02-05-PLAN.md — Account settings, change password, user menu, dashboard placeholder
+- [ ] 02-06-PLAN.md — Human verification of complete auth flow
 
 ### Phase 3: Subscription & Credits
 **Goal**: Users can subscribe to plans and credit system tracks usage
@@ -149,8 +153,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Setup | 3/3 | Complete ✓ | 2026-01-26 |
-| 2. Authentication & Account | 0/TBD | Not started | - |
+| 1. Foundation & Setup | 3/3 | Complete | 2026-01-26 |
+| 2. Authentication & Account | 0/6 | Ready for execution | - |
 | 3. Subscription & Credits | 0/TBD | Not started | - |
 | 4. Core Video Creation | 0/TBD | Not started | - |
 | 5. Video Library & Dashboard | 0/TBD | Not started | - |
