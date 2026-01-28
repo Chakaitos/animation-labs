@@ -86,22 +86,31 @@ export async function createCreditPackCheckout(packId: CreditPackId) {
     return { error: 'Invalid credit pack selected' }
   }
 
-  // User must have an active subscription to buy credit packs
-  const { data: subscription } = await supabase
-    .from('subscriptions')
-    .select('stripe_customer_id, status')
-    .eq('user_id', user.id)
-    .eq('status', 'active')
-    .single()
+  // Check if pack requires subscription (all except 'single')
+  if (pack.requiresSubscription) {
+    const { data: subscription } = await supabase
+      .from('subscriptions')
+      .select('stripe_customer_id, status')
+      .eq('user_id', user.id)
+      .eq('status', 'active')
+      .single()
 
-  if (!subscription) {
-    return { error: 'You must have an active subscription to purchase credit packs' }
+    if (!subscription) {
+      return { error: 'You must have an active subscription to purchase credit packs' }
+    }
   }
+
+  // Get existing customer ID if available (for any user)
+  const { data: existingCustomer } = await supabase
+    .from('subscriptions')
+    .select('stripe_customer_id')
+    .eq('user_id', user.id)
+    .single()
 
   try {
     const session = await stripe.checkout.sessions.create({
-      customer: subscription.stripe_customer_id || undefined,
-      customer_email: subscription.stripe_customer_id ? undefined : user.email,
+      customer: existingCustomer?.stripe_customer_id || undefined,
+      customer_email: existingCustomer?.stripe_customer_id ? undefined : user.email,
       mode: 'payment', // One-time payment for credit pack
       payment_method_types: ['card'],
       line_items: [

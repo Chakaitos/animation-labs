@@ -17,9 +17,10 @@ import { format } from 'date-fns'
 
 // Credit pack pricing (displayed only - actual prices from Stripe)
 const PACK_PRICES: Record<CreditPackId, string> = {
-  small: '$9',
-  medium: '$15',
-  large: '$35',
+  single: '$5',
+  small: '$20',
+  medium: '$35',
+  large: '$65',
 }
 
 export default async function BillingPage() {
@@ -130,7 +131,25 @@ export default async function BillingPage() {
           </div>
         )}
 
-        {/* Credit Packs */}
+        {/* Single Credit - Available to All Users */}
+        {!subscription && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold mb-4">Buy Credits</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Purchase a single credit to try our service, or subscribe to a plan for better value.
+            </p>
+            <div className="max-w-xs">
+              <CreditPackCard
+                packId="single"
+                name={CREDIT_PACKS.single.name}
+                credits={CREDIT_PACKS.single.credits}
+                price={PACK_PRICES.single}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Credit Packs - Requires Active Subscription */}
         {subscription && subscription.status === 'active' && (
           <div className="mb-8">
             <h2 className="text-lg font-semibold mb-4">Buy More Credits</h2>
@@ -138,15 +157,17 @@ export default async function BillingPage() {
               Need more credits this month? Purchase a credit pack. These credits don&apos;t expire and carry over between billing periods.
             </p>
             <div className="grid gap-4 sm:grid-cols-3">
-              {(Object.entries(CREDIT_PACKS) as [CreditPackId, typeof CREDIT_PACKS.small][]).map(([packId, pack]) => (
-                <CreditPackCard
-                  key={packId}
-                  packId={packId}
-                  name={pack.name}
-                  credits={pack.credits}
-                  price={PACK_PRICES[packId]}
-                />
-              ))}
+              {(Object.entries(CREDIT_PACKS) as [CreditPackId, typeof CREDIT_PACKS.small][])
+                .filter(([packId, pack]) => pack.requiresSubscription)
+                .map(([packId, pack]) => (
+                  <CreditPackCard
+                    key={packId}
+                    packId={packId}
+                    name={pack.name}
+                    credits={pack.credits}
+                    price={PACK_PRICES[packId]}
+                  />
+                ))}
             </div>
           </div>
         )}

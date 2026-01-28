@@ -32,21 +32,32 @@ export const PLANS = {
 export type PlanId = keyof typeof PLANS
 
 // Credit pack configuration for overage purchases
+// Single credit: Available to all users (no subscription required)
+// Credit packs: Require active subscription
 export const CREDIT_PACKS = {
+  single: {
+    name: '1 Credit',
+    credits: 1,
+    priceId: process.env.STRIPE_PRICE_SINGLE_CREDIT || '',
+    requiresSubscription: false,
+  },
   small: {
     name: '5 Credits',
     credits: 5,
-    priceId: process.env.STRIPE_PRICE_CREDITS_5 || '',
+    priceId: process.env.STRIPE_PRICE_CREDITS_SMALL || '',
+    requiresSubscription: true,
   },
   medium: {
     name: '10 Credits',
     credits: 10,
-    priceId: process.env.STRIPE_PRICE_CREDITS_10 || '',
+    priceId: process.env.STRIPE_PRICE_CREDITS_MEDIUM || '',
+    requiresSubscription: true,
   },
   large: {
-    name: '25 Credits',
-    credits: 25,
-    priceId: process.env.STRIPE_PRICE_CREDITS_25 || '',
+    name: '20 Credits',
+    credits: 20,
+    priceId: process.env.STRIPE_PRICE_CREDITS_LARGE || '',
+    requiresSubscription: true,
   },
 } as const
 

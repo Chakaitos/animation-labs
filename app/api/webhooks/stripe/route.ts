@@ -200,24 +200,45 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     const pack = packId ? CREDIT_PACKS[packId] : null
 
     if (pack) {
-      // Get user's subscription to add overage credits
+      // Get user's subscription (or create one for single credit purchases)
       const { data: sub } = await getSupabaseAdmin()
         .from('subscriptions')
         .select('id')
         .eq('user_id', userId)
         .single()
 
-      if (sub) {
+      let subscriptionId = sub?.id
+
+      // If no subscription exists and this is a single credit purchase, create a credits-only record
+      if (!sub && !pack.requiresSubscription) {
+        const { data: newSub } = await getSupabaseAdmin()
+          .from('subscriptions')
+          .insert({
+            user_id: userId,
+            plan: 'starter', // Default to starter for credits-only accounts
+            status: 'inactive', // No active subscription, just credits
+            credits_remaining: 0,
+            credits_total: 0,
+            overage_credits: 0,
+            stripe_customer_id: session.customer as string,
+          })
+          .select('id')
+          .single()
+
+        subscriptionId = newSub?.id
+      }
+
+      if (subscriptionId) {
         // Add overage credits using RPC function for atomic increment
         await getSupabaseAdmin().rpc('add_overage_credits', {
-          p_subscription_id: sub.id,
+          p_subscription_id: subscriptionId,
           p_credits: pack.credits,
         })
 
         // Log credit grant
         await getSupabaseAdmin().from('credit_transactions').insert({
           user_id: userId,
-          subscription_id: sub.id,
+          subscription_id: subscriptionId,
           amount: pack.credits,
           type: 'purchase',
           description: `Purchased ${pack.name} credit pack`,
