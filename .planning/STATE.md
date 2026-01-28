@@ -91,6 +91,11 @@ Recent decisions affecting current work:
 - Price IDs as environment variables (D-03-01-004) — Test/live mode separation
 - Configuration pattern with 'as const' (D-03-01-005) — Type-safe plan selection
 
+**From 03-02:**
+- Lazy-load service clients via Proxy (D-03-02-001) — Avoids Next.js build errors from missing env vars
+- RPC-only credit modifications (D-03-02-002) — Atomic operations via add_overage_credits function
+- Overage credits deducted first (D-03-02-003) — Better UX for purchased credit packs
+
 **From 03-03:**
 - User ID metadata attachment (D-03-03-001) — Checkout sessions include user_id for webhook processing
 - Credit pack requires subscription (D-03-03-002) — Only active subscribers can purchase overage credits
