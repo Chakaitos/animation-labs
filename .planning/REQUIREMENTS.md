@@ -146,11 +146,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | PUBL-01 | Phase 7 | Pending |
 | PUBL-02 | Phase 7 | Pending |
-| AUTH-01 | Phase 2 | Pending |
-| AUTH-02 | Phase 2 | Pending |
-| AUTH-03 | Phase 2 | Pending |
-| AUTH-04 | Phase 2 | Pending |
-| AUTH-05 | Phase 2 | Pending |
+| AUTH-01 | Phase 2 | Complete |
+| AUTH-02 | Phase 2 | Complete |
+| AUTH-03 | Phase 2 | Complete |
+| AUTH-04 | Phase 2 | Complete |
+| AUTH-05 | Phase 2 | Complete |
 | DASH-01 | Phase 5 | Pending |
 | DASH-02 | Phase 5 | Pending |
 | DASH-03 | Phase 5 | Pending |
@@ -185,7 +185,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SUBS-06 | Phase 3 | Pending |
 | SUBS-07 | Phase 3 | Pending |
 | SUBS-08 | Phase 3 | Pending |
-| ACCT-01 | Phase 2 | Pending |
+| ACCT-01 | Phase 2 | Complete |
 | EMAL-01 | Phase 6 | Pending |
 | EMAL-02 | Phase 6 | Pending |
 | EMAL-03 | Phase 6 | Pending |

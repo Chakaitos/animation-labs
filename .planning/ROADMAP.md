@@ -13,7 +13,7 @@ AnimateLabs delivers professional logo animations in 10-15 minutes at $3-5 per v
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Setup** - Project scaffolding and infrastructure
-- [ ] **Phase 2: Authentication & Account** - User registration and login
+- [x] **Phase 2: Authentication & Account** - User registration and login
 - [ ] **Phase 3: Subscription & Credits** - Payment and credit system
 - [ ] **Phase 4: Core Video Creation** - Upload logo and generate videos
 - [ ] **Phase 5: Video Library & Dashboard** - View and manage videos
@@ -53,12 +53,12 @@ Plans:
 **Plans**: 6 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Install deps, add shadcn components, validation schemas, Toaster
-- [ ] 02-02-PLAN.md — Server Actions for auth operations and email verification callback
-- [ ] 02-03-PLAN.md — Sign-up, login, and verify-email pages with forms
-- [ ] 02-04-PLAN.md — Password reset request and update pages
-- [ ] 02-05-PLAN.md — Account settings, change password, user menu, dashboard placeholder
-- [ ] 02-06-PLAN.md — Human verification of complete auth flow
+- [x] 02-01-PLAN.md — Install deps, add shadcn components, validation schemas, Toaster
+- [x] 02-02-PLAN.md — Server Actions for auth operations and email verification callback
+- [x] 02-03-PLAN.md — Sign-up, login, and verify-email pages with forms
+- [x] 02-04-PLAN.md — Password reset request and update pages
+- [x] 02-05-PLAN.md — Account settings, change password, user menu, dashboard placeholder
+- [x] 02-06-PLAN.md — Human verification of complete auth flow
 
 ### Phase 3: Subscription & Credits
 **Goal**: Users can subscribe to plans and credit system tracks usage
@@ -154,7 +154,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Setup | 3/3 | Complete | 2026-01-26 |
-| 2. Authentication & Account | 0/6 | Ready for execution | - |
+| 2. Authentication & Account | 6/6 | Complete | 2026-01-27 |
 | 3. Subscription & Credits | 0/TBD | Not started | - |
 | 4. Core Video Creation | 0/TBD | Not started | - |
 | 5. Video Library & Dashboard | 0/TBD | Not started | - |
