@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 3 of 7 (Subscription & Credits) — IN PROGRESS
-Plan: 3 of 6 complete
-Status: Checkout and billing Server Actions ready, webhook handlers next
-Last activity: 2026-01-28 — Completed 03-03-PLAN.md
+Plan: 4 of 6 complete
+Status: Billing dashboard UI complete, webhook handlers next
+Last activity: 2026-01-28 — Completed 03-05-PLAN.md
 
-Progress: [███░░░░░░░] 35%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 11
-- Average duration: 3.1 minutes
-- Total execution time: 0.63 hours
+- Total plans completed: 12
+- Average duration: 3.2 minutes
+- Total execution time: 0.68 hours
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [███░░░░░░░] 35%
 |-------|-------|-------|----------|
 | 01-foundation-setup | 3 | 8m | 2.7m |
 | 02-authentication-account | 6 | 27m | 4.5m |
-| 03-subscription-and-credits | 2 | 3m | 1.5m |
+| 03-subscription-and-credits | 3 | 6m | 2.0m |
 
 **Recent Trend:**
-- Last 5 plans: 02-04 (21m), 02-05 (3m), 02-06 (manual), 03-01 (2m), 03-03 (1m)
-- Trend: Excellent (very fast execution for well-defined Server Actions)
+- Last 5 plans: 02-05 (3m), 02-06 (manual), 03-01 (2m), 03-03 (1m), 03-05 (3m)
+- Trend: Excellent (fast execution for UI components with clear specifications)
 
 *Updated after each plan completion*
 
@@ -102,6 +102,11 @@ Recent decisions affecting current work:
 - Customer Portal return URL (D-03-03-003) — Always return to /billing page
 - Credit balance breakdown (D-03-03-004) — Separate subscription vs overage credits in responses
 
+**From 03-05:**
+- date-fns for date formatting (D-03-05-001) — Lightweight, tree-shakeable, better than moment.js
+- Client wrapper for portal button (D-03-05-002) — Server Actions with conditional redirects need client-side error handling
+- Badge variant mapping (D-03-05-003) — default for positive, destructive for negative, secondary for neutral
+
 ### Pending Todos
 
 None yet.
@@ -113,6 +118,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-28
-Stopped at: Completed 03-03-PLAN.md (Checkout & billing Server Actions)
+Stopped at: Completed 03-05-PLAN.md (Billing dashboard UI)
 Resume file: None
-Next: Continue Phase 3 - webhook handlers (03-05) or billing dashboard UI (03-04)
+Next: Continue Phase 3 - subscription page UI (03-04) or webhook handlers (03-06)
