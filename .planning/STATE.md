@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 3 of 7 (Subscription & Credits) — IN PROGRESS
-Plan: 1 of 6 complete
-Status: Stripe foundation complete, checkout flow next
-Last activity: 2026-01-28 — Completed 03-01-PLAN.md
+Plan: 3 of 6 complete
+Status: Checkout and billing Server Actions ready, webhook handlers next
+Last activity: 2026-01-28 — Completed 03-03-PLAN.md
 
-Progress: [███░░░░░░░] 32%
+Progress: [███░░░░░░░] 35%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 10
-- Average duration: 3.5 minutes
-- Total execution time: 0.61 hours
+- Total plans completed: 11
+- Average duration: 3.1 minutes
+- Total execution time: 0.63 hours
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [███░░░░░░░] 32%
 |-------|-------|-------|----------|
 | 01-foundation-setup | 3 | 8m | 2.7m |
 | 02-authentication-account | 6 | 27m | 4.5m |
-| 03-subscription-and-credits | 1 | 2m | 2.0m |
+| 03-subscription-and-credits | 2 | 3m | 1.5m |
 
 **Recent Trend:**
-- Last 5 plans: 02-03 (23m), 02-04 (21m), 02-05 (3m), 02-06 (manual), 03-01 (2m)
-- Trend: Improving (fast execution for well-defined tasks)
+- Last 5 plans: 02-04 (21m), 02-05 (3m), 02-06 (manual), 03-01 (2m), 03-03 (1m)
+- Trend: Excellent (very fast execution for well-defined Server Actions)
 
 *Updated after each plan completion*
 
@@ -91,6 +91,12 @@ Recent decisions affecting current work:
 - Price IDs as environment variables (D-03-01-004) — Test/live mode separation
 - Configuration pattern with 'as const' (D-03-01-005) — Type-safe plan selection
 
+**From 03-03:**
+- User ID metadata attachment (D-03-03-001) — Checkout sessions include user_id for webhook processing
+- Credit pack requires subscription (D-03-03-002) — Only active subscribers can purchase overage credits
+- Customer Portal return URL (D-03-03-003) — Always return to /billing page
+- Credit balance breakdown (D-03-03-004) — Separate subscription vs overage credits in responses
+
 ### Pending Todos
 
 None yet.
@@ -102,6 +108,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-28
-Stopped at: Completed 03-01-PLAN.md (Stripe foundation)
+Stopped at: Completed 03-03-PLAN.md (Checkout & billing Server Actions)
 Resume file: None
-Next: Continue Phase 3 - checkout flow (03-02) or billing dashboard (03-04)
+Next: Continue Phase 3 - webhook handlers (03-05) or billing dashboard UI (03-04)
