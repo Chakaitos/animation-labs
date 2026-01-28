@@ -102,6 +102,11 @@ Recent decisions affecting current work:
 - Customer Portal return URL (D-03-03-003) — Always return to /billing page
 - Credit balance breakdown (D-03-03-004) — Separate subscription vs overage credits in responses
 
+**From 03-04:**
+- Compact stats card format (D-03-04-001) — Flex-row CardHeader with icon and title for dashboard metrics
+- Plan pricing display constants (D-03-04-002) — Display prices as hardcoded Record, actual prices from Stripe
+- Subscribe CTA vs stats (D-03-04-003) — Free users see CTA, subscribers see stats grid
+
 **From 03-05:**
 - date-fns for date formatting (D-03-05-001) — Lightweight, tree-shakeable, better than moment.js
 - Client wrapper for portal button (D-03-05-002) — Server Actions with conditional redirects need client-side error handling
