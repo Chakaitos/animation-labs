@@ -154,16 +154,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 | DASH-01 | Phase 5 | Pending |
 | DASH-02 | Phase 5 | Pending |
 | DASH-03 | Phase 5 | Pending |
-| VIDC-01 | Phase 4 | Pending |
-| VIDC-02 | Phase 4 | Pending |
-| VIDC-03 | Phase 4 | Pending |
-| VIDC-04 | Phase 4 | Pending |
-| VIDC-05 | Phase 4 | Pending |
-| VIDC-06 | Phase 4 | Pending |
-| VIDC-07 | Phase 4 | Pending |
-| VIDC-08 | Phase 4 | Pending |
-| VIDC-09 | Phase 4 | Pending |
-| VIDC-10 | Phase 4 | Pending |
+| VIDC-01 | Phase 4 | Complete |
+| VIDC-02 | Phase 4 | Complete |
+| VIDC-03 | Phase 4 | Complete |
+| VIDC-04 | Phase 4 | Complete |
+| VIDC-05 | Phase 4 | Complete |
+| VIDC-06 | Phase 4 | Complete |
+| VIDC-07 | Phase 4 | Complete |
+| VIDC-08 | Phase 4 | Complete |
+| VIDC-09 | Phase 4 | Complete |
+| VIDC-10 | Phase 4 | Complete |
 | VIDL-01 | Phase 5 | Pending |
 | VIDL-02 | Phase 5 | Pending |
 | VIDL-03 | Phase 5 | Pending |
@@ -190,8 +190,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | EMAL-02 | Phase 6 | Pending |
 | EMAL-03 | Phase 6 | Pending |
 | EMAL-04 | Phase 6 | Pending |
-| INTG-01 | Phase 4 | Pending |
-| INTG-02 | Phase 4 | Pending |
+| INTG-01 | Phase 4 | Complete |
+| INTG-02 | Phase 4 | Complete |
 | INTG-03 | Phase 3 | Pending |
 
 **Coverage:**

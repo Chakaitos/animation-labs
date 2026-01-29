@@ -99,11 +99,11 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Install deps, configure bodySizeLimit, create validation schemas and utilities
-- [ ] 04-02-PLAN.md — Server Actions for video creation and n8n callback webhook
-- [ ] 04-03-PLAN.md — Storage migration with RLS policies, env vars documentation
-- [ ] 04-04-PLAN.md — Multi-step form UI (upload, details, style, review)
-- [ ] 04-05-PLAN.md — Human verification of complete video creation flow
+- [x] 04-01-PLAN.md — Install deps, configure bodySizeLimit, create validation schemas and utilities
+- [x] 04-02-PLAN.md — Server Actions for video creation and n8n callback webhook
+- [x] 04-03-PLAN.md — Storage migration with RLS policies, env vars documentation
+- [x] 04-04-PLAN.md — Multi-step form UI (upload, details, style, review)
+- [x] 04-05-PLAN.md — Human verification of complete video creation flow
 
 ### Phase 5: Video Library & Dashboard
 **Goal**: Users can view, manage, and download their videos
@@ -161,7 +161,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 1. Foundation & Setup | 3/3 | Complete | 2026-01-26 |
 | 2. Authentication & Account | 6/6 | Complete | 2026-01-27 |
 | 3. Subscription & Credits | 6/6 | Complete | 2026-01-29 |
-| 4. Core Video Creation | 0/5 | Ready to execute | - |
+| 4. Core Video Creation | 5/5 | Complete | 2026-01-29 |
 | 5. Video Library & Dashboard | 0/TBD | Not started | - |
 | 6. Email Notifications | 0/TBD | Not started | - |
 | 7. Public Pages & Marketing | 0/TBD | Not started | - |
