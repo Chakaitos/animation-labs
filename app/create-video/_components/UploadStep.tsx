@@ -4,21 +4,17 @@ import { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import Image from 'next/image'
 
-import { extractColors } from '@/lib/utils/color-extraction'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 interface UploadStepProps {
-  onComplete: (file: File, colors: { primary: string; secondary: string }) => void
+  onComplete: (file: File) => void
   currentFile: File | null
-  currentColors: { primary: string; secondary: string } | null
 }
 
-export function UploadStep({ onComplete, currentFile, currentColors }: UploadStepProps) {
+export function UploadStep({ onComplete, currentFile }: UploadStepProps) {
   const [file, setFile] = useState<File | null>(currentFile)
   const [preview, setPreview] = useState<string | null>(currentFile ? URL.createObjectURL(currentFile) : null)
-  const [colors, setColors] = useState<{ primary: string; secondary: string } | null>(currentColors)
-  const [isExtracting, setIsExtracting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
@@ -31,19 +27,6 @@ export function UploadStep({ onComplete, currentFile, currentColors }: UploadSte
     // Create preview URL
     const objectUrl = URL.createObjectURL(uploadedFile)
     setPreview(objectUrl)
-
-    // Extract colors immediately
-    setIsExtracting(true)
-    try {
-      const extractedColors = await extractColors(uploadedFile)
-      setColors(extractedColors)
-    } catch (err) {
-      console.error('Color extraction failed:', err)
-      // Use fallback colors if extraction fails
-      setColors({ primary: '#000000', secondary: '#666666' })
-    } finally {
-      setIsExtracting(false)
-    }
   }, [])
 
   const { getRootProps, getInputProps, isDragActive, fileRejections } = useDropzone({
@@ -68,15 +51,14 @@ export function UploadStep({ onComplete, currentFile, currentColors }: UploadSte
   })
 
   const handleContinue = () => {
-    if (file && colors) {
-      onComplete(file, colors)
+    if (file) {
+      onComplete(file)
     }
   }
 
   const handleRemove = () => {
     setFile(null)
     setPreview(null)
-    setColors(null)
     setError(null)
   }
 
@@ -157,39 +139,6 @@ export function UploadStep({ onComplete, currentFile, currentColors }: UploadSte
         </p>
       )}
 
-      {/* Extracting indicator */}
-      {isExtracting && (
-        <p className="text-sm text-muted-foreground animate-pulse">
-          Extracting colors from your logo...
-        </p>
-      )}
-
-      {/* Color preview */}
-      {colors && !isExtracting && (
-        <div className="flex gap-6">
-          <div>
-            <p className="text-sm font-medium mb-2">Primary Color</p>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-10 h-10 rounded border shadow-sm"
-                style={{ backgroundColor: colors.primary }}
-              />
-              <span className="text-sm font-mono">{colors.primary}</span>
-            </div>
-          </div>
-          <div>
-            <p className="text-sm font-medium mb-2">Secondary Color</p>
-            <div className="flex items-center gap-2">
-              <div
-                className="w-10 h-10 rounded border shadow-sm"
-                style={{ backgroundColor: colors.secondary }}
-              />
-              <span className="text-sm font-mono">{colors.secondary}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Action buttons */}
       <div className="flex gap-4">
         {file && (
@@ -200,10 +149,10 @@ export function UploadStep({ onComplete, currentFile, currentColors }: UploadSte
         <Button
           type="button"
           onClick={handleContinue}
-          disabled={!file || !colors || isExtracting}
+          disabled={!file}
           className="ml-auto"
         >
-          {isExtracting ? 'Extracting...' : 'Continue'}
+          Continue
         </Button>
       </div>
     </div>

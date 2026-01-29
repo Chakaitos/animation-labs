@@ -23,7 +23,6 @@ export function CreateVideoForm() {
   // Multi-step state
   const [step, setStep] = useState(1)
   const [file, setFile] = useState<File | null>(null)
-  const [colors, setColors] = useState<{ primary: string; secondary: string } | null>(null)
 
   // React Hook Form
   const form = useForm<VideoFormValues>({
@@ -31,14 +30,11 @@ export function CreateVideoForm() {
     defaultValues: videoFormDefaults,
   })
 
-  // Handle file upload and color extraction
-  const handleUploadComplete = useCallback((uploadedFile: File, extractedColors: { primary: string; secondary: string }) => {
+  // Handle file upload
+  const handleUploadComplete = useCallback((uploadedFile: File) => {
     setFile(uploadedFile)
-    setColors(extractedColors)
-    form.setValue('primaryColor', extractedColors.primary)
-    form.setValue('secondaryColor', extractedColors.secondary)
     setStep(2)
-  }, [form])
+  }, [])
 
   // Navigation helpers
   const nextStep = useCallback(() => setStep((s) => Math.min(s + 1, 4)), [])
@@ -61,8 +57,6 @@ export function CreateVideoForm() {
       formData.append('quality', values.quality)
       formData.append('style', values.style)
       formData.append('creativeDirection', values.creativeDirection || '')
-      formData.append('primaryColor', values.primaryColor)
-      formData.append('secondaryColor', values.secondaryColor)
 
       const result: CreateVideoResult = await createVideo(formData)
 
@@ -99,7 +93,6 @@ export function CreateVideoForm() {
           <UploadStep
             onComplete={handleUploadComplete}
             currentFile={file}
-            currentColors={colors}
           />
         )}
 
@@ -123,7 +116,6 @@ export function CreateVideoForm() {
           <ReviewStep
             form={form}
             file={file}
-            colors={colors}
             onBack={prevStep}
             isSubmitting={isPending}
           />

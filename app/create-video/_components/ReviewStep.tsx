@@ -10,26 +10,22 @@ import { Card, CardContent } from '@/components/ui/card'
 interface ReviewStepProps {
   form: UseFormReturn<VideoFormValues>
   file: File | null
-  colors: { primary: string; secondary: string } | null
   onBack: () => void
   isSubmitting: boolean
 }
 
 const DURATION_LABELS: Record<string, string> = {
-  '4s': '4 seconds',
-  '6s': '6 seconds',
-  '8s': '8 seconds',
-  '15s': '15 seconds',
+  '4': '4 seconds',
+  '6': '6 seconds',
+  '8': '8 seconds',
 }
 
 const QUALITY_LABELS: Record<string, string> = {
   'standard': 'Standard (720p)',
   'premium': 'Premium (1080p)',
-  '1080p': '1080p HD',
-  '4k': '4K Ultra HD',
 }
 
-export function ReviewStep({ form, file, colors, onBack, isSubmitting }: ReviewStepProps) {
+export function ReviewStep({ form, file, onBack, isSubmitting }: ReviewStepProps) {
   const values = form.getValues()
   const preview = file ? URL.createObjectURL(file) : null
 
@@ -46,7 +42,7 @@ export function ReviewStep({ form, file, colors, onBack, isSubmitting }: ReviewS
         <CardContent className="pt-6">
           <div className="grid md:grid-cols-2 gap-6">
             {/* Logo Preview */}
-            <div>
+            <div className="md:col-span-2">
               <p className="text-sm font-medium text-muted-foreground mb-2">Logo</p>
               {preview && (
                 <div className="relative w-32 h-32 rounded border bg-muted">
@@ -58,31 +54,6 @@ export function ReviewStep({ form, file, colors, onBack, isSubmitting }: ReviewS
                   />
                 </div>
               )}
-            </div>
-
-            {/* Colors */}
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-2">Extracted Colors</p>
-              <div className="flex gap-4">
-                {colors && (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-8 h-8 rounded border"
-                        style={{ backgroundColor: colors.primary }}
-                      />
-                      <span className="text-sm font-mono">{colors.primary}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-8 h-8 rounded border"
-                        style={{ backgroundColor: colors.secondary }}
-                      />
-                      <span className="text-sm font-mono">{colors.secondary}</span>
-                    </div>
-                  </>
-                )}
-              </div>
             </div>
 
             {/* Brand Name */}

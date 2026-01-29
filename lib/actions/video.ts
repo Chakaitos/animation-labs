@@ -52,8 +52,6 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
     quality: formData.get('quality'),
     style: formData.get('style'),
     creativeDirection: formData.get('creativeDirection') || '',
-    primaryColor: formData.get('primaryColor'),
-    secondaryColor: formData.get('secondaryColor'),
   }
 
   const validated = videoSchema.safeParse(rawData)
@@ -122,11 +120,9 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
       brand_name: validated.data.brandName,
       status: 'processing',
       logo_url: publicUrl,
-      duration_seconds: parseInt(validated.data.duration.replace('s', ''), 10),
-      quality: validated.data.quality === 'standard' ? '720p' : validated.data.quality === 'premium' ? '1080p' : validated.data.quality,
+      duration_seconds: parseInt(validated.data.duration, 10),
+      quality: validated.data.quality === 'standard' ? '720p' : '1080p',
       style: validated.data.style,
-      primary_color: validated.data.primaryColor,
-      secondary_color: validated.data.secondaryColor,
       creative_direction: validated.data.creativeDirection || null,
       credits_used: 1,
     })
@@ -175,8 +171,6 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
         duration: validated.data.duration,
         quality: validated.data.quality,
         style: validated.data.style,
-        primaryColor: validated.data.primaryColor,
-        secondaryColor: validated.data.secondaryColor,
         creativeDirection: validated.data.creativeDirection || null,
         callbackUrl: `${siteUrl}/api/webhooks/video-status`,
         webhookSecret: webhookSecret || null,

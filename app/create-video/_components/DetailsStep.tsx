@@ -28,17 +28,14 @@ interface DetailsStepProps {
 }
 
 const DURATION_LABELS: Record<string, string> = {
-  '4s': '4 seconds - Quick intro',
-  '6s': '6 seconds - Standard',
-  '8s': '8 seconds - Extended',
-  '15s': '15 seconds - Full animation',
+  '4': '4 seconds - Quick intro',
+  '6': '6 seconds - Standard',
+  '8': '8 seconds - Extended',
 }
 
 const QUALITY_LABELS: Record<string, string> = {
   'standard': 'Standard (720p)',
   'premium': 'Premium (1080p)',
-  '1080p': '1080p HD',
-  '4k': '4K Ultra HD',
 }
 
 export function DetailsStep({ form, onNext, onBack }: DetailsStepProps) {

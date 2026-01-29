@@ -50,7 +50,7 @@ export default async function DashboardPage() {
           </div>
           {hasSubscription && (
             <Button asChild>
-              <Link href="/create">
+              <Link href="/create-video">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Video
               </Link>
@@ -118,7 +118,7 @@ export default async function DashboardPage() {
                   <p>No videos yet</p>
                   <p className="text-sm">Create your first logo animation to get started.</p>
                   <Button className="mt-4" asChild>
-                    <Link href="/create">
+                    <Link href="/create-video">
                       <Plus className="h-4 w-4 mr-2" />
                       Create Video
                     </Link>
