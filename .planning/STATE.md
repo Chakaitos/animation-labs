@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 4 of 7 (Core Video Creation) — IN PROGRESS
-Plan: 1 of 3 complete
-Status: Video creation foundation established
-Last activity: 2026-01-29 — Completed 04-01-PLAN.md
+Plan: 2 of 3 complete
+Status: Server Actions and webhooks implemented
+Last activity: 2026-01-29 — Completed 04-02-PLAN.md
 
-Progress: [████░░░░░░] 45%
+Progress: [█████░░░░░] 49%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 16
-- Average duration: 3.6 minutes (autonomous plans only)
-- Total execution time: 0.83 hours
+- Total plans completed: 17
+- Average duration: 3.5 minutes (autonomous plans only)
+- Total execution time: 0.87 hours
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [████░░░░░░] 45%
 | 01-foundation-setup | 3 | 8m | 2.7m |
 | 02-authentication-account | 6 | 27m | 4.5m |
 | 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
-| 04-core-video-creation | 1 | 5m | 5m |
+| 04-core-video-creation | 2 | 7m | 3.5m |
 
 **Recent Trend:**
-- Last 5 plans: 03-03 (1m), 03-04 (2m), 03-05 (3m), 03-06 (manual verification + fixes), 04-01 (5m)
-- Trend: Excellent (autonomous plans execute fast, 3 bugs auto-fixed in 04-01)
+- Last 5 plans: 03-04 (2m), 03-05 (3m), 03-06 (manual verification + fixes), 04-01 (5m), 04-02 (2m)
+- Trend: Excellent (autonomous plans execute fast, efficient workflow)
 
 *Updated after each plan completion*
 
@@ -131,6 +131,12 @@ Recent decisions affecting current work:
 - Style presets: 8 options (D-04-01-006) — modern (default), minimal, bold, elegant, playful, corporate, cinematic, custom
 - Allowed formats: JPG, PNG, WebP only (D-04-01-007) — No SVG per Veo 3 requirements
 
+**From 04-02:**
+- Fire-and-forget n8n webhook pattern (D-04-02-001) — Don't block Server Action response, webhook failure logged but not fatal
+- Service role client for webhooks (D-04-02-002) — Bypasses RLS for system operations, secured by webhook secret
+- Rollback on credit deduction failure (D-04-02-003) — Delete video record and uploaded file to ensure atomicity
+- Idempotent webhook processing (D-04-02-004) — Use n8n_execution_id to prevent duplicate processing and retry loops
+
 ### Pending Todos
 
 None yet.
@@ -142,6 +148,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 04-01-PLAN.md (Video Foundation)
+Stopped at: Completed 04-02-PLAN.md (Server Actions & Webhooks)
 Resume file: None
-Next: 04-02 (Upload UI) - Multi-step form with logo upload and color extraction
+Next: 04-03 (Upload UI) - Multi-step form with logo upload and color extraction
