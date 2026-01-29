@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Professional logo animations at $3-5 per video with 10-15 minute turnaround
-**Current focus:** Subscription & Credits
+**Current focus:** Core Video Creation
 
 ## Current Position
 
-Phase: 3 of 7 (Subscription & Credits) — COMPLETE ✅
-Plan: 6 of 6 complete
-Status: All subscription and credit flows verified and working
-Last activity: 2026-01-29 — Completed Phase 3
+Phase: 4 of 7 (Core Video Creation) — IN PROGRESS
+Plan: 1 of 3 complete
+Status: Video creation foundation established
+Last activity: 2026-01-29 — Completed 04-01-PLAN.md
 
-Progress: [████░░░░░░] 43%
+Progress: [████░░░░░░] 45%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 15
-- Average duration: 3.5 minutes (autonomous plans only)
-- Total execution time: 0.75 hours
+- Total plans completed: 16
+- Average duration: 3.6 minutes (autonomous plans only)
+- Total execution time: 0.83 hours
 
 **By Phase:**
 
@@ -30,10 +30,11 @@ Progress: [████░░░░░░] 43%
 | 01-foundation-setup | 3 | 8m | 2.7m |
 | 02-authentication-account | 6 | 27m | 4.5m |
 | 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
+| 04-core-video-creation | 1 | 5m | 5m |
 
 **Recent Trend:**
-- Last 5 plans: 03-02 (3m), 03-03 (1m), 03-04 (2m), 03-05 (3m), 03-06 (manual verification + fixes)
-- Trend: Excellent (autonomous plans execute fast, verification identified and fixed 7 issues)
+- Last 5 plans: 03-03 (1m), 03-04 (2m), 03-05 (3m), 03-06 (manual verification + fixes), 04-01 (5m)
+- Trend: Excellent (autonomous plans execute fast, 3 bugs auto-fixed in 04-01)
 
 *Updated after each plan completion*
 
@@ -121,6 +122,15 @@ Recent decisions affecting current work:
 - Contextual upgrade/downgrade CTAs (D-03-06-006) — Button text reflects action: "Upgrade to X" vs "Switch to X"
 - Direct portal access from subscribe (D-03-06-007) — Plan change buttons open Stripe portal directly, no intermediate page
 
+**From 04-01:**
+- 25MB body size limit for Server Actions (D-04-01-001) — Matches Supabase Storage limit for logo uploads
+- node-vibrant/browser for color extraction (D-04-01-002) — Browser-specific export with object URLs
+- Magic byte validation for file security (D-04-01-003) — file-type library, never trust client MIME types
+- Duration options: 4s, 6s, 8s, 15s (D-04-01-004) — Default 15s for professional animations
+- Quality options: standard, premium, 1080p, 4k (D-04-01-005) — Default 1080p balanced quality
+- Style presets: 8 options (D-04-01-006) — modern (default), minimal, bold, elegant, playful, corporate, cinematic, custom
+- Allowed formats: JPG, PNG, WebP only (D-04-01-007) — No SVG per Veo 3 requirements
+
 ### Pending Todos
 
 None yet.
@@ -132,6 +142,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed Phase 3 (Subscription & Credits) ✅
+Stopped at: Completed 04-01-PLAN.md (Video Foundation)
 Resume file: None
-Next: Phase 4 (Core Video Creation) - Logo upload and n8n workflow integration
+Next: 04-02 (Upload UI) - Multi-step form with logo upload and color extraction
