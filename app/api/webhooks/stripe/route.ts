@@ -109,6 +109,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     return
   }
 
+  console.log(`[handleCheckoutCompleted] Processing for user: ${userId}, mode: ${session.mode}`)
+
   // Handle subscription checkout
   if (session.mode === 'subscription' && session.subscription) {
     const subscriptionId = typeof session.subscription === 'string'
@@ -116,28 +118,42 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       : session.subscription.id
 
     // Get subscription details from Stripe
+    console.log(`[handleCheckoutCompleted] Retrieving subscription: ${subscriptionId}`)
     const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
       expand: ['items.data.price']
     }) as any
     const priceId = subscription.items.data[0]?.price.id
+    console.log(`[handleCheckoutCompleted] Price ID: ${priceId}`)
     const planId = priceId ? getPlanByPriceId(priceId) : null
     const plan = planId ? PLANS[planId] : null
 
     if (!plan || !planId) {
       console.error('Unknown price ID:', priceId)
+      console.error('Available price IDs:', Object.values(PLANS).map(p => p.priceId))
       return
     }
 
+    console.log(`[handleCheckoutCompleted] Plan matched: ${planId}`)
+
     // Check if user already has a subscription
-    const { data: existingSub } = await getSupabaseAdmin()
+    console.log(`[handleCheckoutCompleted] Checking for existing subscription`)
+    const { data: existingSub, error: checkError } = await getSupabaseAdmin()
       .from('subscriptions')
       .select('id')
       .eq('user_id', userId)
       .single()
 
+    if (checkError && checkError.code !== 'PGRST116') {
+      console.error('[handleCheckoutCompleted] Error checking subscription:', checkError)
+      throw checkError
+    }
+
+    console.log(`[handleCheckoutCompleted] Existing sub:`, existingSub ? 'found' : 'none')
+
     if (existingSub) {
       // Update existing subscription
-      await getSupabaseAdmin()
+      console.log(`[handleCheckoutCompleted] Updating existing subscription`)
+      const { error: updateError } = await getSupabaseAdmin()
         .from('subscriptions')
         .update({
           plan: planId,
@@ -151,17 +167,29 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         })
         .eq('id', existingSub.id)
 
+      if (updateError) {
+        console.error('[handleCheckoutCompleted] Error updating subscription:', updateError)
+        throw updateError
+      }
+
       // Log credit grant
-      await getSupabaseAdmin().from('credit_transactions').insert({
+      console.log(`[handleCheckoutCompleted] Logging credit transaction`)
+      const { error: txError } = await getSupabaseAdmin().from('credit_transactions').insert({
         user_id: userId,
         subscription_id: existingSub.id,
         amount: plan.credits,
         type: 'subscription',
         description: `${plan.name} plan subscription activated`,
       })
+
+      if (txError) {
+        console.error('[handleCheckoutCompleted] Error logging transaction:', txError)
+        throw txError
+      }
     } else {
       // Create new subscription
-      const { data: newSub } = await getSupabaseAdmin()
+      console.log(`[handleCheckoutCompleted] Creating new subscription`)
+      const { data: newSub, error: insertError } = await getSupabaseAdmin()
         .from('subscriptions')
         .insert({
           user_id: userId,
@@ -177,19 +205,32 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         .select('id')
         .single()
 
+      if (insertError) {
+        console.error('[handleCheckoutCompleted] Error creating subscription:', insertError)
+        throw insertError
+      }
+
+      console.log(`[handleCheckoutCompleted] Subscription created:`, newSub?.id)
+
       if (newSub) {
         // Log credit grant
-        await getSupabaseAdmin().from('credit_transactions').insert({
+        console.log(`[handleCheckoutCompleted] Logging credit transaction`)
+        const { error: txError } = await getSupabaseAdmin().from('credit_transactions').insert({
           user_id: userId,
           subscription_id: newSub.id,
           amount: plan.credits,
           type: 'subscription',
           description: `${plan.name} plan subscription started`,
         })
+
+        if (txError) {
+          console.error('[handleCheckoutCompleted] Error logging transaction:', txError)
+          throw txError
+        }
       }
     }
 
-    console.log(`Subscription created for user ${userId}: ${planId} (${plan.credits} credits)`)
+    console.log(`[handleCheckoutCompleted] SUCCESS: Subscription created for user ${userId}: ${planId} (${plan.credits} credits)`)
   }
 
   // Handle one-time credit pack purchase
