@@ -28,12 +28,20 @@ export async function createSubscriptionCheckout(planId: PlanId) {
     return { error: 'Invalid plan selected' }
   }
 
-  // Check if user already has a subscription with Stripe customer
+  // Check if user already has a subscription
   const { data: existingSub } = await supabase
     .from('subscriptions')
-    .select('stripe_customer_id')
+    .select('stripe_customer_id, status, stripe_subscription_id')
     .eq('user_id', user.id)
     .single()
+
+  // Prevent creating duplicate subscriptions - redirect to billing portal instead
+  if (existingSub?.stripe_subscription_id && existingSub.status === 'active') {
+    return {
+      error: 'You already have an active subscription. Please use the billing portal to change your plan.',
+      redirectTo: '/billing'
+    }
+  }
 
   try {
     const session = await stripe.checkout.sessions.create({
