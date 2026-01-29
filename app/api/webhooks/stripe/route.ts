@@ -310,7 +310,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         .insert({
           user_id: userId,
           plan: 'starter', // Default to starter for credits-only accounts
-          status: 'inactive', // No active subscription, just credits
+          status: 'cancelled', // No active subscription - using 'cancelled' for credits-only state
           credits_remaining: 0,
           credits_total: 0,
           overage_credits: 0,
