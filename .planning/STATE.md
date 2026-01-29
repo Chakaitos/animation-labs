@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 4 of 7 (Core Video Creation) — IN PROGRESS
-Plan: 2 of 3 complete
-Status: Server Actions and webhooks implemented
-Last activity: 2026-01-29 — Completed 04-02-PLAN.md
+Phase: 4 of 7 (Core Video Creation) — COMPLETE
+Plan: 3 of 3 complete
+Status: Storage setup complete, ready for UI implementation
+Last activity: 2026-01-29 — Completed 04-03-PLAN.md
 
-Progress: [█████░░░░░] 49%
+Progress: [██████░░░░] 51%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 17
-- Average duration: 3.5 minutes (autonomous plans only)
-- Total execution time: 0.87 hours
+- Total plans completed: 18
+- Average duration: 3.1 minutes (autonomous plans only)
+- Total execution time: 0.88 hours
 
 **By Phase:**
 
@@ -30,11 +30,11 @@ Progress: [█████░░░░░] 49%
 | 01-foundation-setup | 3 | 8m | 2.7m |
 | 02-authentication-account | 6 | 27m | 4.5m |
 | 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
-| 04-core-video-creation | 2 | 7m | 3.5m |
+| 04-core-video-creation | 3 | 8m | 2.7m |
 
 **Recent Trend:**
-- Last 5 plans: 03-04 (2m), 03-05 (3m), 03-06 (manual verification + fixes), 04-01 (5m), 04-02 (2m)
-- Trend: Excellent (autonomous plans execute fast, efficient workflow)
+- Last 5 plans: 03-05 (3m), 03-06 (manual verification + fixes), 04-01 (5m), 04-02 (2m), 04-03 (1m)
+- Trend: Excellent (autonomous plans execute very fast, efficient workflow)
 
 *Updated after each plan completion*
 
@@ -137,6 +137,11 @@ Recent decisions affecting current work:
 - Rollback on credit deduction failure (D-04-02-003) — Delete video record and uploaded file to ensure atomicity
 - Idempotent webhook processing (D-04-02-004) — Use n8n_execution_id to prevent duplicate processing and retry loops
 
+**From 04-03:**
+- Public read access for logos bucket (D-04-03-001) — n8n workflow needs to download logos without auth, safe with UUID paths
+- User-scoped uploads via foldername() RLS pattern (D-04-03-002) — foldername(name)[1] = auth.uid()::text ensures user folder isolation
+- Composite index on videos(user_id, status) (D-04-03-003) — Optimizes dashboard queries filtering by user and status
+
 ### Pending Todos
 
 None yet.
@@ -148,6 +153,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 04-02-PLAN.md (Server Actions & Webhooks)
+Stopped at: Completed 04-03-PLAN.md (Storage Setup)
 Resume file: None
-Next: 04-03 (Upload UI) - Multi-step form with logo upload and color extraction
+Next: Phase 4 complete — Move to Phase 5 (n8n Workflow Integration)
