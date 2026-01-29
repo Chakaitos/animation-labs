@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 
 ## Current Position
 
-Phase: 3 of 7 (Subscription & Credits) — IN PROGRESS
-Plan: 4 of 6 complete
-Status: Billing dashboard UI complete, webhook handlers next
-Last activity: 2026-01-28 — Completed 03-05-PLAN.md
+Phase: 3 of 7 (Subscription & Credits) — COMPLETE ✅
+Plan: 6 of 6 complete
+Status: All subscription and credit flows verified and working
+Last activity: 2026-01-29 — Completed Phase 3
 
-Progress: [████░░░░░░] 40%
+Progress: [████░░░░░░] 43%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 12
-- Average duration: 3.2 minutes
-- Total execution time: 0.68 hours
+- Total plans completed: 15
+- Average duration: 3.5 minutes (autonomous plans only)
+- Total execution time: 0.75 hours
 
 **By Phase:**
 
@@ -29,11 +29,11 @@ Progress: [████░░░░░░] 40%
 |-------|-------|-------|----------|
 | 01-foundation-setup | 3 | 8m | 2.7m |
 | 02-authentication-account | 6 | 27m | 4.5m |
-| 03-subscription-and-credits | 3 | 6m | 2.0m |
+| 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
 
 **Recent Trend:**
-- Last 5 plans: 02-05 (3m), 02-06 (manual), 03-01 (2m), 03-03 (1m), 03-05 (3m)
-- Trend: Excellent (fast execution for UI components with clear specifications)
+- Last 5 plans: 03-02 (3m), 03-03 (1m), 03-04 (2m), 03-05 (3m), 03-06 (manual verification + fixes)
+- Trend: Excellent (autonomous plans execute fast, verification identified and fixed 7 issues)
 
 *Updated after each plan completion*
 
@@ -112,6 +112,15 @@ Recent decisions affecting current work:
 - Client wrapper for portal button (D-03-05-002) — Server Actions with conditional redirects need client-side error handling
 - Badge variant mapping (D-03-05-003) — default for positive, destructive for negative, secondary for neutral
 
+**From 03-06 (Verification & Fixes):**
+- Re-throw NEXT_REDIRECT errors (D-03-06-001) — Next.js redirect() throws special digest error that must be re-thrown
+- Fallback for Stripe period dates (D-03-06-002) — Use subscription.created + 30 days when period dates undefined
+- Prevent duplicate subscriptions (D-03-06-003) — Block checkout if active subscription exists, direct to portal
+- Credits-only subscription status (D-03-06-004) — Use 'cancelled' status for single credit purchases without subscription
+- Show all credits regardless of status (D-03-06-005) — Remove status filter from getCreditBalance() to include overage credits
+- Contextual upgrade/downgrade CTAs (D-03-06-006) — Button text reflects action: "Upgrade to X" vs "Switch to X"
+- Direct portal access from subscribe (D-03-06-007) — Plan change buttons open Stripe portal directly, no intermediate page
+
 ### Pending Todos
 
 None yet.
@@ -122,7 +131,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-28
-Stopped at: Completed 03-05-PLAN.md (Billing dashboard UI)
+Last session: 2026-01-29
+Stopped at: Completed Phase 3 (Subscription & Credits) ✅
 Resume file: None
-Next: Continue Phase 3 - subscription page UI (03-04) or webhook handlers (03-06)
+Next: Phase 4 (Core Video Creation) - Logo upload and n8n workflow integration
