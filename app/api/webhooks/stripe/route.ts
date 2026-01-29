@@ -174,13 +174,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       // Update existing subscription
       console.log(`[handleCheckoutCompleted] Updating existing subscription`)
 
-      if (!subscription.current_period_start || !subscription.current_period_end) {
-        console.error('[handleCheckoutCompleted] Missing period dates:', {
-          start: subscription.current_period_start,
-          end: subscription.current_period_end
-        })
-        throw new Error('Subscription missing period dates')
-      }
+      // Use created timestamp as fallback for period dates (they'll be updated by invoice.payment_succeeded)
+      const periodStart = subscription.current_period_start || subscription.created
+      const periodEnd = subscription.current_period_end || (subscription.created + 30 * 24 * 60 * 60) // 30 days
 
       const { error: updateError } = await getSupabaseAdmin()
         .from('subscriptions')
@@ -191,8 +187,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           credits_total: plan.credits,
           stripe_customer_id: session.customer as string,
           stripe_subscription_id: subscriptionId,
-          current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-          current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+          current_period_start: new Date(periodStart * 1000).toISOString(),
+          current_period_end: new Date(periodEnd * 1000).toISOString(),
         })
         .eq('id', existingSub.id)
 
@@ -219,13 +215,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       // Create new subscription
       console.log(`[handleCheckoutCompleted] Creating new subscription`)
 
-      if (!subscription.current_period_start || !subscription.current_period_end) {
-        console.error('[handleCheckoutCompleted] Missing period dates:', {
-          start: subscription.current_period_start,
-          end: subscription.current_period_end
-        })
-        throw new Error('Subscription missing period dates')
-      }
+      // Use created timestamp as fallback for period dates (they'll be updated by invoice.payment_succeeded)
+      const periodStart = subscription.current_period_start || subscription.created
+      const periodEnd = subscription.current_period_end || (subscription.created + 30 * 24 * 60 * 60) // 30 days
+
+      console.log(`[handleCheckoutCompleted] Using period dates:`, {
+        start: periodStart,
+        end: periodEnd,
+        startDate: new Date(periodStart * 1000).toISOString(),
+        endDate: new Date(periodEnd * 1000).toISOString()
+      })
 
       const { data: newSub, error: insertError } = await getSupabaseAdmin()
         .from('subscriptions')
@@ -237,8 +236,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           credits_total: plan.credits,
           stripe_customer_id: session.customer as string,
           stripe_subscription_id: subscriptionId,
-          current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-          current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+          current_period_start: new Date(periodStart * 1000).toISOString(),
+          current_period_end: new Date(periodEnd * 1000).toISOString(),
         })
         .select('id')
         .single()
