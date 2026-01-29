@@ -9,8 +9,8 @@ import { ArrowLeft } from 'lucide-react'
 
 // Plan pricing (displayed only - actual prices come from Stripe)
 const PLAN_PRICES: Record<PlanId, string> = {
-  starter: '$19',
-  professional: '$49',
+  starter: '$30',
+  professional: '$75',
 }
 
 export default async function SubscribePage() {

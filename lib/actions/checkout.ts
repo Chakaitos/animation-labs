@@ -67,6 +67,10 @@ export async function createSubscriptionCheckout(planId: PlanId) {
 
     redirect(session.url)
   } catch (error) {
+    // Re-throw redirect errors (Next.js navigation)
+    if (error instanceof Error && 'digest' in error && typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
+      throw error
+    }
     console.error('Checkout session error:', error)
     return { error: 'Failed to create checkout session. Please try again.' }
   }
@@ -134,6 +138,10 @@ export async function createCreditPackCheckout(packId: CreditPackId) {
 
     redirect(session.url)
   } catch (error) {
+    // Re-throw redirect errors (Next.js navigation)
+    if (error instanceof Error && 'digest' in error && typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
+      throw error
+    }
     console.error('Credit pack checkout error:', error)
     return { error: 'Failed to create checkout session. Please try again.' }
   }
