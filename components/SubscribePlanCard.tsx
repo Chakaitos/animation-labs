@@ -20,6 +20,8 @@ interface SubscribePlanCardProps {
   recommended?: boolean
   currentPlan?: boolean
   hasActiveSubscription?: boolean
+  isUpgrade?: boolean
+  isDowngrade?: boolean
 }
 
 export function SubscribePlanCard({
@@ -32,6 +34,8 @@ export function SubscribePlanCard({
   recommended = false,
   currentPlan = false,
   hasActiveSubscription = false,
+  isUpgrade = false,
+  isDowngrade = false,
 }: SubscribePlanCardProps) {
   const [isPending, startTransition] = useTransition()
   const router = useRouter()
@@ -58,6 +62,20 @@ export function SubscribePlanCard({
       }
       // Redirect to Stripe portal happens in the action
     })
+  }
+
+  // Determine button text
+  const getButtonText = () => {
+    if (isPending) {
+      return hasActiveSubscription ? 'Opening portal...' : 'Redirecting...'
+    }
+    if (isUpgrade) {
+      return `Upgrade to ${name}`
+    }
+    if (isDowngrade) {
+      return `Switch to ${name}`
+    }
+    return 'Subscribe'
   }
 
   return (
@@ -95,11 +113,11 @@ export function SubscribePlanCard({
         ) : hasActiveSubscription ? (
           <Button
             className="w-full"
-            variant="outline"
+            variant={isUpgrade ? 'default' : 'outline'}
             onClick={handleManageSubscription}
             disabled={isPending}
           >
-            {isPending ? 'Opening portal...' : 'Manage Subscription'}
+            {getButtonText()}
           </Button>
         ) : (
           <Button
@@ -108,7 +126,7 @@ export function SubscribePlanCard({
             onClick={handleSubscribe}
             disabled={isPending}
           >
-            {isPending ? 'Redirecting...' : 'Subscribe'}
+            {getButtonText()}
           </Button>
         )}
       </CardFooter>
