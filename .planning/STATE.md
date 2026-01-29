@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 4 of 7 (Core Video Creation) — COMPLETE
-Plan: 3 of 3 complete
-Status: Storage setup complete, ready for UI implementation
-Last activity: 2026-01-29 — Completed 04-03-PLAN.md
+Plan: 4 of 4 complete
+Status: Video creation UI complete, ready for n8n workflow integration
+Last activity: 2026-01-29 — Completed 04-04-PLAN.md
 
-Progress: [██████░░░░] 51%
+Progress: [██████░░░░] 54%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 18
-- Average duration: 3.1 minutes (autonomous plans only)
-- Total execution time: 0.88 hours
+- Total plans completed: 19
+- Average duration: 3.3 minutes (autonomous plans only)
+- Total execution time: 0.95 hours
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: [██████░░░░] 51%
 | 01-foundation-setup | 3 | 8m | 2.7m |
 | 02-authentication-account | 6 | 27m | 4.5m |
 | 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
-| 04-core-video-creation | 3 | 8m | 2.7m |
+| 04-core-video-creation | 4 | 12m | 3.0m |
 
 **Recent Trend:**
-- Last 5 plans: 03-05 (3m), 03-06 (manual verification + fixes), 04-01 (5m), 04-02 (2m), 04-03 (1m)
+- Last 5 plans: 03-06 (manual verification + fixes), 04-01 (5m), 04-02 (2m), 04-03 (1m), 04-04 (4m)
 - Trend: Excellent (autonomous plans execute very fast, efficient workflow)
 
 *Updated after each plan completion*
@@ -142,6 +142,12 @@ Recent decisions affecting current work:
 - User-scoped uploads via foldername() RLS pattern (D-04-03-002) — foldername(name)[1] = auth.uid()::text ensures user folder isolation
 - Composite index on videos(user_id, status) (D-04-03-003) — Optimizes dashboard queries filtering by user and status
 
+**From 04-04:**
+- Step-by-step validation pattern (D-04-04-001) — Validate fields for current step before allowing Continue button to proceed
+- Immediate color extraction on upload (D-04-04-002) — Extract colors as soon as file is dropped/selected, reduces wait time perception
+- Centralized form state with step-specific components (D-04-04-003) — CreateVideoForm manages file/colors state, step components are pure presentation
+- Credit gate at page level (D-04-04-004) — Check credits in Server Component before rendering form, show upgrade prompt if 0 credits
+
 ### Pending Todos
 
 None yet.
@@ -153,6 +159,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-01-29
-Stopped at: Completed 04-03-PLAN.md (Storage Setup)
+Stopped at: Completed 04-04-PLAN.md (Video Creation UI)
 Resume file: None
 Next: Phase 4 complete — Move to Phase 5 (n8n Workflow Integration)
