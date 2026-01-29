@@ -272,80 +272,130 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   // Handle one-time credit pack purchase
   if (session.mode === 'payment') {
+    console.log(`[handleCheckoutCompleted] Processing credit pack purchase`)
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id)
     const priceId = lineItems.data[0]?.price?.id
+    console.log(`[handleCheckoutCompleted] Credit pack price ID: ${priceId}`)
     const packId = priceId ? getCreditPackByPriceId(priceId) : null
     const pack = packId ? CREDIT_PACKS[packId] : null
 
-    if (pack) {
-      // Get user's subscription (or create one for single credit purchases)
-      const { data: sub } = await getSupabaseAdmin()
+    if (!pack) {
+      console.log(`[handleCheckoutCompleted] No pack found for price ID: ${priceId}`)
+      console.log(`[handleCheckoutCompleted] Available packs:`, Object.entries(CREDIT_PACKS).map(([id, p]) => ({ id, priceId: p.priceId, credits: p.credits })))
+      return
+    }
+
+    console.log(`[handleCheckoutCompleted] Pack matched: ${packId} (${pack.credits} credits)`)
+
+    // Get user's subscription (or create one for single credit purchases)
+    const { data: sub, error: subError } = await getSupabaseAdmin()
+      .from('subscriptions')
+      .select('id')
+      .eq('user_id', userId)
+      .single()
+
+    if (subError && subError.code !== 'PGRST116') {
+      console.error('[handleCheckoutCompleted] Error fetching subscription:', subError)
+      throw subError
+    }
+
+    let subscriptionId = sub?.id
+    console.log(`[handleCheckoutCompleted] Existing subscription: ${subscriptionId || 'none'}`)
+
+    // If no subscription exists and this is a single credit purchase, create a credits-only record
+    if (!sub && !pack.requiresSubscription) {
+      console.log(`[handleCheckoutCompleted] Creating credits-only subscription for single credit`)
+      const { data: newSub, error: insertError } = await getSupabaseAdmin()
         .from('subscriptions')
+        .insert({
+          user_id: userId,
+          plan: 'starter', // Default to starter for credits-only accounts
+          status: 'inactive', // No active subscription, just credits
+          credits_remaining: 0,
+          credits_total: 0,
+          overage_credits: 0,
+          stripe_customer_id: session.customer as string,
+        })
         .select('id')
-        .eq('user_id', userId)
         .single()
 
-      let subscriptionId = sub?.id
-
-      // If no subscription exists and this is a single credit purchase, create a credits-only record
-      if (!sub && !pack.requiresSubscription) {
-        const { data: newSub } = await getSupabaseAdmin()
-          .from('subscriptions')
-          .insert({
-            user_id: userId,
-            plan: 'starter', // Default to starter for credits-only accounts
-            status: 'inactive', // No active subscription, just credits
-            credits_remaining: 0,
-            credits_total: 0,
-            overage_credits: 0,
-            stripe_customer_id: session.customer as string,
-          })
-          .select('id')
-          .single()
-
-        subscriptionId = newSub?.id
+      if (insertError) {
+        console.error('[handleCheckoutCompleted] Error creating credits-only subscription:', insertError)
+        throw insertError
       }
 
-      if (subscriptionId) {
-        // Add overage credits using RPC function for atomic increment
-        await getSupabaseAdmin().rpc('add_overage_credits', {
-          p_subscription_id: subscriptionId,
-          p_credits: pack.credits,
-        })
+      subscriptionId = newSub?.id
+      console.log(`[handleCheckoutCompleted] Created subscription: ${subscriptionId}`)
+    }
 
-        // Log credit grant
-        await getSupabaseAdmin().from('credit_transactions').insert({
-          user_id: userId,
-          subscription_id: subscriptionId,
-          amount: pack.credits,
-          type: 'purchase',
-          description: `Purchased ${pack.name} credit pack`,
-        })
+    if (subscriptionId) {
+      // Add overage credits using RPC function for atomic increment
+      console.log(`[handleCheckoutCompleted] Adding ${pack.credits} overage credits`)
+      const { error: rpcError } = await getSupabaseAdmin().rpc('add_overage_credits', {
+        p_subscription_id: subscriptionId,
+        p_credits: pack.credits,
+      })
 
-        console.log(`Credit pack purchased for user ${userId}: ${pack.credits} credits`)
+      if (rpcError) {
+        console.error('[handleCheckoutCompleted] Error adding overage credits:', rpcError)
+        throw rpcError
       }
+
+      // Log credit grant
+      console.log(`[handleCheckoutCompleted] Logging credit transaction`)
+      const { error: txError } = await getSupabaseAdmin().from('credit_transactions').insert({
+        user_id: userId,
+        subscription_id: subscriptionId,
+        amount: pack.credits,
+        type: 'purchase',
+        description: `Purchased ${pack.name} credit pack`,
+      })
+
+      if (txError) {
+        console.error('[handleCheckoutCompleted] Error logging transaction:', txError)
+        throw txError
+      }
+
+      console.log(`[handleCheckoutCompleted] SUCCESS: Credit pack purchased for user ${userId}: ${pack.credits} credits`)
+    } else {
+      console.error('[handleCheckoutCompleted] No subscription ID available for credit pack')
     }
   }
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  const sub = subscription as any
-  const priceId = sub.items.data[0]?.price.id
+  console.log(`[handleSubscriptionUpdated] Processing subscription: ${subscription.id}`)
+
+  const priceId = subscription.items.data[0]?.price.id
   const planId = priceId ? getPlanByPriceId(priceId) : null
+  const plan = planId ? PLANS[planId] : null
+
+  // Use fallback for period dates (same as checkout handler)
+  const periodStart = subscription.current_period_start || subscription.created
+  const periodEnd = subscription.current_period_end || (subscription.created + 30 * 24 * 60 * 60)
+
+  const updateData: any = {
+    status: subscription.status === 'active' ? 'active' :
+            subscription.status === 'past_due' ? 'past_due' :
+            subscription.status === 'canceled' ? 'cancelled' : 'active',
+    current_period_start: new Date(periodStart * 1000).toISOString(),
+    current_period_end: new Date(periodEnd * 1000).toISOString(),
+  }
+
+  // Update plan and credits if plan changed
+  if (planId && plan) {
+    console.log(`[handleSubscriptionUpdated] Plan changed to: ${planId}`)
+    updateData.plan = planId
+    updateData.credits_remaining = plan.credits
+    updateData.credits_total = plan.credits
+  }
 
   await getSupabaseAdmin()
     .from('subscriptions')
-    .update({
-      status: sub.status === 'active' ? 'active' :
-              sub.status === 'past_due' ? 'past_due' :
-              sub.status === 'canceled' ? 'cancelled' : 'active',
-      plan: planId || undefined,
-      current_period_start: new Date(sub.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
-    })
-    .eq('stripe_subscription_id', sub.id)
+    .update(updateData)
+    .eq('stripe_subscription_id', subscription.id)
 
-  console.log(`Subscription updated: ${sub.id} -> ${sub.status}`)
+  console.log(`[handleSubscriptionUpdated] Subscription updated: ${subscription.id} -> ${subscription.status}`)
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
