@@ -42,6 +42,10 @@ export async function createPortalSession() {
 
     redirect(session.url)
   } catch (error) {
+    // Re-throw redirect errors (Next.js navigation)
+    if (error instanceof Error && 'digest' in error && typeof error.digest === 'string' && error.digest.startsWith('NEXT_REDIRECT')) {
+      throw error
+    }
     console.error('Portal session error:', error)
     return { error: 'Failed to open billing portal. Please try again.' }
   }
