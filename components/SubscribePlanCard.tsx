@@ -6,6 +6,7 @@ import { Check } from 'lucide-react'
 import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { createSubscriptionCheckout } from '@/lib/actions/checkout'
+import { createPortalSession } from '@/lib/actions/billing'
 import type { PlanId } from '@/lib/stripe/config'
 import { useRouter } from 'next/navigation'
 
@@ -50,7 +51,13 @@ export function SubscribePlanCard({
   }
 
   const handleManageSubscription = () => {
-    router.push('/billing')
+    startTransition(async () => {
+      const result = await createPortalSession()
+      if (result?.error) {
+        toast.error(result.error)
+      }
+      // Redirect to Stripe portal happens in the action
+    })
   }
 
   return (
@@ -90,8 +97,9 @@ export function SubscribePlanCard({
             className="w-full"
             variant="outline"
             onClick={handleManageSubscription}
+            disabled={isPending}
           >
-            Manage Subscription
+            {isPending ? 'Opening portal...' : 'Manage Subscription'}
           </Button>
         ) : (
           <Button
