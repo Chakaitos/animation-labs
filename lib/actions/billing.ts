@@ -107,7 +107,6 @@ export async function getCreditBalance() {
     .from('subscriptions')
     .select('credits_remaining, overage_credits, status')
     .eq('user_id', user.id)
-    .eq('status', 'active')
     .single()
 
   if (error && error.code !== 'PGRST116') {
