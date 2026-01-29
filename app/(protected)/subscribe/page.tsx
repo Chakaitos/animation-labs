@@ -30,6 +30,7 @@ export default async function SubscribePage() {
     .single()
 
   const currentPlan = subscription?.plan as PlanId | undefined
+  const hasActiveSubscription = !!subscription
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,9 +51,21 @@ export default async function SubscribePage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-12">
+        {hasActiveSubscription && (
+          <div className="max-w-4xl mx-auto mb-8 p-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg">
+            <p className="text-sm text-blue-900 dark:text-blue-100">
+              <strong>Already subscribed?</strong> To change your plan, please use the{' '}
+              <Link href="/billing" className="underline font-semibold">
+                Manage Subscription
+              </Link>{' '}
+              button on your billing page. This ensures proper plan changes without duplicate charges.
+            </p>
+          </div>
+        )}
+
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold mb-4">
-            {currentPlan ? 'Change Your Plan' : 'Choose Your Plan'}
+            {currentPlan ? 'Your Current Plan' : 'Choose Your Plan'}
           </h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
             Get professional logo animations at a fraction of freelancer costs.
@@ -72,6 +85,7 @@ export default async function SubscribePage() {
               price={PLAN_PRICES[planId]}
               recommended={planId === 'professional'}
               currentPlan={currentPlan === planId}
+              hasActiveSubscription={hasActiveSubscription}
             />
           ))}
         </div>

@@ -7,6 +7,7 @@ import { useTransition } from 'react'
 import { toast } from 'sonner'
 import { createSubscriptionCheckout } from '@/lib/actions/checkout'
 import type { PlanId } from '@/lib/stripe/config'
+import { useRouter } from 'next/navigation'
 
 interface SubscribePlanCardProps {
   planId: PlanId
@@ -17,6 +18,7 @@ interface SubscribePlanCardProps {
   price: string
   recommended?: boolean
   currentPlan?: boolean
+  hasActiveSubscription?: boolean
 }
 
 export function SubscribePlanCard({
@@ -28,17 +30,27 @@ export function SubscribePlanCard({
   price,
   recommended = false,
   currentPlan = false,
+  hasActiveSubscription = false,
 }: SubscribePlanCardProps) {
   const [isPending, startTransition] = useTransition()
+  const router = useRouter()
 
   const handleSubscribe = () => {
     startTransition(async () => {
       const result = await createSubscriptionCheckout(planId)
       if (result?.error) {
         toast.error(result.error)
+        // If they have redirectTo, navigate there
+        if ('redirectTo' in result && result.redirectTo) {
+          router.push(result.redirectTo)
+        }
       }
       // Redirect happens in the action
     })
+  }
+
+  const handleManageSubscription = () => {
+    router.push('/billing')
   }
 
   return (
@@ -72,6 +84,14 @@ export function SubscribePlanCard({
         {currentPlan ? (
           <Button className="w-full" variant="outline" disabled>
             Current Plan
+          </Button>
+        ) : hasActiveSubscription ? (
+          <Button
+            className="w-full"
+            variant="outline"
+            onClick={handleManageSubscription}
+          >
+            Manage Subscription
           </Button>
         ) : (
           <Button
