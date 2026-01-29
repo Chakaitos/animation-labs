@@ -128,13 +128,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     console.log(`[handleCheckoutCompleted] Retrieving subscription: ${subscriptionId}`)
     const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
       expand: ['items.data.price', 'default_payment_method']
-    })
+    }) as Stripe.Subscription
+
+    // Access period dates via type assertion (runtime property exists but TypeScript doesn't know)
+    const subWithPeriod = subscription as Stripe.Subscription & {
+      current_period_start?: number
+      current_period_end?: number
+    }
 
     console.log(`[handleCheckoutCompleted] Subscription data:`, JSON.stringify({
       id: subscription.id,
       status: subscription.status,
-      current_period_start: subscription.current_period_start,
-      current_period_end: subscription.current_period_end,
+      current_period_start: subWithPeriod.current_period_start,
+      current_period_end: subWithPeriod.current_period_end,
       created: subscription.created,
       items: subscription.items.data.map(item => ({
         price_id: item.price.id,
@@ -175,8 +181,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       console.log(`[handleCheckoutCompleted] Updating existing subscription`)
 
       // Use created timestamp as fallback for period dates (they'll be updated by invoice.payment_succeeded)
-      const periodStart = subscription.current_period_start || subscription.created
-      const periodEnd = subscription.current_period_end || (subscription.created + 30 * 24 * 60 * 60) // 30 days
+      const periodStart = subWithPeriod.current_period_start || subscription.created
+      const periodEnd = subWithPeriod.current_period_end || (subscription.created + 30 * 24 * 60 * 60) // 30 days
 
       const { error: updateError } = await getSupabaseAdmin()
         .from('subscriptions')
@@ -216,8 +222,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       console.log(`[handleCheckoutCompleted] Creating new subscription`)
 
       // Use created timestamp as fallback for period dates (they'll be updated by invoice.payment_succeeded)
-      const periodStart = subscription.current_period_start || subscription.created
-      const periodEnd = subscription.current_period_end || (subscription.created + 30 * 24 * 60 * 60) // 30 days
+      const periodStart = subWithPeriod.current_period_start || subscription.created
+      const periodEnd = subWithPeriod.current_period_end || (subscription.created + 30 * 24 * 60 * 60) // 30 days
 
       console.log(`[handleCheckoutCompleted] Using period dates:`, {
         start: periodStart,
@@ -366,13 +372,19 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   console.log(`[handleSubscriptionUpdated] Processing subscription: ${subscription.id}`)
 
+  // Access period dates via type assertion (runtime property exists but TypeScript doesn't know)
+  const subWithPeriod = subscription as Stripe.Subscription & {
+    current_period_start?: number
+    current_period_end?: number
+  }
+
   const priceId = subscription.items.data[0]?.price.id
   const planId = priceId ? getPlanByPriceId(priceId) : null
   const plan = planId ? PLANS[planId] : null
 
   // Use fallback for period dates (same as checkout handler)
-  const periodStart = subscription.current_period_start || subscription.created
-  const periodEnd = subscription.current_period_end || (subscription.created + 30 * 24 * 60 * 60)
+  const periodStart = subWithPeriod.current_period_start || subscription.created
+  const periodEnd = subWithPeriod.current_period_end || (subscription.created + 30 * 24 * 60 * 60)
 
   const updateData: any = {
     status: subscription.status === 'active' ? 'active' :

@@ -1,7 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '25mb', // Match Supabase Storage limit for logo uploads
+    },
+  },
 };
 
 export default nextConfig;
