@@ -119,9 +119,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
     // Get subscription details from Stripe
     console.log(`[handleCheckoutCompleted] Retrieving subscription: ${subscriptionId}`)
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
-      expand: ['items.data.price']
-    }) as any
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+
+    console.log(`[handleCheckoutCompleted] Subscription data:`, {
+      id: subscription.id,
+      status: subscription.status,
+      current_period_start: subscription.current_period_start,
+      current_period_end: subscription.current_period_end,
+      items: subscription.items.data.length
+    })
+
     const priceId = subscription.items.data[0]?.price.id
     console.log(`[handleCheckoutCompleted] Price ID: ${priceId}`)
     const planId = priceId ? getPlanByPriceId(priceId) : null
@@ -153,6 +160,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     if (existingSub) {
       // Update existing subscription
       console.log(`[handleCheckoutCompleted] Updating existing subscription`)
+
+      if (!subscription.current_period_start || !subscription.current_period_end) {
+        console.error('[handleCheckoutCompleted] Missing period dates:', {
+          start: subscription.current_period_start,
+          end: subscription.current_period_end
+        })
+        throw new Error('Subscription missing period dates')
+      }
+
       const { error: updateError } = await getSupabaseAdmin()
         .from('subscriptions')
         .update({
@@ -189,6 +205,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     } else {
       // Create new subscription
       console.log(`[handleCheckoutCompleted] Creating new subscription`)
+
+      if (!subscription.current_period_start || !subscription.current_period_end) {
+        console.error('[handleCheckoutCompleted] Missing period dates:', {
+          start: subscription.current_period_start,
+          end: subscription.current_period_end
+        })
+        throw new Error('Subscription missing period dates')
+      }
+
       const { data: newSub, error: insertError } = await getSupabaseAdmin()
         .from('subscriptions')
         .insert({
