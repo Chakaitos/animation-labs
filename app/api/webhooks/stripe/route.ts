@@ -110,6 +110,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   }
 
   console.log(`[handleCheckoutCompleted] Processing for user: ${userId}, mode: ${session.mode}`)
+  console.log(`[handleCheckoutCompleted] Full session data:`, JSON.stringify({
+    id: session.id,
+    mode: session.mode,
+    subscription: session.subscription,
+    customer: session.customer,
+    metadata: session.metadata
+  }, null, 2))
 
   // Handle subscription checkout
   if (session.mode === 'subscription' && session.subscription) {
@@ -117,17 +124,23 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       ? session.subscription
       : session.subscription.id
 
-    // Get subscription details from Stripe
+    // Get subscription details from Stripe with expanded data
     console.log(`[handleCheckoutCompleted] Retrieving subscription: ${subscriptionId}`)
-    const subscription = await stripe.subscriptions.retrieve(subscriptionId)
+    const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
+      expand: ['items.data.price', 'default_payment_method']
+    })
 
-    console.log(`[handleCheckoutCompleted] Subscription data:`, {
+    console.log(`[handleCheckoutCompleted] Subscription data:`, JSON.stringify({
       id: subscription.id,
       status: subscription.status,
       current_period_start: subscription.current_period_start,
       current_period_end: subscription.current_period_end,
-      items: subscription.items.data.length
-    })
+      created: subscription.created,
+      items: subscription.items.data.map(item => ({
+        price_id: item.price.id,
+        quantity: item.quantity
+      }))
+    }, null, 2))
 
     const priceId = subscription.items.data[0]?.price.id
     console.log(`[handleCheckoutCompleted] Price ID: ${priceId}`)
