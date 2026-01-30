@@ -2,7 +2,11 @@
 
 import { UseFormReturn } from 'react-hook-form'
 
-import { VideoFormValues, VIDEO_DURATIONS, VIDEO_QUALITIES } from '@/lib/validations/video-schema'
+import {
+  VideoFormValues,
+  VIDEO_DURATIONS,
+  VIDEO_QUALITIES,
+} from '@/lib/validations/video-schema'
 import { Button } from '@/components/ui/button'
 import {
   FormField,
@@ -20,6 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Label } from '@/components/ui/label'
 
 interface DetailsStepProps {
   form: UseFormReturn<VideoFormValues>
@@ -34,14 +40,21 @@ const DURATION_LABELS: Record<string, string> = {
 }
 
 const QUALITY_LABELS: Record<string, string> = {
-  'standard': 'Standard (720p)',
-  'premium': 'Premium (1080p)',
+  standard: 'Standard',
+  premium: 'Premium',
 }
 
 export function DetailsStep({ form, onNext, onBack }: DetailsStepProps) {
+  const selectedQuality = form.watch('quality')
+
   const handleNext = async () => {
     // Validate fields for this step
-    const isValid = await form.trigger(['brandName', 'duration', 'quality'])
+    const isValid = await form.trigger([
+      'brandName',
+      'duration',
+      'quality',
+      'aspectRatio',
+    ])
     if (isValid) {
       onNext()
     }
@@ -130,7 +143,49 @@ export function DetailsStep({ form, onNext, onBack }: DetailsStepProps) {
                 </SelectContent>
               </Select>
               <FormDescription>
-                Higher quality videos are recommended for marketing
+                {selectedQuality === 'premium' ? (
+                  <span className="font-medium text-orange-600">
+                    Premium videos cost 2 credits
+                  </span>
+                ) : (
+                  'Higher quality videos are recommended for marketing'
+                )}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Aspect Ratio */}
+        <FormField
+          control={form.control}
+          name="aspectRatio"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Aspect Ratio</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex gap-4"
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="landscape" id="landscape" />
+                    <Label htmlFor="landscape" className="cursor-pointer">
+                      Landscape (16:9)
+                    </Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="portrait" id="portrait" />
+                    <Label htmlFor="portrait" className="cursor-pointer">
+                      Portrait (9:16)
+                    </Label>
+                  </div>
+                </RadioGroup>
+              </FormControl>
+              <FormDescription>
+                Choose the format that best fits your platform (YouTube:
+                landscape, Instagram: portrait)
               </FormDescription>
               <FormMessage />
             </FormItem>
