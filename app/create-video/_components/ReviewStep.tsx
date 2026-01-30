@@ -21,8 +21,13 @@ const DURATION_LABELS: Record<string, string> = {
 }
 
 const QUALITY_LABELS: Record<string, string> = {
-  'standard': 'Standard (720p)',
-  'premium': 'Premium (1080p)',
+  standard: 'Standard',
+  premium: 'Premium',
+}
+
+const ASPECT_RATIO_LABELS: Record<string, string> = {
+  landscape: 'Landscape (16:9)',
+  portrait: 'Portrait (9:16)',
 }
 
 export function ReviewStep({ form, file, onBack, isSubmitting }: ReviewStepProps) {
@@ -74,6 +79,12 @@ export function ReviewStep({ form, file, onBack, isSubmitting }: ReviewStepProps
               <p className="font-medium">{QUALITY_LABELS[values.quality]}</p>
             </div>
 
+            {/* Aspect Ratio */}
+            <div>
+              <p className="text-sm font-medium text-muted-foreground mb-1">Aspect Ratio</p>
+              <p className="font-medium">{ASPECT_RATIO_LABELS[values.aspectRatio]}</p>
+            </div>
+
             {/* Style */}
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Style</p>
@@ -87,6 +98,16 @@ export function ReviewStep({ form, file, onBack, isSubmitting }: ReviewStepProps
                 <p className="text-sm">{values.creativeDirection}</p>
               </div>
             )}
+
+            {/* Voiceover */}
+            <div className="md:col-span-2">
+              <p className="text-sm font-medium text-muted-foreground mb-1">Voiceover</p>
+              <p className="text-sm">
+                {values.dialogueType === 'custom' && values.dialogueText
+                  ? values.dialogueText
+                  : 'No voiceover'}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -94,7 +115,9 @@ export function ReviewStep({ form, file, onBack, isSubmitting }: ReviewStepProps
       {/* Credit Notice */}
       <div className="rounded-lg border bg-muted/50 p-4">
         <p className="text-sm">
-          <span className="font-medium">Credit Cost:</span> 1 credit will be deducted from your balance when you create this video.
+          <span className="font-medium">Credit Cost:</span>{' '}
+          {values.quality === 'premium' ? '2 credits' : '1 credit'} will be
+          deducted from your balance when you create this video.
         </p>
       </div>
 

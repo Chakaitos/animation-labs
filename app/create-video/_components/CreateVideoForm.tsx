@@ -55,8 +55,11 @@ export function CreateVideoForm() {
       formData.append('brandName', values.brandName)
       formData.append('duration', values.duration)
       formData.append('quality', values.quality)
+      formData.append('aspectRatio', values.aspectRatio)
       formData.append('style', values.style)
       formData.append('creativeDirection', values.creativeDirection || '')
+      formData.append('dialogueType', values.dialogueType)
+      formData.append('dialogueText', values.dialogueText || '')
 
       const result: CreateVideoResult = await createVideo(formData)
 

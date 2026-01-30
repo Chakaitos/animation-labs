@@ -3,16 +3,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { videoSchema, type VideoFormValues } from '@/lib/validations/video-schema'
 import { validateImageFile } from '@/lib/utils/file-validation'
+import { getStylePresetConfig } from '@/lib/config/style-presets'
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
-
-// Helper to get site URL for callback URL
-async function getSiteUrl() {
-  const headersList = await headers()
-  const host = headersList.get('host') || 'localhost:3000'
-  const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
-  return `${protocol}://${host}`
-}
 
 export interface CreateVideoResult {
   success?: boolean
@@ -37,7 +29,6 @@ export interface CreateVideoResult {
  */
 export async function createVideo(formData: FormData): Promise<CreateVideoResult> {
   const supabase = await createClient()
-  const siteUrl = await getSiteUrl()
 
   // 1. Authenticate user
   const { data: { user } } = await supabase.auth.getUser()
@@ -50,8 +41,11 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
     brandName: formData.get('brandName'),
     duration: formData.get('duration'),
     quality: formData.get('quality'),
+    aspectRatio: formData.get('aspectRatio'),
     style: formData.get('style'),
     creativeDirection: formData.get('creativeDirection') || '',
+    dialogueType: formData.get('dialogueType'),
+    dialogueText: formData.get('dialogueText') || '',
   }
 
   const validated = videoSchema.safeParse(rawData)
@@ -76,9 +70,12 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
   }
 
   // 4. Check credits using RPC function
+  // Premium quality costs 2 credits, standard costs 1 credit
+  const creditsRequired = validated.data.quality === 'premium' ? 2 : 1
+
   const { data: hasCredits, error: creditCheckError } = await supabase.rpc('check_credits', {
     p_user_id: user.id,
-    p_required: 1,
+    p_required: creditsRequired,
   })
 
   if (creditCheckError) {
@@ -121,10 +118,16 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
       status: 'processing',
       logo_url: publicUrl,
       duration_seconds: parseInt(validated.data.duration, 10),
-      quality: validated.data.quality === 'standard' ? '720p' : '1080p',
+      quality: validated.data.quality,
+      aspect_ratio: validated.data.aspectRatio,
       style: validated.data.style,
       creative_direction: validated.data.creativeDirection || null,
-      credits_used: 1,
+      dialogue:
+        validated.data.dialogueType === 'custom'
+          ? validated.data.dialogueText
+          : 'no voiceover',
+      error_message: null,
+      credits_used: creditsRequired,
     })
     .select('id')
     .single()
@@ -140,8 +143,8 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
   const { data: deductSuccess, error: deductError } = await supabase.rpc('deduct_credits', {
     p_user_id: user.id,
     p_video_id: video.id,
-    p_credits: 1,
-    p_description: `Video: ${validated.data.brandName}`,
+    p_credits: creditsRequired,
+    p_description: `Video: ${validated.data.brandName} (${validated.data.quality})`,
   })
 
   if (deductError || !deductSuccess) {
@@ -165,15 +168,21 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
         ...(webhookSecret && { 'X-Webhook-Secret': webhookSecret }),
       },
       body: JSON.stringify({
-        videoId: video.id,
-        logoUrl: publicUrl,
-        brandName: validated.data.brandName,
-        duration: validated.data.duration,
+        video_id: video.id,
+        brand_name: validated.data.brandName,
         quality: validated.data.quality,
-        style: validated.data.style,
-        creativeDirection: validated.data.creativeDirection || null,
-        callbackUrl: `${siteUrl}/api/webhooks/video-status`,
-        webhookSecret: webhookSecret || null,
+        aspect_ratio: validated.data.aspectRatio,
+        duration: parseInt(validated.data.duration, 10),
+        style_preset: getStylePresetConfig(
+          validated.data.style,
+          validated.data.creativeDirection
+        ),
+        creative_direction: validated.data.creativeDirection || null,
+        dialogue:
+          validated.data.dialogueType === 'custom'
+            ? validated.data.dialogueText
+            : 'no voiceover',
+        logo_url: publicUrl,
       }),
     }).catch((err) => {
       // Log but don't fail - video is already created and credits deducted
