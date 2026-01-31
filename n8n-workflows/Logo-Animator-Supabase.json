@@ -1,0 +1,994 @@
+{
+  "name": "Logo Animator - Supabase",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "video-processing",
+        "options": {
+          "responseMode": "lastNode"
+        },
+        "responseCode": 200
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        240,
+        300
+      ],
+      "id": "webhook-trigger",
+      "name": "Webhook Trigger",
+      "webhookId": "video-processing-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.headers['x-webhook-secret'] }}",
+              "rightValue": "={{ $env.N8N_WEBHOOK_SECRET }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        460,
+        300
+      ],
+      "id": "validate-secret",
+      "name": "Validate Webhook Secret"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"error\": \"Unauthorized - Invalid webhook secret\" } }}",
+        "options": {
+          "responseCode": 401
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        460,
+        480
+      ],
+      "id": "unauthorized-response",
+      "name": "Unauthorized Response"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=SELECT \n  id,\n  user_id,\n  brand_name,\n  logo_url,\n  duration_seconds,\n  quality,\n  aspect_ratio,\n  style,\n  creative_direction,\n  dialogue\nFROM videos\nWHERE id = '{{ $json.body.video_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        680,
+        300
+      ],
+      "id": "fetch-video-data",
+      "name": "Fetch Video from Supabase",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Fetches video details from Supabase using video_id from webhook payload"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.length }}",
+              "rightValue": 0,
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        900,
+        300
+      ],
+      "id": "check-video-exists",
+      "name": "Check Video Exists"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"error\": \"Video not found\", \"video_id\": $('Webhook Trigger').item.json.body.video_id } }}",
+        "options": {
+          "responseCode": 404
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        480
+      ],
+      "id": "video-not-found-response",
+      "name": "Video Not Found Response"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE videos\nSET \n  status = 'processing',\n  n8n_execution_id = '{{ $execution.id }}',\n  updated_at = NOW()\nWHERE id = '{{ $('Webhook Trigger').item.json.body.video_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        1120,
+        300
+      ],
+      "id": "update-status-processing",
+      "name": "Update Status to Processing",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Sets video status to 'processing' and stores n8n execution ID"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "video-data",
+              "name": "video_id",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].id }}",
+              "type": "string"
+            },
+            {
+              "id": "user-id",
+              "name": "user_id",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].user_id }}",
+              "type": "string"
+            },
+            {
+              "id": "brand-name",
+              "name": "brand_name",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].brand_name }}",
+              "type": "string"
+            },
+            {
+              "id": "logo-url",
+              "name": "logo_url",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].logo_url }}",
+              "type": "string"
+            },
+            {
+              "id": "duration",
+              "name": "duration_seconds",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].duration_seconds }}",
+              "type": "number"
+            },
+            {
+              "id": "quality",
+              "name": "quality",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].quality }}",
+              "type": "string"
+            },
+            {
+              "id": "aspect-ratio",
+              "name": "aspect_ratio",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].aspect_ratio === 'landscape' ? '16:9' : '9:16' }}",
+              "type": "string"
+            },
+            {
+              "id": "aspect-ratio-veo",
+              "name": "aspect_ratio_veo",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].aspect_ratio === 'landscape' ? 'horizontal' : 'vertical' }}",
+              "type": "string"
+            },
+            {
+              "id": "style",
+              "name": "style",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].style }}",
+              "type": "string"
+            },
+            {
+              "id": "creative-direction",
+              "name": "creative_direction",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].creative_direction || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "dialogue",
+              "name": "dialogue",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].dialogue || 'no voiceover' }}",
+              "type": "string"
+            },
+            {
+              "id": "model",
+              "name": "video_model",
+              "value": "={{ $('Fetch Video from Supabase').item.json[0].quality === 'premium' ? 'veo3' : 'veo3_fast' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1340,
+        300
+      ],
+      "id": "map-video-data",
+      "name": "Map Video Data",
+      "notes": "Transforms Supabase data into format needed for downstream nodes"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "chatgpt-4o-latest",
+          "mode": "list",
+          "cachedResultName": "CHATGPT-4O-LATEST"
+        },
+        "text": "=Return the analysis in YAML format with the following fields:\n\nbrand_name: (Name of the brand shown in the image, if visible or inferable)\ncolor_scheme:\n  - hex: (Hex code of each prominent color used)\n    name: (Descriptive name of the color)\nfont_style: (Describe the font family or style used: serif/sans-serif, bold/thin, etc.)\nvisual_description: (A full sentence or two summarizing what is seen in the image, ignoring the background)\n\nOnly return the YAML. Do not explain or add any other comments.",
+        "imageUrls": "={{ $json.logo_url }}",
+        "simplify": false,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "typeVersion": 1.8,
+      "position": [
+        1560,
+        300
+      ],
+      "id": "analyze-logo",
+      "name": "Analyze Logo",
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credentials",
+          "name": "OpenAi account"
+        }
+      },
+      "notes": "Analyzes logo image to extract brand colors and visual style"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=User's Brand: {{ $('Map Video Data').item.json.brand_name }}\n\nUser's Creative Direction:\n{{ $('Map Video Data').item.json.creative_direction }}\n\nDescription of the logo:\n{{ $json.choices[0].message.content }}\n\n***\nPreferred aspect ratio: {{ $('Map Video Data').item.json.aspect_ratio }}\nPreferred model: {{ $('Map Video Data').item.json.video_model }}\nPreferred dialogue: {{ $('Map Video Data').item.json.dialogue }}\nPreferred length: {{ $('Map Video Data').item.json.duration_seconds }} seconds\nStyle preference: {{ $('Map Video Data').item.json.style }}\n\nUse the Think tool to double check your output.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "=## SYSTEM PROMPT: 🎬 Logo Animation Prompt Generator Agent\n\nA – Ask:\n  Generate a logo animation video prompt for a brand based on user-provided creative direction.\n\nG – Guidance:\n  role: Creative video director aligned to brand aesthetics  \n  output_count: 1  \n  character_limit: No limit  \n  constraints: \n    - Output must follow the structure of the provided `full_video_prompt` sample.\n    - The `aspect_ratio` must be \"16:9\" or \"9:16\".\n    - The `video_model` must be \"veo3\" or \"veo3_fast\".\n    - `full_video_prompt` must be a valid stringified JSON containing detailed animation instructions.\n    - If the user does not specify any dialogue, set `\"dialog\"` to `null` by default.\n    - Add `\"overlay_text\"` to each scene and ALWAYS set it to null.\n    - The `scenes` structure must match this framework's parameters.\n\nE – Examples:\n  🟢 good_examples:\n    - |\n      {\n        \"aspect_ratio\": \"16:9\",\n        \"video_model\": \"veo3\",\n        \"full_video_prompt\": \"{\n          \\\"brand_name\\\": \\\"brand name here\\\",\n          \\\"overall_style\\\": \\\"pixelized, playful, colorful, youthful\\\",\n          \\\"aspect_ratio\\\": \\\"landscape 16:9\\\",\n          \\\"video_length\\\": 7.8,\n          \\\"background_color\\\": { \\\"hex\\\": \\\"#fce8c5\\\", \\\"name\\\": \\\"light peach\\\" },\n          \\\"background_fill\\\": \\\"full\\\",\n          \\\"music\\\": \\\"cinematic music\\\",\n          \\\"brand_colors\\\": [\n            { \\\"hex\\\": \\\"#ff6600\\\", \\\"name\\\": \\\"bright orange\\\" }\n          ],\n          \\\"scenes\\\": [\n            {\n              \\\"start\\\": 0.0,\n              \\\"end\\\": 2.2,\n              \\\"starting_frame\\\": \\\"reference_logo_image\\\",\n              \\\"visual\\\": \\\"The full logo appears immediately, centered in frame with soft pixel flickers.\\\",\n              \\\"camera\\\": \\\"cinematic slow dolly-in with light pixel shake\\\",\n              \\\"sound\\\": \\\"8-bit chime sparkles, soft ambient wind, subtle bounces\\\",\n              \\\"scene_elements\\\": [\n                \\\"pixel-shaped falling light blocks\\\",\n                \\\"animated glow trails on impact\\\"\n              ],\n              \\\"intensity\\\": 40,\n              \\\"dialog\\\": null,\n              \\\"overlay_text\\\": null\n            }\n          ]\n        }\"\n      }\n\nN – Notation:\n  format: JSON  \n  example_output: |\n    {\n      \"aspect_ratio\": \"16:9\",\n      \"video_model\": \"veo3\",\n      \"duration_seconds\": 7.8,\n      \"full_video_prompt\": \"stringified JSON\"\n    }\n\nT – Tools:\n  You have access to the following tools:\n  - Think Tool: Use this to reflect and reason before responding."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        1780,
+        300
+      ],
+      "id": "logo-animator-agent",
+      "name": "Logo Animator AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "typeVersion": 1,
+      "position": [
+        1780,
+        480
+      ],
+      "id": "think-tool",
+      "name": "Think"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4.1",
+          "mode": "list",
+          "cachedResultName": "gpt-4.1"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1780,
+        660
+      ],
+      "id": "gpt-model",
+      "name": "GPT Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "openai-credentials",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"aspect_ratio\": \"16:9 or 9:16\",\n  \"video_model\": \"veo3 or veo3_fast\",\n  \"duration_seconds\": 7.8,\n  \"full_video_prompt\": \"stringified JSON\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1780,
+        840
+      ],
+      "id": "structured-output",
+      "name": "Structured Output"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.kie.ai/api/v1/veo/generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "application/json",
+        "body": "={\n  \"prompt\": {{ $json.output.full_video_prompt }},\n  \"model\": \"{{ $json.output.video_model }}\",\n  \"aspectRatio\": \"{{ $('Map Video Data').item.json.aspect_ratio_veo }}\",\n  \"durationSeconds\": {{ $json.output.duration_seconds }},\n  \"imageUrls\": \"{{ $('Map Video Data').item.json.logo_url }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2000,
+        300
+      ],
+      "id": "create-veo3",
+      "name": "Create Veo3",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "kie-ai-credentials",
+          "name": "Kie AI Credentials"
+        }
+      },
+      "notes": "Triggers Kie AI video generation"
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        2220,
+        300
+      ],
+      "id": "wait-60s",
+      "name": "Wait 60s",
+      "webhookId": "wait-webhook"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.kie.ai/api/v1/veo/record-info",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "taskId",
+              "value": "={{ $('Create Veo3').item.json.data.taskId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2440,
+        300
+      ],
+      "id": "get-veo3-status",
+      "name": "Get Veo3 Status",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "kie-ai-credentials",
+          "name": "Kie AI Credentials"
+        }
+      },
+      "notes": "Checks if video is ready"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "rightValue": 1,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.data.successFlag }}",
+                    "rightValue": 0,
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "in progress"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.3,
+      "position": [
+        2660,
+        300
+      ],
+      "id": "check-video-ready",
+      "name": "Check Video Ready"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.data.response.resultUrls[0] }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2880,
+        240
+      ],
+      "id": "download-video",
+      "name": "Download Video from Kie AI",
+      "notes": "Downloads completed video from Kie AI temporary URL"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.SUPABASE_URL }}/storage/v1/object/logos/{{ $('Map Video Data').item.json.user_id }}/{{ $('Map Video Data').item.json.video_id }}.mp4",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "binaryData",
+        "options": {
+          "batching": {
+            "batch": {}
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3100,
+        240
+      ],
+      "id": "upload-to-supabase-storage",
+      "name": "Upload to Supabase Storage",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "supabase-storage-auth",
+          "name": "Supabase Storage Auth"
+        }
+      },
+      "notes": "Uploads video to Supabase Storage at logos/{user_id}/{video_id}.mp4"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "video-url",
+              "name": "video_url",
+              "value": "={{ $env.SUPABASE_URL }}/storage/v1/object/public/logos/{{ $('Map Video Data').item.json.user_id }}/{{ $('Map Video Data').item.json.video_id }}.mp4",
+              "type": "string"
+            },
+            {
+              "id": "video-id",
+              "name": "video_id",
+              "value": "={{ $('Map Video Data').item.json.video_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3320,
+        240
+      ],
+      "id": "set-video-url",
+      "name": "Set Video URL"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE videos\nSET \n  status = 'completed',\n  video_url = '{{ $json.video_url }}',\n  updated_at = NOW()\nWHERE id = '{{ $json.video_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        3540,
+        240
+      ],
+      "id": "update-completed",
+      "name": "Update Status to Completed",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Updates video status to 'completed' and stores permanent video URL"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NEXTJS_CALLBACK_URL }}",
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={\n  \"videoId\": \"{{ $('Set Video URL').item.json.video_id }}\",\n  \"status\": \"completed\",\n  \"videoUrl\": \"{{ $('Set Video URL').item.json.video_url }}\",\n  \"n8nExecutionId\": \"{{ $execution.id }}\"\n}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Webhook-Secret",
+              "value": "={{ $env.N8N_WEBHOOK_SECRET }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "fullResponse": false
+            }
+          }
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3760,
+        240
+      ],
+      "id": "callback-nextjs",
+      "name": "Callback Next.js",
+      "notes": "Notifies Next.js app that video is complete",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": true, \"video_id\": $('Set Video URL').item.json.video_id, \"status\": \"completed\" } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3980,
+        240
+      ],
+      "id": "success-response",
+      "name": "Success Response"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "=UPDATE videos\nSET \n  status = 'failed',\n  error_message = 'Video processing failed - video not ready after timeout',\n  updated_at = NOW()\nWHERE id = '{{ $('Map Video Data').item.json.video_id }}'",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        3540,
+        420
+      ],
+      "id": "update-failed",
+      "name": "Update Status to Failed",
+      "credentials": {
+        "postgres": {
+          "id": "supabase-postgres",
+          "name": "Supabase Postgres"
+        }
+      },
+      "notes": "Updates video status to 'failed' if processing times out or fails"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.NEXTJS_CALLBACK_URL }}",
+        "sendBody": true,
+        "contentType": "json",
+        "body": "={\n  \"videoId\": \"{{ $('Map Video Data').item.json.video_id }}\",\n  \"status\": \"failed\",\n  \"errorMessage\": \"Video not ready after timeout\",\n  \"n8nExecutionId\": \"{{ $execution.id }}\"\n}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Webhook-Secret",
+              "value": "={{ $env.N8N_WEBHOOK_SECRET }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3760,
+        420
+      ],
+      "id": "callback-nextjs-failed",
+      "name": "Callback Next.js (Failed)",
+      "notes": "Notifies Next.js app that video failed",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ { \"success\": false, \"video_id\": $('Map Video Data').item.json.video_id, \"status\": \"failed\", \"error\": \"Video not ready after timeout\" } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        3980,
+        420
+      ],
+      "id": "failed-response",
+      "name": "Failed Response"
+    }
+  ],
+  "connections": {
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Validate Webhook Secret",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Webhook Secret": {
+      "main": [
+        [
+          {
+            "node": "Fetch Video from Supabase",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unauthorized Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Video from Supabase": {
+      "main": [
+        [
+          {
+            "node": "Check Video Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Video Exists": {
+      "main": [
+        [
+          {
+            "node": "Update Status to Processing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Video Not Found Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status to Processing": {
+      "main": [
+        [
+          {
+            "node": "Map Video Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Map Video Data": {
+      "main": [
+        [
+          {
+            "node": "Analyze Logo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Logo": {
+      "main": [
+        [
+          {
+            "node": "Logo Animator AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Logo Animator AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Create Veo3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Logo Animator AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Logo Animator AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Logo Animator AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Veo3": {
+      "main": [
+        [
+          {
+            "node": "Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 60s": {
+      "main": [
+        [
+          {
+            "node": "Get Veo3 Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Veo3 Status": {
+      "main": [
+        [
+          {
+            "node": "Check Video Ready",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Video Ready": {
+      "main": [
+        [
+          {
+            "node": "Download Video from Kie AI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video from Kie AI": {
+      "main": [
+        [
+          {
+            "node": "Upload to Supabase Storage",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Supabase Storage": {
+      "main": [
+        [
+          {
+            "node": "Set Video URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Video URL": {
+      "main": [
+        [
+          {
+            "node": "Update Status to Completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status to Completed": {
+      "main": [
+        [
+          {
+            "node": "Callback Next.js",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback Next.js": {
+      "main": [
+        [
+          {
+            "node": "Success Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Status to Failed": {
+      "main": [
+        [
+          {
+            "node": "Callback Next.js (Failed)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Callback Next.js (Failed)": {
+      "main": [
+        [
+          {
+            "node": "Failed Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": ""
+  },
+  "versionId": "supabase-migration-v1",
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "instanceId": "animatelabs-production"
+  },
+  "id": "logo-animator-supabase",
+  "tags": [
+    {
+      "name": "production"
+    },
+    {
+      "name": "video-processing"
+    }
+  ]
+}
