@@ -3,6 +3,7 @@ import {
   Heading,
   Text,
   Button,
+  Link,
 } from '@react-email/components'
 import { EmailLayout } from './_components/EmailLayout'
 
@@ -55,7 +56,10 @@ export default function PaymentFailedEmail({
         </Section>
 
         <Text className="text-sm text-gray-600 mt-6">
-          Questions about your billing? Reply to this email and we&apos;ll help you out.
+          Questions about your billing? Contact us at{' '}
+          <Link href="mailto:support@animationlabs.ai" className="text-blue-600 underline">
+            support@animationlabs.ai
+          </Link>
         </Text>
       </Section>
     </EmailLayout>
