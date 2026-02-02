@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 6 of 7 (Email Notifications)
-Plan: 1 of 3 complete
-Status: Email infrastructure setup complete with Resend client, React Email templates, and first name capture
-Last activity: 2026-02-02 — Completed 06-01-PLAN.md (email infrastructure)
+Plan: 2 of 3 complete
+Status: Video completion and payment failed emails integrated into webhooks with fire-and-forget pattern
+Last activity: 2026-02-02 — Completed 06-02-PLAN.md (webhook email integration)
 
-Progress: [████████░░] 75%
+Progress: [████████░░] 77%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 25
-- Average duration: 2.8 minutes (autonomous plans only)
+- Total plans completed: 26
+- Average duration: 2.6 minutes (autonomous plans only)
 - Total execution time: 1.6 hours
 
 **By Phase:**
@@ -32,11 +32,11 @@ Progress: [████████░░] 75%
 | 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
 | 04-core-video-creation | 5 | 27m | 3.4m |
 | 05-video-library-dashboard | 4 | 11m | 2.8m |
-| 06-email-notifications | 1 | 3m | 3.0m |
+| 06-email-notifications | 2 | 5m | 2.5m |
 
 **Recent Trend:**
-- Last 5 plans: 05-02 (2m), 05-03 (1m), 05-04 (3m), Phase 5 complete, 06-01 (3m)
-- Trend: Excellent (consistent velocity, clean builds, Phase 6 started)
+- Last 5 plans: 05-03 (1m), 05-04 (3m), Phase 5 complete, 06-01 (3m), 06-02 (2m)
+- Trend: Excellent (fast execution, clean builds, Phase 6 progressing)
 
 *Updated after each plan completion*
 
@@ -195,6 +195,12 @@ Recent decisions affecting current work:
 - First name capture for personalization (D-06-01-005) — "Hey {firstName}" more engaging than generic greeting
 - React Email with Tailwind (D-06-01-006) — Component-based templates with email client compatibility
 
+**From 06-02:**
+- Fire-and-forget email sending in webhooks (D-06-02-001) — Webhooks must respond quickly, email has own retry logic
+- Rely on existing webhook idempotency (D-06-02-002) — n8n_execution_id and webhook_events prevent duplicate emails
+- Select additional fields in queries (D-06-02-003) — Fetch all email data in single query to avoid extra database calls
+- Email preview development script (D-06-02-004) — npm run email:dev enables live template iteration
+
 ### Pending Todos
 
 None yet.
@@ -206,6 +212,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 06-01-PLAN.md (email infrastructure setup)
+Stopped at: Completed 06-02-PLAN.md (webhook email integration)
 Resume file: None
-Next: Phase 06-02 (Video Completion Emails) - Integrate email notifications into video webhook
+Next: Phase 06-03 (Welcome Email & Testing) - Send welcome email on signup and test email flow end-to-end
