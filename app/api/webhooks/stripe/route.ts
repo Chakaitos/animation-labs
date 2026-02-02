@@ -3,6 +3,7 @@ import { PLANS, getPlanByPriceId, getCreditPackByPriceId, CREDIT_PACKS } from '@
 import { createClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 import Stripe from 'stripe'
+import { sendPaymentFailedEmail } from '@/lib/email/send'
 
 // Create Supabase client with service role - lazy init to avoid build errors
 function getSupabaseAdmin() {
@@ -480,10 +481,41 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
 
   if (!subscriptionId) return
 
+  // Update subscription status
   await getSupabaseAdmin()
     .from('subscriptions')
     .update({ status: 'past_due' })
     .eq('stripe_subscription_id', subscriptionId)
+
+  // Get subscription details for email
+  const { data: sub } = await getSupabaseAdmin()
+    .from('subscriptions')
+    .select('id, user_id, plan')
+    .eq('stripe_subscription_id', subscriptionId)
+    .single()
+
+  if (sub) {
+    // Get plan name for email
+    const planId = sub.plan as keyof typeof PLANS
+    const plan = PLANS[planId]
+    const planName = plan?.name || 'your subscription'
+
+    // Get amount due (convert cents to dollars)
+    const amountDue = (invoice.amount_due || 0) / 100
+
+    // Get retry URL (Stripe hosted invoice page)
+    const retryUrl = invoice.hosted_invoice_url || 'https://animatelabs.com/billing'
+
+    // Send email (fire-and-forget)
+    sendPaymentFailedEmail(
+      sub.user_id,
+      planName,
+      amountDue,
+      retryUrl
+    ).catch(err => {
+      console.error('Failed to send payment failed email:', err)
+    })
+  }
 
   console.log(`Payment failed for subscription: ${subscriptionId}`)
 }
