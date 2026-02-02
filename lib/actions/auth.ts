@@ -22,7 +22,7 @@ export async function signUp(formData: FormData) {
   const fullName = (formData.get('fullName') as string).trim()
   const nameParts = fullName.split(/\s+/)
   const firstName = nameParts[0]
-  const lastName = nameParts.slice(1).join(' ') || '' // Handle multiple middle/last names
+  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : null
   const email = formData.get('email') as string
 
   // Use admin client to generate verification link
