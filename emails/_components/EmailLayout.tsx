@@ -25,6 +25,9 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
         <Body className="bg-gray-100 font-sans">
           <Container className="mx-auto my-8 max-w-xl bg-white p-6 rounded-lg shadow-sm">
             {/* Logo Header */}
+            {/* Note: Logo requires absolute URL for email clients. */}
+            {/* In local dev (npm run email:dev), external URLs may not load. */}
+            {/* Logo will display correctly in sent emails. */}
             <Section className="text-center mb-6">
               <Img
                 src="https://animationlabs.ai/logo.svg"
