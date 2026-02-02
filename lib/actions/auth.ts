@@ -42,8 +42,6 @@ export async function signUp(formData: FormData) {
         first_name: firstName,
         last_name: lastName,
       },
-      // Disable Supabase's built-in email - we'll send our own
-      emailRedirectTo: `${siteUrl}/auth/confirm`,
     },
   })
 
