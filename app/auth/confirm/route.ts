@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { type EmailOtpType } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
+import { sendWelcomeEmail } from '@/lib/email/send'
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -20,6 +21,34 @@ export async function GET(request: NextRequest) {
     })
 
     if (!error) {
+      // Email verified successfully - send welcome email
+      // Only send on signup verification (not password reset, etc.)
+      if (type === 'email') {
+        const { data: { user } } = await supabase.auth.getUser()
+
+        if (user) {
+          // Fetch profile for first name
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_name')
+            .eq('id', user.id)
+            .single()
+
+          // Send welcome email asynchronously - don't block redirect
+          sendWelcomeEmail(
+            user.email!,
+            profile?.first_name || 'there'
+          ).catch(err => {
+            console.error('Failed to send welcome email:', {
+              userId: user.id,
+              email: user.email,
+              error: err instanceof Error ? err.message : 'Unknown error',
+            })
+            // Don't throw - verification succeeded, email is optional
+          })
+        }
+      }
+
       return NextResponse.redirect(new URL(redirectTo, request.url))
     }
   }

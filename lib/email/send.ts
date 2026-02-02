@@ -7,6 +7,7 @@ import VideoReadyEmail from '@/emails/video-ready'
 import PaymentFailedEmail from '@/emails/payment-failed'
 import VerificationEmail from '@/emails/verification'
 import PasswordResetEmail from '@/emails/password-reset'
+import WelcomeEmail from '@/emails/welcome'
 
 /**
  * Send video ready notification email with retry logic
@@ -300,6 +301,76 @@ export async function sendPasswordResetEmail(
   } catch (error) {
     console.error('Password reset email error:', {
       emailType: 'password-reset',
+      email,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
+    throw error
+  }
+}
+
+/**
+ * Send welcome email after successful email verification
+ * Fire-and-forget pattern - should not block auth flow
+ *
+ * @param email - User email address
+ * @param firstName - User first name for personalization
+ */
+export async function sendWelcomeEmail(
+  email: string,
+  firstName: string
+) {
+  try {
+    // Use exponential backoff for retry logic
+    const result = await backOff(
+      async () => {
+        const { data, error } = await resend.emails.send({
+          from: 'Animation Labs <hello@animationlabs.ai>',
+          to: email,
+          subject: 'Welcome to Animation Labs! 🎬',
+          react: WelcomeEmail({
+            firstName,
+          }),
+        })
+
+        // CRITICAL: Resend doesn't throw on errors, check result.error explicitly
+        if (error) {
+          // Don't retry on validation errors
+          if (
+            error.message?.includes('invalid_email') ||
+            error.message?.includes('domain_not_verified')
+          ) {
+            console.error('Permanent email error (not retrying):', {
+              emailType: 'welcome',
+              email,
+              error: error.message,
+            })
+            throw new Error(`Permanent email error: ${error.message}`)
+          }
+
+          // Throw to trigger retry
+          throw new Error(error.message || 'Unknown Resend error')
+        }
+
+        return data
+      },
+      {
+        numOfAttempts: 3,
+        startingDelay: 1000, // 1 second
+        timeMultiple: 5, // 1s -> 5s -> 25s
+        jitter: 'full',
+      }
+    )
+
+    console.log('Welcome email sent successfully:', {
+      emailType: 'welcome',
+      email,
+      emailId: result?.id,
+    })
+
+    return result
+  } catch (error) {
+    console.error('Failed to send welcome email after retries:', {
+      emailType: 'welcome',
       email,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
