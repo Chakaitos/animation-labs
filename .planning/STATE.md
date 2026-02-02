@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 5 of 7 (Video Library & Dashboard) — IN PROGRESS
-Plan: 1 of 3 complete
-Status: Video components created, ready for dashboard and videos page integration
-Last activity: 2026-02-01 — Completed 05-01-PLAN.md
+Plan: 2 of 3 complete
+Status: Dashboard enhanced with real video data, ready for videos page implementation
+Last activity: 2026-02-02 — Completed 05-03-PLAN.md
 
-Progress: [███████░░░] 62%
+Progress: [███████░░░] 65%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 21
-- Average duration: 3.1 minutes (autonomous plans only)
-- Total execution time: 1.25 hours
+- Total plans completed: 22
+- Average duration: 2.9 minutes (autonomous plans only)
+- Total execution time: 1.3 hours
 
 **By Phase:**
 
@@ -31,10 +31,10 @@ Progress: [███████░░░] 62%
 | 02-authentication-account | 6 | 27m | 4.5m |
 | 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
 | 04-core-video-creation | 5 | 27m | 3.4m |
-| 05-video-library-dashboard | 1 | 3m | 3m |
+| 05-video-library-dashboard | 2 | 4m | 2m |
 
 **Recent Trend:**
-- Last 5 plans: 04-02 (2m), 04-03 (1m), 04-04 (4m), 04-05 (15m checkpoint + fixes), 05-01 (3m)
+- Last 5 plans: 04-03 (1m), 04-04 (4m), 04-05 (15m checkpoint + fixes), 05-01 (3m), 05-03 (1m)
 - Trend: Excellent (autonomous plans execute very fast, components build cleanly)
 
 *Updated after each plan completion*
@@ -161,6 +161,11 @@ Recent decisions affecting current work:
 - Show status icon placeholder when no thumbnail (D-05-01-004) — Videos in pending/processing status don't have thumbnails yet
 - TypeScript null check in download link (D-05-01-005) — Explicit null check satisfies TypeScript type narrowing
 
+**From 05-03:**
+- Server-side video queries with order and limit (D-05-03-001) — Dashboard shows 5 recent videos ordered by created_at desc
+- Monthly stats calculation using start-of-month filter (D-05-03-002) — First day of month at midnight as boundary for video count
+- Conditional View All button (D-05-03-003) — View All link appears only when videos exist
+
 ### Pending Todos
 
 None yet.
@@ -171,7 +176,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-01
-Stopped at: Completed 05-01-PLAN.md (Video Library Components)
+Last session: 2026-02-02
+Stopped at: Completed 05-03-PLAN.md (Dashboard Integration)
 Resume file: None
-Next: Ready for 05-02 (Dashboard integration) and 05-03 (Videos page)
+Next: Ready for 05-02 (Videos Page) - Full video library view
