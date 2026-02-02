@@ -5,6 +5,8 @@ import { resend } from './client'
 import { createClient } from '@/lib/supabase/server'
 import VideoReadyEmail from '@/emails/video-ready'
 import PaymentFailedEmail from '@/emails/payment-failed'
+import VerificationEmail from '@/emails/verification'
+import PasswordResetEmail from '@/emails/password-reset'
 
 /**
  * Send video ready notification email with retry logic
@@ -193,6 +195,106 @@ export async function sendPaymentFailedEmail(
       emailType: 'payment-failed',
       userId,
       planName,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
+    throw error
+  }
+}
+
+/**
+ * Send verification email with branded template
+ * Called immediately after signup (not fire-and-forget - user needs to see this)
+ *
+ * @param email - User email address
+ * @param firstName - User first name for personalization
+ * @param verificationUrl - Magic link URL from Supabase
+ */
+export async function sendVerificationEmail(
+  email: string,
+  firstName: string,
+  verificationUrl: string
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Animation Labs <hello@animationlabs.ai>',
+      to: email,
+      subject: 'Welcome to Animation Labs - Verify your email',
+      react: VerificationEmail({
+        firstName,
+        verificationUrl,
+      }),
+    })
+
+    if (error) {
+      console.error('Failed to send verification email:', {
+        emailType: 'verification',
+        email,
+        error: error.message,
+      })
+      throw new Error(error.message || 'Failed to send verification email')
+    }
+
+    console.log('Verification email sent successfully:', {
+      emailType: 'verification',
+      email,
+      emailId: data?.id,
+    })
+
+    return data
+  } catch (error) {
+    console.error('Verification email error:', {
+      emailType: 'verification',
+      email,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
+    throw error
+  }
+}
+
+/**
+ * Send password reset email with branded template
+ * Called immediately after reset request (not fire-and-forget - user needs to see this)
+ *
+ * @param email - User email address
+ * @param firstName - User first name for personalization
+ * @param resetUrl - Password reset URL from Supabase
+ */
+export async function sendPasswordResetEmail(
+  email: string,
+  firstName: string,
+  resetUrl: string
+) {
+  try {
+    const { data, error } = await resend.emails.send({
+      from: 'Animation Labs <hello@animationlabs.ai>',
+      to: email,
+      subject: 'Reset your Animation Labs password',
+      react: PasswordResetEmail({
+        firstName,
+        resetUrl,
+      }),
+    })
+
+    if (error) {
+      console.error('Failed to send password reset email:', {
+        emailType: 'password-reset',
+        email,
+        error: error.message,
+      })
+      throw new Error(error.message || 'Failed to send password reset email')
+    }
+
+    console.log('Password reset email sent successfully:', {
+      emailType: 'password-reset',
+      email,
+      emailId: data?.id,
+    })
+
+    return data
+  } catch (error) {
+    console.error('Password reset email error:', {
+      emailType: 'password-reset',
+      email,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
     throw error

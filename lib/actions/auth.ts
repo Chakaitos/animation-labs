@@ -1,8 +1,10 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
 import { headers } from 'next/headers'
+import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email/send'
 
 // Helper to get site URL for redirects
 async function getSiteUrl() {
@@ -21,9 +23,17 @@ export async function signUp(formData: FormData) {
   const nameParts = fullName.split(/\s+/)
   const firstName = nameParts[0]
   const lastName = nameParts.slice(1).join(' ') || '' // Handle multiple middle/last names
+  const email = formData.get('email') as string
 
-  const { error } = await supabase.auth.signUp({
-    email: formData.get('email') as string,
+  // Use admin client to generate verification link
+  const supabaseAdmin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+
+  // Sign up user
+  const { data, error } = await supabase.auth.signUp({
+    email,
     password: formData.get('password') as string,
     options: {
       emailRedirectTo: `${siteUrl}/auth/confirm`,
@@ -32,11 +42,37 @@ export async function signUp(formData: FormData) {
         first_name: firstName,
         last_name: lastName,
       },
+      // Disable Supabase's built-in email - we'll send our own
+      emailRedirectTo: `${siteUrl}/auth/confirm`,
     },
   })
 
   if (error) {
     return { error: error.message }
+  }
+
+  // Generate verification link using admin API
+  if (data.user && !data.user.email_confirmed_at) {
+    try {
+      const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+        type: 'signup',
+        email,
+        options: {
+          redirectTo: `${siteUrl}/auth/confirm`,
+        },
+      })
+
+      if (linkError) {
+        console.error('Failed to generate verification link:', linkError)
+        // Continue anyway - user can request new link
+      } else if (linkData.properties?.action_link) {
+        // Send custom branded verification email
+        await sendVerificationEmail(email, firstName, linkData.properties.action_link)
+      }
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError)
+      // Continue anyway - user can request new link
+    }
   }
 
   redirect('/verify-email')
@@ -68,13 +104,41 @@ export async function resetPassword(formData: FormData) {
   const siteUrl = await getSiteUrl()
   const email = formData.get('email') as string
 
-  // Note: resetPasswordForEmail doesn't error if email doesn't exist
-  // This prevents email enumeration (security best practice)
-  await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${siteUrl}/auth/confirm?next=/update-password`,
-  })
+  // Use admin client to check if user exists and generate reset link
+  const supabaseAdmin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
 
-  // Always return success to prevent email enumeration
+  try {
+    // Generate password reset link using admin API
+    const { data: linkData, error: linkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'recovery',
+      email,
+      options: {
+        redirectTo: `${siteUrl}/auth/confirm?next=/update-password`,
+      },
+    })
+
+    if (!linkError && linkData.properties?.action_link) {
+      // Fetch user's first name for personalization
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('first_name')
+        .eq('email', email)
+        .single()
+
+      const firstName = profile?.first_name || 'there'
+
+      // Send custom branded password reset email
+      await sendPasswordResetEmail(email, firstName, linkData.properties.action_link)
+    }
+  } catch (error) {
+    // Silently fail to prevent email enumeration
+    console.error('Password reset error:', error)
+  }
+
+  // Always return success to prevent email enumeration (security best practice)
   return { success: true }
 }
 
