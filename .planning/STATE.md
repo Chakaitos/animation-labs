@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Professional logo animations at $3-5 per video with 10-15 minute turnaround
-**Current focus:** Core Video Creation
+**Current focus:** Video Library & Dashboard
 
 ## Current Position
 
-Phase: 4 of 7 (Core Video Creation) — COMPLETE
-Plan: 5 of 5 complete
-Status: Video creation flow verified and refined, ready for Phase 5
-Last activity: 2026-01-29 — Completed 04-05-PLAN.md (verification checkpoint)
+Phase: 5 of 7 (Video Library & Dashboard) — IN PROGRESS
+Plan: 1 of 3 complete
+Status: Video components created, ready for dashboard and videos page integration
+Last activity: 2026-02-01 — Completed 05-01-PLAN.md
 
-Progress: [██████░░░░] 57%
+Progress: [███████░░░] 62%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 20
-- Average duration: 3.2 minutes (autonomous plans only)
-- Total execution time: 1.2 hours
+- Total plans completed: 21
+- Average duration: 3.1 minutes (autonomous plans only)
+- Total execution time: 1.25 hours
 
 **By Phase:**
 
@@ -31,10 +31,11 @@ Progress: [██████░░░░] 57%
 | 02-authentication-account | 6 | 27m | 4.5m |
 | 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
 | 04-core-video-creation | 5 | 27m | 3.4m |
+| 05-video-library-dashboard | 1 | 3m | 3m |
 
 **Recent Trend:**
-- Last 5 plans: 04-01 (5m), 04-02 (2m), 04-03 (1m), 04-04 (4m), 04-05 (15m checkpoint + fixes)
-- Trend: Excellent (autonomous plans execute very fast, checkpoints identify issues early)
+- Last 5 plans: 04-02 (2m), 04-03 (1m), 04-04 (4m), 04-05 (15m checkpoint + fixes), 05-01 (3m)
+- Trend: Excellent (autonomous plans execute very fast, components build cleanly)
 
 *Updated after each plan completion*
 
@@ -153,6 +154,13 @@ Recent decisions affecting current work:
 - Simplified quality options (D-04-05-003) — Changed from 4 options to 2 tiers: 'standard' (720p) and 'premium' (1080p)
 - Database cleanup migration (D-04-05-004) — Created migration to drop unused primary_color and secondary_color columns
 
+**From 05-01:**
+- AlertDialog over Dialog for delete confirmation (D-05-01-001) — Forces explicit user choice before closing, prevents accidental deletions
+- Extract storage paths from URLs via regex (D-05-01-002) — Supabase returns full public URLs, storage.remove() expects paths
+- Revalidate both /videos and /dashboard after delete (D-05-01-003) — Video list appears on multiple pages, ensures cache refresh
+- Show status icon placeholder when no thumbnail (D-05-01-004) — Videos in pending/processing status don't have thumbnails yet
+- TypeScript null check in download link (D-05-01-005) — Explicit null check satisfies TypeScript type narrowing
+
 ### Pending Todos
 
 None yet.
@@ -163,7 +171,7 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-29
-Stopped at: Completed 04-05-PLAN.md (Video Creation Verification)
+Last session: 2026-02-01
+Stopped at: Completed 05-01-PLAN.md (Video Library Components)
 Resume file: None
-Next: Phase 4 complete — Ready for Phase 5 (Video Management)
+Next: Ready for 05-02 (Dashboard integration) and 05-03 (Videos page)
