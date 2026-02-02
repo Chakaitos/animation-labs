@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { sendVideoReadyEmail } from '@/lib/email/send'
 
 // Use service role client for webhook processing (bypasses RLS)
 function getServiceClient() {
@@ -109,7 +110,7 @@ export async function POST(request: Request) {
     query = query.or(`n8n_execution_id.is.null,n8n_execution_id.eq.${webhookId}`)
   }
 
-  const { data, error } = await query.select('id, status')
+  const { data, error } = await query.select('id, status, user_id, brand_name, video_url, thumbnail_url')
 
   if (error) {
     console.error('Video status update error:', error)
@@ -140,6 +141,21 @@ export async function POST(request: Request) {
       message: 'Already processed',
       videoId: existing.id,
       status: existing.status,
+    })
+  }
+
+  // Send email notification when video completes
+  if (data && data.length > 0 && status === 'completed') {
+    const video = data[0]
+    // Send email asynchronously - don't block webhook response
+    sendVideoReadyEmail(
+      video.user_id,
+      video.video_url || videoUrl,
+      video.brand_name,
+      video.thumbnail_url || thumbnailUrl
+    ).catch(err => {
+      console.error('Failed to send video ready email:', err)
+      // Don't throw - email failure shouldn't fail the webhook
     })
   }
 
