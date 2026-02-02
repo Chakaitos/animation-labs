@@ -32,8 +32,8 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
               <Img
                 src="https://animationlabs.ai/logo.svg"
                 alt="Animation Labs"
-                width="150"
-                height="40"
+                width="220"
+                height="60"
                 className="mx-auto"
               />
             </Section>
