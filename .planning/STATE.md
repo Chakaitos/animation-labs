@@ -5,23 +5,23 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Professional logo animations at $3-5 per video with 10-15 minute turnaround
-**Current focus:** Video Library & Dashboard
+**Current focus:** Email Notifications
 
 ## Current Position
 
-Phase: 5 of 7 (Video Library & Dashboard) — COMPLETE
-Plan: 4 of 4 complete + UX fixes + UI polish
-Status: Video library with hover previews, dashboard integration, UX fixes, and UI polish complete
-Last activity: 2026-02-02 — Completed UI polish (aspect ratio + Created label on video cards)
+Phase: 6 of 7 (Email Notifications)
+Plan: 1 of 3 complete
+Status: Email infrastructure setup complete with Resend client, React Email templates, and first name capture
+Last activity: 2026-02-02 — Completed 06-01-PLAN.md (email infrastructure)
 
-Progress: [████████░░] 72%
+Progress: [████████░░] 75%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 24
+- Total plans completed: 25
 - Average duration: 2.8 minutes (autonomous plans only)
-- Total execution time: 1.5 hours
+- Total execution time: 1.6 hours
 
 **By Phase:**
 
@@ -32,10 +32,11 @@ Progress: [████████░░] 72%
 | 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
 | 04-core-video-creation | 5 | 27m | 3.4m |
 | 05-video-library-dashboard | 4 | 11m | 2.8m |
+| 06-email-notifications | 1 | 3m | 3.0m |
 
 **Recent Trend:**
-- Last 5 plans: 05-01 (3m), 05-02 (2m), 05-03 (1m), 05-04 (3m), Phase 5 complete
-- Trend: Excellent (Phase 5 complete with user-tested enhancements, clean builds)
+- Last 5 plans: 05-02 (2m), 05-03 (1m), 05-04 (3m), Phase 5 complete, 06-01 (3m)
+- Trend: Excellent (consistent velocity, clean builds, Phase 6 started)
 
 *Updated after each plan completion*
 
@@ -186,6 +187,14 @@ Recent decisions affecting current work:
 - Aspect ratio display on video cards (D-05-POLISH-001) — Shows "Landscape - 16:9" or "Portrait - 9:16" using database aspect_ratio column
 - Created date label for clarity (D-05-POLISH-002) — "Created" prefix before date helps users understand timestamp meaning
 
+**From 06-01:**
+- Lazy-load Resend client via Proxy (D-06-01-001) — Prevents build errors when RESEND_API_KEY not set, same pattern as Stripe
+- 3 retries with exponential backoff (D-06-01-002) — 1s, 5s, 25s delays with full jitter for transient email API errors
+- Explicit Resend error checking (D-06-01-003) — CRITICAL: Resend doesn't throw, must check result.error
+- Skip retries on permanent errors (D-06-01-004) — Don't retry invalid_email or domain_not_verified errors
+- First name capture for personalization (D-06-01-005) — "Hey {firstName}" more engaging than generic greeting
+- React Email with Tailwind (D-06-01-006) — Component-based templates with email client compatibility
+
 ### Pending Todos
 
 None yet.
@@ -197,6 +206,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed UI polish for video library (aspect ratio + Created label)
+Stopped at: Completed 06-01-PLAN.md (email infrastructure setup)
 Resume file: None
-Next: Phase 06 (n8n Workflow Integration) - Build automated video generation workflow
+Next: Phase 06-02 (Video Completion Emails) - Integrate email notifications into video webhook
