@@ -35,7 +35,7 @@ async function VideoList({
   // Build query with filters
   let queryBuilder = supabase
     .from('videos')
-    .select('id, brand_name, status, video_url, thumbnail_url, created_at, error_message')
+    .select('id, brand_name, status, video_url, thumbnail_url, created_at, error_message, aspect_ratio')
     .eq('user_id', userId)
     .order('created_at', { ascending: false })
 

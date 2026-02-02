@@ -19,6 +19,7 @@ interface Video {
   thumbnail_url: string | null
   created_at: string
   error_message: string | null
+  aspect_ratio: 'landscape' | 'portrait'
 }
 
 interface VideoCardProps {
@@ -28,6 +29,11 @@ interface VideoCardProps {
 export function VideoCard({ video }: VideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canDownload = video.status === 'completed' && video.video_url
+
+  // Format aspect ratio for display
+  const formatAspectRatio = (ratio: 'landscape' | 'portrait') => {
+    return ratio === 'landscape' ? 'Landscape - 16:9' : 'Portrait - 9:16'
+  }
 
   // Handle video hover preview
   const handleMouseEnter = () => {
@@ -103,8 +109,11 @@ export function VideoCard({ video }: VideoCardProps) {
         <h3 className="truncate font-semibold" title={video.brand_name}>
           {video.brand_name}
         </h3>
+        <p className="text-xs text-muted-foreground">
+          {formatAspectRatio(video.aspect_ratio)}
+        </p>
         <p className="text-sm text-muted-foreground">
-          {new Date(video.created_at).toLocaleDateString()}
+          Created {new Date(video.created_at).toLocaleDateString()}
         </p>
         {video.status === 'failed' && video.error_message && (
           <p className="text-sm text-destructive">{video.error_message}</p>

@@ -8,6 +8,7 @@ type Video = {
   thumbnail_url: string | null
   created_at: string
   error_message: string | null
+  aspect_ratio: 'landscape' | 'portrait'
 }
 
 interface VideoGridProps {

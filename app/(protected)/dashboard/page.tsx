@@ -32,7 +32,7 @@ export default async function DashboardPage() {
   // Get recent videos (limit 6 to fill 3-column desktop grid)
   const { data: recentVideos } = await supabase
     .from('videos')
-    .select('id, brand_name, status, video_url, thumbnail_url, created_at, error_message')
+    .select('id, brand_name, status, video_url, thumbnail_url, created_at, error_message, aspect_ratio')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(6)
