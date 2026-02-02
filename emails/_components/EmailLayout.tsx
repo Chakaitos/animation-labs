@@ -27,8 +27,8 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
             {/* Logo Header */}
             <Section className="text-center mb-6">
               <Img
-                src="https://animatelabs.com/logo.svg"
-                alt="AnimateLabs"
+                src="https://animationlabs.ai/logo.svg"
+                alt="Animation Labs"
                 width="150"
                 height="40"
                 className="mx-auto"
@@ -45,10 +45,10 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
             {/* Footer */}
             <Section className="text-center">
               <Text className="text-sm text-gray-500 mb-2">
-                AnimateLabs - Professional logo animations
+                Animation Labs - Professional logo animations
               </Text>
               <Text className="text-xs text-gray-400">
-                &copy; {new Date().getFullYear()} AnimateLabs. All rights reserved.
+                &copy; {new Date().getFullYear()} Animation Labs. All rights reserved.
               </Text>
             </Section>
           </Container>

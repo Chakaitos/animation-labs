@@ -44,7 +44,7 @@ export async function sendVideoReadyEmail(
     const result = await backOff(
       async () => {
         const { data, error } = await resend.emails.send({
-          from: 'AnimateLabs <noreply@animatelabs.com>',
+          from: 'Animation Labs <no-reply@animationlabs.ai>',
           to: profile.email,
           subject: `Your ${brandName} video is ready!`,
           react: VideoReadyEmail({
@@ -142,9 +142,9 @@ export async function sendPaymentFailedEmail(
     const result = await backOff(
       async () => {
         const { data, error } = await resend.emails.send({
-          from: 'AnimateLabs <noreply@animatelabs.com>',
+          from: 'Animation Labs <support@animationlabs.ai>',
           to: profile.email,
-          subject: 'Action Required: Payment failed for your AnimateLabs subscription',
+          subject: 'Action Required: Payment failed for your Animation Labs subscription',
           react: PaymentFailedEmail({
             firstName: profile.first_name || undefined,
             planName,
