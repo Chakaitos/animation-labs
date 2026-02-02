@@ -28,13 +28,15 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
             {/* Note: Logo requires absolute URL for email clients. */}
             {/* In local dev (npm run email:dev), external URLs may not load. */}
             {/* Logo will display correctly in sent emails. */}
+            {/* The email-logo.png file should be placed in public/ directory */}
             <Section className="text-center mb-3">
               <Img
-                src="https://animationlabs.ai/logo.svg"
+                src="https://animationlabs.ai/email-logo.png"
                 alt="Animation Labs"
-                width="220"
-                height="60"
+                width="300"
+                height="75"
                 className="mx-auto"
+                style={{ display: 'block' }}
               />
             </Section>
 
