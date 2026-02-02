@@ -147,6 +147,15 @@ export async function POST(request: Request) {
   // Send email notification when video completes
   if (data && data.length > 0 && status === 'completed') {
     const video = data[0]
+
+    console.log('Triggering video ready email:', {
+      videoId: video.id,
+      userId: video.user_id,
+      brandName: video.brand_name,
+      hasVideoUrl: !!video.video_url,
+      hasThumbnailUrl: !!video.thumbnail_url,
+    })
+
     // Send email asynchronously - don't block webhook response
     sendVideoReadyEmail(
       video.user_id,
@@ -154,7 +163,13 @@ export async function POST(request: Request) {
       video.brand_name,
       video.thumbnail_url || thumbnailUrl
     ).catch(err => {
-      console.error('Failed to send video ready email:', err)
+      console.error('Failed to send video ready email:', {
+        videoId: video.id,
+        userId: video.user_id,
+        brandName: video.brand_name,
+        error: err instanceof Error ? err.message : 'Unknown error',
+        stack: err instanceof Error ? err.stack : undefined,
+      })
       // Don't throw - email failure shouldn't fail the webhook
     })
   }

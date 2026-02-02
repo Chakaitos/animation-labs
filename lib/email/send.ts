@@ -22,6 +22,8 @@ export async function sendVideoReadyEmail(
   brandName: string,
   thumbnailUrl?: string
 ) {
+  console.log('sendVideoReadyEmail called:', { userId, brandName, hasVideoUrl: !!videoUrl, hasThumbnailUrl: !!thumbnailUrl })
+
   const supabase = await createClient()
 
   // Fetch user profile for email and first name
@@ -35,9 +37,13 @@ export async function sendVideoReadyEmail(
     console.error('Failed to fetch user profile for email:', {
       userId,
       error: profileError?.message,
+      code: profileError?.code,
+      details: profileError?.details,
     })
     throw new Error('User profile not found')
   }
+
+  console.log('Profile fetched successfully:', { userId, email: profile.email, hasFirstName: !!profile.first_name })
 
   try {
     // Use exponential backoff for retry logic
