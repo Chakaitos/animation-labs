@@ -61,7 +61,7 @@ export function VideoCard({ video }: VideoCardProps) {
     <Card className="overflow-hidden">
       {/* Thumbnail Container */}
       <div
-        className="relative aspect-video bg-muted"
+        className="relative aspect-video bg-muted overflow-hidden"
         onMouseEnter={video.status === 'completed' && video.video_url ? handleMouseEnter : undefined}
         onMouseLeave={video.status === 'completed' && video.video_url ? handleMouseLeave : undefined}
       >
@@ -83,6 +83,7 @@ export function VideoCard({ video }: VideoCardProps) {
             src={video.thumbnail_url}
             alt={`${video.brand_name} thumbnail`}
             fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover"
           />
         ) : (
