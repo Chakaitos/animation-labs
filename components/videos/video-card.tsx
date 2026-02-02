@@ -1,3 +1,6 @@
+'use client'
+
+import { useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Download, Trash2, CheckCircle, Loader2, XCircle } from 'lucide-react'
@@ -23,7 +26,22 @@ interface VideoCardProps {
 }
 
 export function VideoCard({ video }: VideoCardProps) {
+  const videoRef = useRef<HTMLVideoElement>(null)
   const canDownload = video.status === 'completed' && video.video_url
+
+  // Handle video hover preview
+  const handleMouseEnter = () => {
+    if (videoRef.current) {
+      videoRef.current.play()
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (videoRef.current) {
+      videoRef.current.pause()
+      videoRef.current.currentTime = 0
+    }
+  }
 
   // Get status icon for thumbnail placeholder
   const getStatusIcon = () => {
@@ -42,8 +60,25 @@ export function VideoCard({ video }: VideoCardProps) {
   return (
     <Card className="overflow-hidden">
       {/* Thumbnail Container */}
-      <div className="relative aspect-video bg-muted">
-        {video.thumbnail_url ? (
+      <div
+        className="relative aspect-video bg-muted"
+        onMouseEnter={video.status === 'completed' && video.video_url ? handleMouseEnter : undefined}
+        onMouseLeave={video.status === 'completed' && video.video_url ? handleMouseLeave : undefined}
+      >
+        {video.status === 'completed' && video.video_url ? (
+          // Show video preview for completed videos
+          <video
+            ref={videoRef}
+            src={video.video_url}
+            poster={video.thumbnail_url || undefined}
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            className="h-full w-full object-cover"
+          />
+        ) : video.thumbnail_url ? (
+          // Show static thumbnail for other statuses with thumbnail
           <Image
             src={video.thumbnail_url}
             alt={`${video.brand_name} thumbnail`}
@@ -51,6 +86,7 @@ export function VideoCard({ video }: VideoCardProps) {
             className="object-cover"
           />
         ) : (
+          // Show status icon for videos without thumbnail
           <div className="flex h-full items-center justify-center">
             {getStatusIcon()}
           </div>

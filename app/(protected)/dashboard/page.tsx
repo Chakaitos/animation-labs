@@ -29,13 +29,13 @@ export default async function DashboardPage() {
 
   const hasSubscription = subscription && subscription.status === 'active'
 
-  // Get recent videos (limit 5)
+  // Get recent videos (limit 6 to fill 3-column desktop grid)
   const { data: recentVideos } = await supabase
     .from('videos')
     .select('id, brand_name, status, video_url, thumbnail_url, created_at, error_message')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
-    .limit(5)
+    .limit(6)
 
   // Get video count for this month
   const startOfMonth = new Date()
