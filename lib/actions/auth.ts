@@ -21,6 +21,9 @@ export async function signUp(formData: FormData) {
     password: formData.get('password') as string,
     options: {
       emailRedirectTo: `${siteUrl}/auth/confirm`,
+      data: {
+        first_name: formData.get('firstName') as string,
+      },
     },
   })
 

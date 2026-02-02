@@ -24,6 +24,7 @@ export function SignupForm() {
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
+      firstName: '',
       email: '',
       password: '',
       confirmPassword: '',
@@ -34,6 +35,7 @@ export function SignupForm() {
     setIsLoading(true)
 
     const formData = new FormData()
+    formData.append('firstName', data.firstName)
     formData.append('email', data.email)
     formData.append('password', data.password)
 
@@ -49,6 +51,25 @@ export function SignupForm() {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
+          control={form.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>First Name</FormLabel>
+              <FormControl>
+                <Input
+                  type="text"
+                  placeholder="John"
+                  autoComplete="given-name"
+                  disabled={isLoading}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="email"
