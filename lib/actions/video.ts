@@ -5,6 +5,7 @@ import { videoSchema, type VideoFormValues } from '@/lib/validations/video-schem
 import { validateImageFile } from '@/lib/utils/file-validation'
 import { getStylePresetConfig } from '@/lib/config/style-presets'
 import { redirect } from 'next/navigation'
+import { revalidatePath } from 'next/cache'
 
 export interface CreateVideoResult {
   success?: boolean
@@ -194,4 +195,83 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
 
   // 9. Success - return videoId (form will redirect)
   return { success: true, videoId: video.id }
+}
+
+/**
+ * Delete a video and its associated storage files.
+ *
+ * Flow:
+ * 1. Authenticate user
+ * 2. Get video to verify ownership and extract file URLs
+ * 3. Verify user owns the video (extra security beyond RLS)
+ * 4. Extract storage paths from URLs
+ * 5. Delete storage files (logo, video, thumbnail)
+ * 6. Delete database record (RLS ensures user can only delete own videos)
+ * 7. Revalidate pages to update UI
+ */
+export async function deleteVideo(videoId: string): Promise<{ success?: boolean; error?: string }> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'Unauthorized' }
+  }
+
+  // 1. Get video to verify ownership and get file URLs
+  const { data: video, error: fetchError } = await supabase
+    .from('videos')
+    .select('logo_url, video_url, thumbnail_url, user_id')
+    .eq('id', videoId)
+    .single()
+
+  if (fetchError || !video) {
+    return { error: 'Video not found' }
+  }
+
+  // 2. Verify ownership (extra security check beyond RLS)
+  if (video.user_id !== user.id) {
+    return { error: 'Unauthorized' }
+  }
+
+  // 3. Extract storage paths from URLs and delete files
+  // Path format: {user_id}/{uuid}.{ext} stored in 'logos' bucket
+  const extractPath = (url: string | null): string | null => {
+    if (!url) return null
+    try {
+      const urlObj = new URL(url)
+      // URL pattern: .../storage/v1/object/public/logos/{user_id}/{filename}
+      const match = urlObj.pathname.match(/\/logos\/(.+)$/)
+      return match ? match[1] : null
+    } catch {
+      return null
+    }
+  }
+
+  const filesToDelete = [
+    extractPath(video.logo_url),
+    extractPath(video.video_url),
+    extractPath(video.thumbnail_url),
+  ].filter((path): path is string => path !== null)
+
+  // Delete storage files (don't fail if files already deleted)
+  if (filesToDelete.length > 0) {
+    await supabase.storage.from('logos').remove(filesToDelete)
+  }
+
+  // 4. Delete database record (RLS ensures user can only delete own videos)
+  const { error: deleteError } = await supabase
+    .from('videos')
+    .delete()
+    .eq('id', videoId)
+
+  if (deleteError) {
+    console.error('Delete video error:', deleteError)
+    return { error: 'Failed to delete video' }
+  }
+
+  // 5. Revalidate pages
+  revalidatePath('/videos')
+  revalidatePath('/dashboard')
+
+  return { success: true }
 }

@@ -76,7 +76,7 @@ export function VideoCard({ video }: VideoCardProps) {
 
       {/* Actions */}
       <CardFooter className="gap-2">
-        {canDownload && (
+        {canDownload && video.video_url && (
           <Button variant="outline" size="sm" asChild className="flex-1">
             <a href={video.video_url} download>
               <Download />
