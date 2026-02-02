@@ -16,13 +16,21 @@ export async function signUp(formData: FormData) {
   const supabase = await createClient()
   const siteUrl = await getSiteUrl()
 
+  // Split full name into first and last
+  const fullName = (formData.get('fullName') as string).trim()
+  const nameParts = fullName.split(/\s+/)
+  const firstName = nameParts[0]
+  const lastName = nameParts.slice(1).join(' ') || '' // Handle multiple middle/last names
+
   const { error } = await supabase.auth.signUp({
     email: formData.get('email') as string,
     password: formData.get('password') as string,
     options: {
       emailRedirectTo: `${siteUrl}/auth/confirm`,
       data: {
-        first_name: formData.get('firstName') as string,
+        full_name: fullName,
+        first_name: firstName,
+        last_name: lastName,
       },
     },
   })

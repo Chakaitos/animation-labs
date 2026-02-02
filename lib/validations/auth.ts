@@ -1,10 +1,14 @@
 import { z } from 'zod'
 
 export const signupSchema = z.object({
-  firstName: z
+  fullName: z
     .string()
-    .min(1, 'First name is required')
-    .max(50, 'First name must be 50 characters or less'),
+    .min(1, 'Full name is required')
+    .max(100, 'Full name must be 100 characters or less')
+    .refine(
+      (name) => name.trim().split(/\s+/).length >= 2,
+      'Please enter your full name (first and last name)'
+    ),
   email: z.string().email('Please enter a valid email address'),
   password: z
     .string()
