@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 5 of 7 (Video Library & Dashboard) — COMPLETE
-Plan: 4 of 4 complete
-Status: Video library with hover previews and dashboard integration complete
-Last activity: 2026-02-02 — Completed 05-04-PLAN.md (Phase 5 complete)
+Plan: 4 of 4 complete + UX fixes
+Status: Video library with hover previews, dashboard integration, and UX fixes complete
+Last activity: 2026-02-02 — Completed UX fixes (portrait video layout + download button)
 
 Progress: [████████░░] 72%
 
@@ -178,6 +178,10 @@ Recent decisions affecting current work:
 - Video preview via React ref control (D-05-04-003) — onMouseEnter/onMouseLeave with play()/pause() and currentTime reset
 - Status badge overlay during preview (D-05-04-004) — Badge remains visible during hover preview for state awareness
 
+**From 05-UX-FIXES:**
+- Server-side download proxy for cross-origin resources (D-05-UX-001) — Content-Disposition header via API route enables proper downloads
+- object-cover for consistent aspect ratios (D-05-UX-002) — Maintains 16:9 card height regardless of source video dimensions
+
 ### Pending Todos
 
 None yet.
@@ -189,6 +193,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 05-04-PLAN.md (Phase 5 complete - Video Library & Dashboard)
+Stopped at: Completed UX fixes for video library (portrait layout + download button)
 Resume file: None
 Next: Phase 06 (n8n Workflow Integration) - Build automated video generation workflow
