@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 5 of 7 (Video Library & Dashboard) — COMPLETE
-Plan: 4 of 4 complete + UX fixes
-Status: Video library with hover previews, dashboard integration, and UX fixes complete
-Last activity: 2026-02-02 — Completed UX fixes (portrait video layout + download button)
+Plan: 4 of 4 complete + UX fixes + UI polish
+Status: Video library with hover previews, dashboard integration, UX fixes, and UI polish complete
+Last activity: 2026-02-02 — Completed UI polish (aspect ratio + Created label on video cards)
 
 Progress: [████████░░] 72%
 
@@ -182,6 +182,10 @@ Recent decisions affecting current work:
 - Server-side download proxy for cross-origin resources (D-05-UX-001) — Content-Disposition header via API route enables proper downloads
 - object-cover for consistent aspect ratios (D-05-UX-002) — Maintains 16:9 card height regardless of source video dimensions
 
+**From 05-POLISH:**
+- Aspect ratio display on video cards (D-05-POLISH-001) — Shows "Landscape - 16:9" or "Portrait - 9:16" using database aspect_ratio column
+- Created date label for clarity (D-05-POLISH-002) — "Created" prefix before date helps users understand timestamp meaning
+
 ### Pending Todos
 
 None yet.
@@ -193,6 +197,6 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed UX fixes for video library (portrait layout + download button)
+Stopped at: Completed UI polish for video library (aspect ratio + Created label)
 Resume file: None
 Next: Phase 06 (n8n Workflow Integration) - Build automated video generation workflow
