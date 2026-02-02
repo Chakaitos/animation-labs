@@ -6,6 +6,8 @@ import { UserMenu } from '@/components/navigation/user-menu'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CreditBalance } from '@/components/CreditBalance'
+import { VideoCard } from '@/components/videos/video-card'
+import { EmptyVideosState } from '@/components/videos/empty-state'
 import { Plus, Video, CreditCard } from 'lucide-react'
 
 export default async function DashboardPage() {
@@ -26,6 +28,25 @@ export default async function DashboardPage() {
     .single()
 
   const hasSubscription = subscription && subscription.status === 'active'
+
+  // Get recent videos (limit 5)
+  const { data: recentVideos } = await supabase
+    .from('videos')
+    .select('id, brand_name, status, video_url, thumbnail_url, created_at, error_message')
+    .eq('user_id', user.id)
+    .order('created_at', { ascending: false })
+    .limit(5)
+
+  // Get video count for this month
+  const startOfMonth = new Date()
+  startOfMonth.setDate(1)
+  startOfMonth.setHours(0, 0, 0, 0)
+
+  const { count: videosThisMonth } = await supabase
+    .from('videos')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', user.id)
+    .gte('created_at', startOfMonth.toISOString())
 
   return (
     <div className="min-h-screen bg-background">
@@ -69,7 +90,7 @@ export default async function DashboardPage() {
                   <Video className="h-4 w-4 text-muted-foreground" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">0</div>
+                  <div className="text-2xl font-bold">{videosThisMonth ?? 0}</div>
                   <p className="text-xs text-muted-foreground">This month</p>
                 </CardContent>
               </Card>
@@ -107,25 +128,27 @@ export default async function DashboardPage() {
           )}
         </div>
 
-        {/* Recent Videos Section (placeholder) */}
+        {/* Recent Videos Section */}
         {hasSubscription && (
           <div>
-            <h2 className="text-lg font-semibold mb-4">Recent Videos</h2>
-            <Card>
-              <CardContent className="py-8">
-                <div className="text-center text-muted-foreground">
-                  <Video className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>No videos yet</p>
-                  <p className="text-sm">Create your first logo animation to get started.</p>
-                  <Button className="mt-4" asChild>
-                    <Link href="/create-video">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Create Video
-                    </Link>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold">Recent Videos</h2>
+              {recentVideos && recentVideos.length > 0 && (
+                <Button variant="ghost" asChild>
+                  <Link href="/videos">View All</Link>
+                </Button>
+              )}
+            </div>
+
+            {recentVideos && recentVideos.length > 0 ? (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {recentVideos.map((video) => (
+                  <VideoCard key={video.id} video={video} />
+                ))}
+              </div>
+            ) : (
+              <EmptyVideosState />
+            )}
           </div>
         )}
       </main>
