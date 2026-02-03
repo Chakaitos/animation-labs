@@ -56,13 +56,17 @@ export async function sendVideoReadyEmail(
 
     console.log('Using email from auth.users (profile missing):', { userId, email: authUser.email })
 
+    if (!authUser.email) {
+      throw new Error('User has no email address')
+    }
+
     // Send email without personalization
     try {
       const result = await backOff(
         async () => {
           const { data, error } = await resend.emails.send({
             from: 'Animation Labs <no-reply@animationlabs.ai>',
-            to: authUser.email,
+            to: authUser.email!,
             subject: `Your ${brandName} video is ready!`,
             react: VideoReadyEmail({
               firstName: undefined, // No first name - will use "there" fallback
@@ -232,12 +236,16 @@ export async function sendPaymentFailedEmail(
 
     console.log('Using email from auth.users (profile missing):', { userId, email: authUser.email })
 
+    if (!authUser.email) {
+      throw new Error('User has no email address')
+    }
+
     try {
       const result = await backOff(
         async () => {
           const { data, error } = await resend.emails.send({
             from: 'Animation Labs <support@animationlabs.ai>',
-            to: authUser.email,
+            to: authUser.email!,
             subject: 'Action Required: Payment failed for your Animation Labs subscription',
             react: PaymentFailedEmail({
               firstName: undefined,
