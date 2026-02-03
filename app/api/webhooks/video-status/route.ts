@@ -100,7 +100,7 @@ export async function POST(request: Request) {
   }
 
   // Check for empty or malformed payload (common n8n configuration issue)
-  if (!body || Object.keys(body).length === 0 || body[''] === '') {
+  if (!body || Object.keys(body).length === 0 || (body as any)[''] !== undefined) {
     console.error('❌ WEBHOOK ERROR: Empty or malformed payload received')
     console.error('This usually means n8n is not sending data correctly')
     console.error('Expected fields: videoId, status, videoUrl (optional), thumbnailUrl (optional)')
