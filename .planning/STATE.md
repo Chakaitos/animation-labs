@@ -5,22 +5,22 @@
 See: .planning/PROJECT.md (updated 2026-01-26)
 
 **Core value:** Professional logo animations at $3-5 per video with 10-15 minute turnaround
-**Current focus:** Email Notifications
+**Current focus:** Public Pages & Marketing
 
 ## Current Position
 
-Phase: 6 of 7 (Email Notifications) — COMPLETE
-Plan: 3 of 3 complete
-Status: Phase complete - all email notification flows working in production
-Last activity: 2026-02-03 — Completed Phase 6 (Email Notifications)
+Phase: 7 of 7 (Public Pages & Marketing) — IN PROGRESS
+Plan: 1 of 4 complete
+Status: Core marketing components complete, ready for homepage assembly
+Last activity: 2026-02-03 — Completed 07-01-PLAN.md
 
-Progress: [█████████░] 85%
+Progress: [█████████░] 87%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 30
-- Average duration: 2.9 minutes (autonomous plans only)
+- Total plans completed: 31
+- Average duration: 2.8 minutes (autonomous plans only)
 - Total execution time: 2.1 hours
 
 **By Phase:**
@@ -33,10 +33,11 @@ Progress: [█████████░] 85%
 | 04-core-video-creation | 5 | 27m | 3.4m |
 | 05-video-library-dashboard | 4 | 11m | 2.8m |
 | 06-email-notifications | 3 | 13m (autonomous) + 8h (verification/fixes) | 4.3m |
+| 07-public-pages-marketing | 1 | 2m | 2.0m |
 
 **Recent Trend:**
-- Last 5 completions: 05-04 (3m), Phase 5, 06-01 (3m), 06-02 (2m), 06-03 (8h), Phase 6
-- Trend: Phase 6 complete - human verification revealed production issues requiring extensive fixes
+- Last 5 completions: 06-01 (3m), 06-02 (2m), 06-03 (8h), Phase 6, 07-01 (2m)
+- Trend: Phase 7 started - marketing components building quickly
 
 *Updated after each plan completion*
 
@@ -211,27 +212,31 @@ Recent decisions affecting current work:
 - White background for emails (D-06-03-007) — Better contrast and professional appearance
 - Optional last name in signup (D-06-03-008) — Reduces form friction, first name sufficient for personalization
 
+**From 07-01:**
+- Server Components for marketing (D-07-01-001) — No client-side state needed, better SSR performance
+- Auto-play video attributes (D-07-01-002) — autoPlay, muted, loop, playsInline for cross-browser compatibility
+- Six example videos (D-07-01-003) — Fills 3-column desktop layout perfectly
+- Simple navigation (D-07-01-004) — No hamburger menu needed with only 4 items
+
 ### Pending Todos
 
 None yet.
 
 ### Blockers/Concerns
 
-**Phase 6 Complete - No Blockers:**
-All email notification flows working in production:
-- ✅ Custom branded auth emails (verification, password reset)
-- ✅ Welcome email after verification
-- ✅ Video completion emails with download links
-- ✅ Payment failure emails with retry buttons
-- ✅ Comprehensive logging for production monitoring
-- ✅ Profile backfill migration completed
+**Phase 7 In Progress - No Blockers:**
+- ✅ Marketing components complete (Hero, Gallery, Header)
+- All components TypeScript-validated
+- Ready for homepage assembly in next plan
 
-**Next Phase (Phase 7):**
-Ready for Public Pages & Marketing phase.
+**Upcoming:**
+- Homepage route assembly (07-02)
+- Pricing page (07-03)
+- Additional marketing content as needed
 
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed Phase 6 (Email Notifications) - All email flows working in production
+Stopped at: Completed 07-01-PLAN.md (Marketing Components)
 Resume file: None
-Next: Phase 7 (Public Pages & Marketing)
+Next: 07-02 (Homepage Assembly)
