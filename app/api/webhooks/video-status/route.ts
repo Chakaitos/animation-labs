@@ -29,13 +29,25 @@ interface VideoStatusPayload {
 }
 
 export async function POST(request: Request) {
+  console.log('=== VIDEO STATUS WEBHOOK CALLED ===')
+  console.log('Timestamp:', new Date().toISOString())
+
   const headersList = await headers()
+
+  // Log all headers for debugging
+  console.log('Webhook headers:', {
+    'x-webhook-secret': headersList.get('x-webhook-secret') ? '***' : 'missing',
+    'x-webhook-id': headersList.get('x-webhook-id'),
+    'x-n8n-execution-id': headersList.get('x-n8n-execution-id'),
+    'content-type': headersList.get('content-type'),
+  })
 
   // Verify webhook secret
   const secret = headersList.get('x-webhook-secret')
   const expectedSecret = process.env.N8N_WEBHOOK_SECRET
 
   if (expectedSecret && secret !== expectedSecret) {
+    console.error('Webhook authentication failed')
     return NextResponse.json(
       { error: 'Unauthorized' },
       { status: 401 }
@@ -48,7 +60,9 @@ export async function POST(request: Request) {
   let body: VideoStatusPayload
   try {
     body = await request.json()
-  } catch {
+    console.log('Webhook payload:', JSON.stringify(body, null, 2))
+  } catch (err) {
+    console.error('Invalid JSON body:', err)
     return NextResponse.json(
       { error: 'Invalid JSON body' },
       { status: 400 }
@@ -145,15 +159,24 @@ export async function POST(request: Request) {
   }
 
   // Send email notification when video completes
+  console.log('Checking if should send email:', {
+    hasData: !!data && data.length > 0,
+    status,
+    shouldSend: data && data.length > 0 && status === 'completed',
+  })
+
   if (data && data.length > 0 && status === 'completed') {
     const video = data[0]
 
-    console.log('Triggering video ready email:', {
+    console.log('=== SENDING VIDEO READY EMAIL ===')
+    console.log('Email trigger data:', {
       videoId: video.id,
       userId: video.user_id,
       brandName: video.brand_name,
-      hasVideoUrl: !!video.video_url,
-      hasThumbnailUrl: !!video.thumbnail_url,
+      videoUrl: video.video_url || videoUrl,
+      thumbnailUrl: video.thumbnail_url || thumbnailUrl,
+      hasVideoUrl: !!(video.video_url || videoUrl),
+      hasThumbnailUrl: !!(video.thumbnail_url || thumbnailUrl),
     })
 
     // Send email asynchronously - don't block webhook response
@@ -162,8 +185,13 @@ export async function POST(request: Request) {
       video.video_url || videoUrl,
       video.brand_name,
       video.thumbnail_url || thumbnailUrl
-    ).catch(err => {
-      console.error('Failed to send video ready email:', {
+    ).then(() => {
+      console.log('=== VIDEO EMAIL SENT SUCCESSFULLY ===', {
+        videoId: video.id,
+        userId: video.user_id,
+      })
+    }).catch(err => {
+      console.error('=== VIDEO EMAIL FAILED ===', {
         videoId: video.id,
         userId: video.user_id,
         brandName: video.brand_name,
@@ -172,11 +200,18 @@ export async function POST(request: Request) {
       })
       // Don't throw - email failure shouldn't fail the webhook
     })
+  } else {
+    console.log('Email NOT sent - conditions not met')
   }
 
-  return NextResponse.json({
+  const response = {
     success: true,
     videoId: data[0].id,
     status: data[0].status,
-  })
+  }
+
+  console.log('=== WEBHOOK COMPLETED SUCCESSFULLY ===')
+  console.log('Response:', response)
+
+  return NextResponse.json(response)
 }
