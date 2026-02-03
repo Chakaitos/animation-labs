@@ -22,7 +22,7 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
         <meta name="description" content={previewText} />
       </Head>
       <Tailwind>
-        <Body className="bg-gray-100 font-sans">
+        <Body className="bg-white font-sans">
           <Container className="mx-auto my-8 max-w-xl bg-white p-6 rounded-lg shadow-sm">
             {/* Logo Header */}
             {/* Note: Logo requires absolute URL for email clients. */}
