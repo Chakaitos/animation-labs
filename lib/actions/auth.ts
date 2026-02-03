@@ -36,7 +36,7 @@ export async function signUp(formData: FormData) {
     email,
     password: formData.get('password') as string,
     options: {
-      emailRedirectTo: `${siteUrl}/auth/confirm`,
+      emailRedirectTo: `${siteUrl}/auth/callback`,
       data: {
         full_name: fullName,
         first_name: firstName,
@@ -57,7 +57,7 @@ export async function signUp(formData: FormData) {
         email,
         password: formData.get('password') as string,
         options: {
-          redirectTo: `${siteUrl}/auth/confirm`,
+          redirectTo: `${siteUrl}/auth/callback`,
         },
       })
 
@@ -115,7 +115,7 @@ export async function resetPassword(formData: FormData) {
       type: 'recovery',
       email,
       options: {
-        redirectTo: `${siteUrl}/auth/confirm?next=/update-password`,
+        redirectTo: `${siteUrl}/auth/callback?next=/update-password`,
       },
     })
 
