@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 6 of 7 (Email Notifications)
-Plan: 2 of 3 complete
-Status: Video completion and payment failed emails integrated into webhooks with fire-and-forget pattern
-Last activity: 2026-02-02 — Completed 06-02-PLAN.md (webhook email integration)
+Plan: 3 of 3 complete
+Status: Email system debugged with comprehensive logging and documentation
+Last activity: 2026-02-02 — Completed 06-03 (email fixes and debugging)
 
-Progress: [████████░░] 77%
+Progress: [█████████░] 80%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 26
-- Average duration: 2.6 minutes (autonomous plans only)
-- Total execution time: 1.6 hours
+- Total plans completed: 27
+- Average duration: 2.7 minutes (autonomous plans only)
+- Total execution time: 1.7 hours
 
 **By Phase:**
 
@@ -32,11 +32,11 @@ Progress: [████████░░] 77%
 | 03-subscription-and-credits | 6 | ~2h (includes manual verification) | - |
 | 04-core-video-creation | 5 | 27m | 3.4m |
 | 05-video-library-dashboard | 4 | 11m | 2.8m |
-| 06-email-notifications | 2 | 5m | 2.5m |
+| 06-email-notifications | 3 | 13m | 4.3m |
 
 **Recent Trend:**
-- Last 5 plans: 05-03 (1m), 05-04 (3m), Phase 5 complete, 06-01 (3m), 06-02 (2m)
-- Trend: Excellent (fast execution, clean builds, Phase 6 progressing)
+- Last 5 plans: 05-04 (3m), Phase 5 complete, 06-01 (3m), 06-02 (2m), 06-03 (8m)
+- Trend: Phase 6 complete (Email Notifications) - production fixes took longer due to debugging
 
 *Updated after each plan completion*
 
@@ -201,17 +201,33 @@ Recent decisions affecting current work:
 - Select additional fields in queries (D-06-02-003) — Fetch all email data in single query to avoid extra database calls
 - Email preview development script (D-06-02-004) — npm run email:dev enables live template iteration
 
+**From 06-03:**
+- Centralized auth callback route (D-06-03-001) — /auth/callback handles all verification types, matches Supabase default
+- Keep legacy /auth/confirm route (D-06-03-002) — Redirects to /auth/callback for backward compatibility
+- Extensive production logging (D-06-03-003) — Detailed webhook and auth logs for debugging email issues
+- Documentation-first troubleshooting (D-06-03-004) — Comprehensive guides before code changes help system understanding
+
 ### Pending Todos
 
 None yet.
 
 ### Blockers/Concerns
 
-None yet.
+**Email Configuration (Production):**
+- Need to verify SUPABASE_SERVICE_ROLE_KEY is set in Vercel (required for custom emails)
+- Need to verify RESEND_API_KEY is set in Vercel (required for email delivery)
+- Supabase SMTP may be enabled, causing duplicate emails (Supabase plain text + our branded)
+- Video emails may not be sending - production logs will reveal root cause
+
+**Recommended actions:**
+1. Run `./scripts/check-email-config.sh` to verify env vars
+2. Test signup flow and check for duplicate emails
+3. Disable Supabase SMTP if duplicates occur
+4. Monitor Vercel logs for webhook calls and email sends
 
 ## Session Continuity
 
 Last session: 2026-02-02
-Stopped at: Completed 06-02-PLAN.md (webhook email integration)
+Stopped at: Completed Phase 6 (Email Notifications) - 06-03 fixes
 Resume file: None
-Next: Phase 06-03 (Welcome Email & Testing) - Send welcome email on signup and test email flow end-to-end
+Next: Phase 7 (Final Polish & Documentation) or Production Testing
