@@ -3,6 +3,33 @@ import { headers } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { sendVideoReadyEmail } from '@/lib/email/send'
 
+/**
+ * Video Status Webhook - Receives updates from n8n workflow
+ *
+ * **n8n Configuration Requirements:**
+ *
+ * The n8n workflow MUST send a JSON payload with the following structure:
+ * ```json
+ * {
+ *   "videoId": "uuid-of-video-record",
+ *   "status": "processing" | "completed" | "failed",
+ *   "videoUrl": "https://...",  // Optional: URL to completed video
+ *   "thumbnailUrl": "https://...",  // Optional: URL to thumbnail
+ *   "errorMessage": "error details",  // Optional: error if failed
+ *   "n8nExecutionId": "execution-id"  // Optional: for debugging
+ * }
+ * ```
+ *
+ * **Common Issues:**
+ * - Empty payload `{ '': '' }` - n8n HTTP Request node not configured correctly
+ * - Missing fields - Check n8n expression syntax for JSON body
+ * - Content-Type header must be `application/json`
+ *
+ * **Headers:**
+ * - `x-webhook-secret` - Must match N8N_WEBHOOK_SECRET env var
+ * - `x-webhook-id` or `x-n8n-execution-id` - For idempotency
+ */
+
 // Use service role client for webhook processing (bypasses RLS)
 function getServiceClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -60,11 +87,30 @@ export async function POST(request: Request) {
   let body: VideoStatusPayload
   try {
     body = await request.json()
-    console.log('Webhook payload:', JSON.stringify(body, null, 2))
+    console.log('=== FULL REQUEST BODY ===')
+    console.log('Raw body:', JSON.stringify(body, null, 2))
+    console.log('Body keys:', Object.keys(body))
+    console.log('Body values:', Object.values(body))
   } catch (err) {
-    console.error('Invalid JSON body:', err)
+    console.error('❌ JSON PARSING ERROR:', err)
     return NextResponse.json(
       { error: 'Invalid JSON body' },
+      { status: 400 }
+    )
+  }
+
+  // Check for empty or malformed payload (common n8n configuration issue)
+  if (!body || Object.keys(body).length === 0 || body[''] === '') {
+    console.error('❌ WEBHOOK ERROR: Empty or malformed payload received')
+    console.error('This usually means n8n is not sending data correctly')
+    console.error('Expected fields: videoId, status, videoUrl (optional), thumbnailUrl (optional)')
+    console.error('Received:', body)
+    return NextResponse.json(
+      {
+        error: 'Invalid payload: expected videoId, status, and optional videoUrl/thumbnailUrl',
+        received: body,
+        help: 'Check n8n webhook configuration - ensure JSON body contains required fields'
+      },
       { status: 400 }
     )
   }
@@ -73,8 +119,17 @@ export async function POST(request: Request) {
   const { videoId, status, videoUrl, thumbnailUrl, errorMessage, n8nExecutionId, metadata } = body
 
   if (!videoId || !status) {
+    console.error('❌ WEBHOOK ERROR: Missing required fields')
+    console.error('Received payload:', body)
+    console.error('Missing:', {
+      videoId: !videoId ? 'MISSING' : 'present',
+      status: !status ? 'MISSING' : 'present',
+    })
     return NextResponse.json(
-      { error: 'Missing required fields: videoId, status' },
+      {
+        error: 'Missing required fields: videoId and status',
+        received: { videoId, status },
+      },
       { status: 400 }
     )
   }
