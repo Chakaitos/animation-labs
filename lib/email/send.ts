@@ -32,47 +32,27 @@ export async function sendVideoReadyEmail(
   brandName: string,
   thumbnailUrl?: string
 ) {
-  console.log('sendVideoReadyEmail called:', { userId, brandName, hasVideoUrl: !!videoUrl, hasThumbnailUrl: !!thumbnailUrl })
-
   try {
     const supabase = await createClient()
-    console.log('✓ Supabase client created')
 
     // Fetch user profile for email and first name
-    console.log('Fetching profile for userId:', userId)
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
       .select('email, first_name')
       .eq('id', userId)
       .single()
 
-    console.log('Profile fetch result:', { hasProfile: !!profile, hasError: !!profileError })
-
   // Fallback: If profile doesn't exist, fetch email from auth.users
   if (profileError || !profile) {
-    console.error('Profile not found, attempting auth.users fallback:', {
-      userId,
-      error: profileError?.message,
-      code: profileError?.code,
-      details: profileError?.details,
-    })
+    console.error('Video email: Profile not found, using auth.users fallback', { userId })
 
     // Use admin client to access auth.users
     const adminClient = getAdminClient()
     const { data: { user: authUser }, error: authError } = await adminClient.auth.admin.getUserById(userId)
 
     if (authError || !authUser?.email) {
-      console.error('Failed to fetch user email from auth.users:', {
-        userId,
-        error: authError?.message,
-      })
+      console.error('Video email: Failed to fetch user email', { userId })
       throw new Error('Could not find user email for video notification')
-    }
-
-    console.log('Using email from auth.users (profile missing):', { userId, email: authUser.email })
-
-    if (!authUser.email) {
-      throw new Error('User has no email address')
     }
 
     // Send email without personalization
@@ -120,27 +100,15 @@ export async function sendVideoReadyEmail(
         }
       )
 
-      console.log('Video ready email sent successfully (no profile):', {
-        emailType: 'video-ready',
-        userId,
-        brandName,
-        emailId: result?.id,
-        fallback: true,
-      })
-
       return result
     } catch (error) {
-      console.error('Failed to send video ready email after retries (fallback):', {
-        emailType: 'video-ready',
+      console.error('Video email: Send failed after retries (fallback)', {
         userId,
-        brandName,
         error: error instanceof Error ? error.message : 'Unknown error',
       })
       throw error
     }
   }
-
-  console.log('Profile fetched successfully:', { userId, email: profile.email, hasFirstName: !!profile.first_name })
 
   try {
     // Use exponential backoff for retry logic
@@ -187,29 +155,18 @@ export async function sendVideoReadyEmail(
       }
     )
 
-    console.log('Video ready email sent successfully:', {
-      emailType: 'video-ready',
-      userId,
-      brandName,
-      emailId: result?.id,
-    })
-
     return result
   } catch (error) {
-    console.error('Failed to send video ready email after retries:', {
-      emailType: 'video-ready',
+    console.error('Video email: Send failed after retries', {
       userId,
-      brandName,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
     throw error
   }
   } catch (error) {
-    console.error('===  VIDEO EMAIL FUNCTION ERROR ===:', {
+    console.error('Video email: Unexpected error', {
       userId,
-      brandName,
       error: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
     })
     throw error
   }
@@ -243,27 +200,15 @@ export async function sendPaymentFailedEmail(
 
   // Fallback: If profile doesn't exist, fetch email from auth.users
   if (profileError || !profile) {
-    console.error('Profile not found, attempting auth.users fallback:', {
-      userId,
-      error: profileError?.message,
-    })
+    console.error('Payment email: Profile not found, using auth.users fallback', { userId })
 
     // Use admin client to access auth.users
     const adminClient = getAdminClient()
     const { data: { user: authUser }, error: authError } = await adminClient.auth.admin.getUserById(userId)
 
     if (authError || !authUser?.email) {
-      console.error('Failed to fetch user email from auth.users:', {
-        userId,
-        error: authError?.message,
-      })
+      console.error('Payment email: Failed to fetch user email', { userId })
       throw new Error('Could not find user email for payment notification')
-    }
-
-    console.log('Using email from auth.users (profile missing):', { userId, email: authUser.email })
-
-    if (!authUser.email) {
-      throw new Error('User has no email address')
     }
 
     try {
@@ -307,20 +252,10 @@ export async function sendPaymentFailedEmail(
         }
       )
 
-      console.log('Payment failed email sent successfully (no profile):', {
-        emailType: 'payment-failed',
-        userId,
-        planName,
-        emailId: result?.id,
-        fallback: true,
-      })
-
       return result
     } catch (error) {
-      console.error('Failed to send payment failed email after retries (fallback):', {
-        emailType: 'payment-failed',
+      console.error('Payment email: Send failed after retries (fallback)', {
         userId,
-        planName,
         error: error instanceof Error ? error.message : 'Unknown error',
       })
       throw error
@@ -372,19 +307,10 @@ export async function sendPaymentFailedEmail(
       }
     )
 
-    console.log('Payment failed email sent successfully:', {
-      emailType: 'payment-failed',
-      userId,
-      planName,
-      emailId: result?.id,
-    })
-
     return result
   } catch (error) {
-    console.error('Failed to send payment failed email after retries:', {
-      emailType: 'payment-failed',
+    console.error('Payment email: Send failed after retries', {
       userId,
-      planName,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
     throw error
@@ -416,24 +342,13 @@ export async function sendVerificationEmail(
     })
 
     if (error) {
-      console.error('Failed to send verification email:', {
-        emailType: 'verification',
-        email,
-        error: error.message,
-      })
+      console.error('Verification email: Send failed', { email, error: error.message })
       throw new Error(error.message || 'Failed to send verification email')
     }
 
-    console.log('Verification email sent successfully:', {
-      emailType: 'verification',
-      email,
-      emailId: data?.id,
-    })
-
     return data
   } catch (error) {
-    console.error('Verification email error:', {
-      emailType: 'verification',
+    console.error('Verification email: Unexpected error', {
       email,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
@@ -466,24 +381,13 @@ export async function sendPasswordResetEmail(
     })
 
     if (error) {
-      console.error('Failed to send password reset email:', {
-        emailType: 'password-reset',
-        email,
-        error: error.message,
-      })
+      console.error('Password reset email: Send failed', { email, error: error.message })
       throw new Error(error.message || 'Failed to send password reset email')
     }
 
-    console.log('Password reset email sent successfully:', {
-      emailType: 'password-reset',
-      email,
-      emailId: data?.id,
-    })
-
     return data
   } catch (error) {
-    console.error('Password reset email error:', {
-      emailType: 'password-reset',
+    console.error('Password reset email: Unexpected error', {
       email,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
@@ -544,16 +448,9 @@ export async function sendWelcomeEmail(
       }
     )
 
-    console.log('Welcome email sent successfully:', {
-      emailType: 'welcome',
-      email,
-      emailId: result?.id,
-    })
-
     return result
   } catch (error) {
-    console.error('Failed to send welcome email after retries:', {
-      emailType: 'welcome',
+    console.error('Welcome email: Send failed after retries', {
       email,
       error: error instanceof Error ? error.message : 'Unknown error',
     })

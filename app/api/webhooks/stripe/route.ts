@@ -46,11 +46,8 @@ export async function POST(req: NextRequest) {
     .single()
 
   if (existing) {
-    console.log(`Event ${event.id} already processed, skipping`)
     return NextResponse.json({ received: true })
   }
-
-  console.log(`Processing webhook: ${event.type} (${event.id})`)
 
   try {
     switch (event.type) {
@@ -85,7 +82,7 @@ export async function POST(req: NextRequest) {
       }
 
       default:
-        console.log(`Unhandled event type: ${event.type}`)
+        // Silently ignore unhandled event types
     }
 
     // Log event to prevent duplicate processing
@@ -106,18 +103,9 @@ export async function POST(req: NextRequest) {
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const userId = session.metadata?.user_id
   if (!userId) {
-    console.error('No user_id in checkout session metadata')
+    console.error('Stripe webhook: No user_id in checkout session metadata')
     return
   }
-
-  console.log(`[handleCheckoutCompleted] Processing for user: ${userId}, mode: ${session.mode}`)
-  console.log(`[handleCheckoutCompleted] Full session data:`, JSON.stringify({
-    id: session.id,
-    mode: session.mode,
-    subscription: session.subscription,
-    customer: session.customer,
-    metadata: session.metadata
-  }, null, 2))
 
   // Handle subscription checkout
   if (session.mode === 'subscription' && session.subscription) {
@@ -126,7 +114,6 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       : session.subscription.id
 
     // Get subscription details from Stripe with expanded data
-    console.log(`[handleCheckoutCompleted] Retrieving subscription: ${subscriptionId}`)
     const subscription = await stripe.subscriptions.retrieve(subscriptionId, {
       expand: ['items.data.price', 'default_payment_method']
     }) as Stripe.Subscription
@@ -137,33 +124,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       current_period_end?: number
     }
 
-    console.log(`[handleCheckoutCompleted] Subscription data:`, JSON.stringify({
-      id: subscription.id,
-      status: subscription.status,
-      current_period_start: subWithPeriod.current_period_start,
-      current_period_end: subWithPeriod.current_period_end,
-      created: subscription.created,
-      items: subscription.items.data.map(item => ({
-        price_id: item.price.id,
-        quantity: item.quantity
-      }))
-    }, null, 2))
-
     const priceId = subscription.items.data[0]?.price.id
-    console.log(`[handleCheckoutCompleted] Price ID: ${priceId}`)
     const planId = priceId ? getPlanByPriceId(priceId) : null
     const plan = planId ? PLANS[planId] : null
 
     if (!plan || !planId) {
-      console.error('Unknown price ID:', priceId)
-      console.error('Available price IDs:', Object.values(PLANS).map(p => p.priceId))
+      console.error('Stripe webhook: Unknown price ID', { priceId })
       return
     }
 
-    console.log(`[handleCheckoutCompleted] Plan matched: ${planId}`)
-
     // Check if user already has a subscription
-    console.log(`[handleCheckoutCompleted] Checking for existing subscription`)
     const { data: existingSub, error: checkError } = await getSupabaseAdmin()
       .from('subscriptions')
       .select('id')
@@ -171,15 +141,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       .single()
 
     if (checkError && checkError.code !== 'PGRST116') {
-      console.error('[handleCheckoutCompleted] Error checking subscription:', checkError)
+      console.error('Stripe webhook: Error checking subscription', { userId })
       throw checkError
     }
 
-    console.log(`[handleCheckoutCompleted] Existing sub:`, existingSub ? 'found' : 'none')
-
     if (existingSub) {
       // Update existing subscription
-      console.log(`[handleCheckoutCompleted] Updating existing subscription`)
 
       // Use created timestamp as fallback for period dates (they'll be updated by invoice.payment_succeeded)
       const periodStart = subWithPeriod.current_period_start || subscription.created
@@ -200,12 +167,11 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         .eq('id', existingSub.id)
 
       if (updateError) {
-        console.error('[handleCheckoutCompleted] Error updating subscription:', updateError)
+        console.error('Stripe webhook: Error updating subscription', { userId })
         throw updateError
       }
 
       // Log credit grant
-      console.log(`[handleCheckoutCompleted] Logging credit transaction`)
       const { error: txError } = await getSupabaseAdmin().from('credit_transactions').insert({
         user_id: userId,
         subscription_id: existingSub.id,
@@ -215,23 +181,15 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       })
 
       if (txError) {
-        console.error('[handleCheckoutCompleted] Error logging transaction:', txError)
+        console.error('Stripe webhook: Error logging transaction', { userId })
         throw txError
       }
     } else {
       // Create new subscription
-      console.log(`[handleCheckoutCompleted] Creating new subscription`)
 
       // Use created timestamp as fallback for period dates (they'll be updated by invoice.payment_succeeded)
       const periodStart = subWithPeriod.current_period_start || subscription.created
       const periodEnd = subWithPeriod.current_period_end || (subscription.created + 30 * 24 * 60 * 60) // 30 days
-
-      console.log(`[handleCheckoutCompleted] Using period dates:`, {
-        start: periodStart,
-        end: periodEnd,
-        startDate: new Date(periodStart * 1000).toISOString(),
-        endDate: new Date(periodEnd * 1000).toISOString()
-      })
 
       const { data: newSub, error: insertError } = await getSupabaseAdmin()
         .from('subscriptions')
@@ -250,15 +208,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         .single()
 
       if (insertError) {
-        console.error('[handleCheckoutCompleted] Error creating subscription:', insertError)
+        console.error('Stripe webhook: Error creating subscription', { userId })
         throw insertError
       }
 
-      console.log(`[handleCheckoutCompleted] Subscription created:`, newSub?.id)
-
       if (newSub) {
         // Log credit grant
-        console.log(`[handleCheckoutCompleted] Logging credit transaction`)
         const { error: txError } = await getSupabaseAdmin().from('credit_transactions').insert({
           user_id: userId,
           subscription_id: newSub.id,
@@ -268,31 +223,24 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         })
 
         if (txError) {
-          console.error('[handleCheckoutCompleted] Error logging transaction:', txError)
+          console.error('Stripe webhook: Error logging transaction', { userId })
           throw txError
         }
       }
     }
-
-    console.log(`[handleCheckoutCompleted] SUCCESS: Subscription created for user ${userId}: ${planId} (${plan.credits} credits)`)
   }
 
   // Handle one-time credit pack purchase
   if (session.mode === 'payment') {
-    console.log(`[handleCheckoutCompleted] Processing credit pack purchase`)
     const lineItems = await stripe.checkout.sessions.listLineItems(session.id)
     const priceId = lineItems.data[0]?.price?.id
-    console.log(`[handleCheckoutCompleted] Credit pack price ID: ${priceId}`)
     const packId = priceId ? getCreditPackByPriceId(priceId) : null
     const pack = packId ? CREDIT_PACKS[packId] : null
 
     if (!pack) {
-      console.log(`[handleCheckoutCompleted] No pack found for price ID: ${priceId}`)
-      console.log(`[handleCheckoutCompleted] Available packs:`, Object.entries(CREDIT_PACKS).map(([id, p]) => ({ id, priceId: p.priceId, credits: p.credits })))
+      console.error('Stripe webhook: Unknown credit pack price ID', { priceId })
       return
     }
-
-    console.log(`[handleCheckoutCompleted] Pack matched: ${packId} (${pack.credits} credits)`)
 
     // Get user's subscription (or create one for single credit purchases)
     const { data: sub, error: subError } = await getSupabaseAdmin()
@@ -302,16 +250,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       .single()
 
     if (subError && subError.code !== 'PGRST116') {
-      console.error('[handleCheckoutCompleted] Error fetching subscription:', subError)
+      console.error('Stripe webhook: Error fetching subscription', { userId })
       throw subError
     }
 
     let subscriptionId = sub?.id
-    console.log(`[handleCheckoutCompleted] Existing subscription: ${subscriptionId || 'none'}`)
 
     // If no subscription exists and this is a single credit purchase, create a credits-only record
     if (!sub && !pack.requiresSubscription) {
-      console.log(`[handleCheckoutCompleted] Creating credits-only subscription for single credit`)
       const { data: newSub, error: insertError } = await getSupabaseAdmin()
         .from('subscriptions')
         .insert({
@@ -327,29 +273,26 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         .single()
 
       if (insertError) {
-        console.error('[handleCheckoutCompleted] Error creating credits-only subscription:', insertError)
+        console.error('Stripe webhook: Error creating credits-only subscription', { userId })
         throw insertError
       }
 
       subscriptionId = newSub?.id
-      console.log(`[handleCheckoutCompleted] Created subscription: ${subscriptionId}`)
     }
 
     if (subscriptionId) {
       // Add overage credits using RPC function for atomic increment
-      console.log(`[handleCheckoutCompleted] Adding ${pack.credits} overage credits`)
       const { error: rpcError } = await getSupabaseAdmin().rpc('add_overage_credits', {
         p_subscription_id: subscriptionId,
         p_credits: pack.credits,
       })
 
       if (rpcError) {
-        console.error('[handleCheckoutCompleted] Error adding overage credits:', rpcError)
+        console.error('Stripe webhook: Error adding overage credits', { userId })
         throw rpcError
       }
 
       // Log credit grant
-      console.log(`[handleCheckoutCompleted] Logging credit transaction`)
       const { error: txError } = await getSupabaseAdmin().from('credit_transactions').insert({
         user_id: userId,
         subscription_id: subscriptionId,
@@ -359,20 +302,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       })
 
       if (txError) {
-        console.error('[handleCheckoutCompleted] Error logging transaction:', txError)
+        console.error('Stripe webhook: Error logging transaction', { userId })
         throw txError
       }
-
-      console.log(`[handleCheckoutCompleted] SUCCESS: Credit pack purchased for user ${userId}: ${pack.credits} credits`)
     } else {
-      console.error('[handleCheckoutCompleted] No subscription ID available for credit pack')
+      console.error('Stripe webhook: No subscription ID available for credit pack', { userId })
     }
   }
 }
 
 async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
-  console.log(`[handleSubscriptionUpdated] Processing subscription: ${subscription.id}`)
-
   // Access period dates via type assertion (runtime property exists but TypeScript doesn't know)
   const subWithPeriod = subscription as Stripe.Subscription & {
     current_period_start?: number
@@ -397,7 +336,6 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   // Update plan and credits if plan changed
   if (planId && plan) {
-    console.log(`[handleSubscriptionUpdated] Plan changed to: ${planId}`)
     updateData.plan = planId
     updateData.credits_remaining = plan.credits
     updateData.credits_total = plan.credits
@@ -407,8 +345,6 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     .from('subscriptions')
     .update(updateData)
     .eq('stripe_subscription_id', subscription.id)
-
-  console.log(`[handleSubscriptionUpdated] Subscription updated: ${subscription.id} -> ${subscription.status}`)
 }
 
 async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
@@ -416,8 +352,6 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
     .from('subscriptions')
     .update({ status: 'cancelled' })
     .eq('stripe_subscription_id', subscription.id)
-
-  console.log(`Subscription cancelled: ${subscription.id}`)
 }
 
 async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
@@ -470,8 +404,6 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     type: 'subscription',
     description: `${plan.name} plan renewed - credits reset`,
   })
-
-  console.log(`Subscription renewed: ${subscriptionId} (${plan.credits} credits reset)`)
 }
 
 async function handlePaymentFailed(invoice: Stripe.Invoice) {
@@ -513,9 +445,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
       amountDue,
       retryUrl
     ).catch(err => {
-      console.error('Failed to send payment failed email:', err)
+      console.error('Stripe webhook: Payment failed email error', { subscriptionId })
     })
   }
-
-  console.log(`Payment failed for subscription: ${subscriptionId}`)
 }

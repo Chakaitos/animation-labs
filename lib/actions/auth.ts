@@ -67,23 +67,14 @@ export async function signUp(formData: FormData) {
       })
 
       if (linkError) {
-        console.error('Failed to generate verification link:', {
-          error: linkError.message,
-          code: linkError.code,
-          email,
-        })
+        console.error('Auth: Failed to generate verification link', { email })
         // Continue anyway - user can request new link
       } else if (linkData.properties?.action_link) {
-        console.log('Sending custom verification email:', {
-          email,
-          firstName,
-          hasActionLink: !!linkData.properties.action_link,
-        })
         // Send custom branded verification email
         await sendVerificationEmail(email, firstName, linkData.properties.action_link)
       }
     } catch (emailError) {
-      console.error('Failed to send verification email:', emailError)
+      console.error('Auth: Failed to send verification email', { email })
       // Continue anyway - user can request new link
     }
   }
@@ -148,7 +139,7 @@ export async function resetPassword(formData: FormData) {
     }
   } catch (error) {
     // Silently fail to prevent email enumeration
-    console.error('Password reset error:', error)
+    console.error('Auth: Password reset error')
   }
 
   // Always return success to prevent email enumeration (security best practice)
