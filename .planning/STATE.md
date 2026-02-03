@@ -10,17 +10,17 @@ See: .planning/PROJECT.md (updated 2026-01-26)
 ## Current Position
 
 Phase: 7 of 7 (Public Pages & Marketing) — IN PROGRESS
-Plan: 2 of 4 complete
-Status: Homepage complete with all marketing sections and SEO metadata
-Last activity: 2026-02-03 — Completed 07-02-PLAN.md
+Plan: 3 of 4 complete
+Status: Pricing page complete with FAQ, tier comparison, and UI placeholders
+Last activity: 2026-02-03 — Completed 07-03-PLAN.md
 
-Progress: [█████████░] 90%
+Progress: [█████████░] 92%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 32
-- Average duration: 2.8 minutes (autonomous plans only)
+- Total plans completed: 33
+- Average duration: 2.7 minutes (autonomous plans only)
 - Total execution time: 2.2 hours
 
 **By Phase:**
@@ -33,11 +33,11 @@ Progress: [█████████░] 90%
 | 04-core-video-creation | 5 | 27m | 3.4m |
 | 05-video-library-dashboard | 4 | 11m | 2.8m |
 | 06-email-notifications | 3 | 13m (autonomous) + 8h (verification/fixes) | 4.3m |
-| 07-public-pages-marketing | 2 | 4m | 2.0m |
+| 07-public-pages-marketing | 3 | 7m | 2.3m |
 
 **Recent Trend:**
-- Last 5 completions: 06-02 (2m), 06-03 (8h), Phase 6, 07-01 (2m), 07-02 (2m)
-- Trend: Phase 7 rapid progress - homepage assembly complete
+- Last 5 completions: 06-03 (8h), Phase 6, 07-01 (2m), 07-02 (2m), 07-03 (2.5m)
+- Trend: Phase 7 rapid progress - pricing page complete
 
 *Updated after each plan completion*
 
@@ -224,6 +224,11 @@ Recent decisions affecting current work:
 - Per-video cost breakdown (D-07-02-003) — Starter shows $3, Professional shows $2.50 for clarity
 - Technical Failure Guarantee (D-07-02-004) — Addresses AI quality concerns with link to examples
 
+**From 07-03:**
+- Disabled UI placeholder pattern (D-07-03-001) — Reserve space for monthly/annual toggle and promo codes without backend complexity
+- FAQ questions focus on objections (D-07-03-002) — Address cancellation, refunds, unused credits, delivery time concerns
+- Technical guarantee before FAQ (D-07-03-003) — Position guarantee section between pricing cards and FAQ for flow
+
 ### Pending Todos
 
 None yet.
@@ -232,16 +237,16 @@ None yet.
 
 **Phase 7 In Progress - No Blockers:**
 - ✅ Homepage complete with all sections
+- ✅ Pricing page complete with FAQ and tier comparison
 - SEO metadata (Open Graph, Twitter Card) configured
 - All components TypeScript-validated and server-rendered
 
 **Upcoming:**
-- Pricing page (07-03)
-- Additional marketing pages as needed
+- Additional marketing pages as needed (07-04 or later)
 
 ## Session Continuity
 
 Last session: 2026-02-03
-Stopped at: Completed 07-02-PLAN.md (Homepage Assembly)
+Stopped at: Completed 07-03-PLAN.md (Pricing Page)
 Resume file: None
-Next: 07-03 (Pricing Page)
+Next: 07-04 (remaining marketing pages)
