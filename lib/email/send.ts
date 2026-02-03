@@ -34,14 +34,19 @@ export async function sendVideoReadyEmail(
 ) {
   console.log('sendVideoReadyEmail called:', { userId, brandName, hasVideoUrl: !!videoUrl, hasThumbnailUrl: !!thumbnailUrl })
 
-  const supabase = await createClient()
+  try {
+    const supabase = await createClient()
+    console.log('✓ Supabase client created')
 
-  // Fetch user profile for email and first name
-  const { data: profile, error: profileError } = await supabase
-    .from('profiles')
-    .select('email, first_name')
-    .eq('id', userId)
-    .single()
+    // Fetch user profile for email and first name
+    console.log('Fetching profile for userId:', userId)
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('email, first_name')
+      .eq('id', userId)
+      .single()
+
+    console.log('Profile fetch result:', { hasProfile: !!profile, hasError: !!profileError })
 
   // Fallback: If profile doesn't exist, fetch email from auth.users
   if (profileError || !profile) {
@@ -196,6 +201,15 @@ export async function sendVideoReadyEmail(
       userId,
       brandName,
       error: error instanceof Error ? error.message : 'Unknown error',
+    })
+    throw error
+  }
+  } catch (error) {
+    console.error('===  VIDEO EMAIL FUNCTION ERROR ===:', {
+      userId,
+      brandName,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      stack: error instanceof Error ? error.stack : undefined,
     })
     throw error
   }
