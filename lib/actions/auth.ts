@@ -25,6 +25,11 @@ export async function signUp(formData: FormData) {
   const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : null
   const email = formData.get('email') as string
 
+  // Check for required environment variables
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('SUPABASE_SERVICE_ROLE_KEY not set - custom verification emails will not be sent')
+  }
+
   // Use admin client to generate verification link
   const supabaseAdmin = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -62,9 +67,18 @@ export async function signUp(formData: FormData) {
       })
 
       if (linkError) {
-        console.error('Failed to generate verification link:', linkError)
+        console.error('Failed to generate verification link:', {
+          error: linkError.message,
+          code: linkError.code,
+          email,
+        })
         // Continue anyway - user can request new link
       } else if (linkData.properties?.action_link) {
+        console.log('Sending custom verification email:', {
+          email,
+          firstName,
+          hasActionLink: !!linkData.properties.action_link,
+        })
         // Send custom branded verification email
         await sendVerificationEmail(email, firstName, linkData.properties.action_link)
       }
