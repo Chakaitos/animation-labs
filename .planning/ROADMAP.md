@@ -150,10 +150,13 @@ Plans:
   2. Pricing page shows detailed tier comparison
   3. Call-to-action buttons lead to sign up flow
   4. Pages are responsive and work on mobile devices
-**Plans**: TBD
+**Plans**: 4 plans
 
 Plans:
-- [ ] 07-01: TBD
+- [ ] 07-01-PLAN.md — Marketing components (Hero, ExampleGallery, MarketingHeader)
+- [ ] 07-02-PLAN.md — Homepage assembly (SocialProof, PricingSection, Footer, page.tsx)
+- [ ] 07-03-PLAN.md — Pricing page with FAQ accordion
+- [ ] 07-04-PLAN.md — Human verification of public pages
 
 ## Progress
 
@@ -168,4 +171,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 4. Core Video Creation | 5/5 | Complete | 2026-01-29 |
 | 5. Video Library & Dashboard | 4/4 | Complete | 2026-02-01 |
 | 6. Email Notifications | 3/3 | Complete | 2026-02-03 |
-| 7. Public Pages & Marketing | 0/TBD | Not started | - |
+| 7. Public Pages & Marketing | 0/4 | Not started | - |
