@@ -3,11 +3,20 @@
 import { backOff } from 'exponential-backoff'
 import { resend } from './client'
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import VideoReadyEmail from '@/emails/video-ready'
 import PaymentFailedEmail from '@/emails/payment-failed'
 import VerificationEmail from '@/emails/verification'
 import PasswordResetEmail from '@/emails/password-reset'
 import WelcomeEmail from '@/emails/welcome'
+
+// Create admin client for auth.admin access
+function getAdminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+}
 
 /**
  * Send video ready notification email with retry logic
@@ -43,8 +52,9 @@ export async function sendVideoReadyEmail(
       details: profileError?.details,
     })
 
-    // Use service role client to access auth.users
-    const { data: { user: authUser }, error: authError } = await supabase.auth.admin.getUserById(userId)
+    // Use admin client to access auth.users
+    const adminClient = getAdminClient()
+    const { data: { user: authUser }, error: authError } = await adminClient.auth.admin.getUserById(userId)
 
     if (authError || !authUser?.email) {
       console.error('Failed to fetch user email from auth.users:', {
@@ -224,7 +234,9 @@ export async function sendPaymentFailedEmail(
       error: profileError?.message,
     })
 
-    const { data: { user: authUser }, error: authError } = await supabase.auth.admin.getUserById(userId)
+    // Use admin client to access auth.users
+    const adminClient = getAdminClient()
+    const { data: { user: authUser }, error: authError } = await adminClient.auth.admin.getUserById(userId)
 
     if (authError || !authUser?.email) {
       console.error('Failed to fetch user email from auth.users:', {
