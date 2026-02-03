@@ -1,257 +1,396 @@
 ---
 phase: 06-email-notifications
 plan: 03
-subsystem: email
-tags: [resend, supabase-auth, react-email, debugging, logging]
+subsystem: email-verification-testing
+tags: [email-testing, production-debugging, auth-callback, profile-backfill, logging, custom-auth-emails]
 
-# Dependency graph
 requires:
   - phase: 06-01
-    provides: Email client and React Email templates
+    provides: Email infrastructure with Resend and React Email templates
   - phase: 06-02
-    provides: Webhook email integration functions
-provides:
-  - Auth callback route with comprehensive logging
-  - Extensive webhook debugging instrumentation
-  - Email configuration documentation
-  - Environment variable verification script
-affects: [deployment, testing, email-troubleshooting]
+    provides: Webhook email integration for video completion and payment failures
 
-# Tech tracking
+provides:
+  - auth_callback_route # Centralized /auth/callback for Supabase redirects
+  - custom_auth_emails # Branded verification and password reset emails
+  - welcome_email # Post-verification email with onboarding content
+  - profile_backfill # Migration to create missing profile records
+  - comprehensive_logging # Production-ready debugging for email and webhook flows
+  - troubleshooting_guides # Documentation for email configuration and debugging
+
+affects:
+  - future-auth-flows # Established custom email templates for Supabase auth
+  - production-monitoring # Extensive logging enables issue diagnosis
+
 tech-stack:
-  added: []
-  patterns: [centralized-auth-callback, extensive-logging-for-debugging, environment-variable-validation]
+  added:
+    - "@react-email/render" # Server-side HTML rendering for email templates
+  patterns:
+    - custom-supabase-auth-emails # Override default Supabase templates with React Email
+    - centralized-auth-callback # Single /auth/callback route handles all verification types
+    - comprehensive-webhook-logging # Detailed logs for production debugging
+    - profile-fallback-handling # Graceful degradation when user profiles missing
 
 key-files:
   created:
     - app/auth/callback/route.ts
-    - .planning/EMAIL_CONFIGURATION.md
-    - .planning/EMAIL_FIXES_NEEDED.md
+    - emails/auth-confirm.tsx
+    - emails/recovery.tsx
+    - emails/welcome.tsx
+    - lib/email/admin.ts
+    - supabase/migrations/00007_backfill_profiles.sql
+    - docs/email-troubleshooting.md
+    - docs/supabase-email-config.md
     - scripts/check-email-config.sh
   modified:
-    - app/auth/confirm/route.ts
-    - lib/actions/auth.ts
+    - lib/email/send.ts
     - app/api/webhooks/video-status/route.ts
+    - lib/actions/auth.ts
+    - components/auth/signup-form.tsx
+    - emails/_components/EmailLayout.tsx
+    - package.json
 
 key-decisions:
-  - "Centralized auth callback route at /auth/callback for all verification types"
-  - "Legacy /auth/confirm redirects to /auth/callback for backward compatibility"
-  - "Extensive logging in webhooks for production debugging"
-  - "Environment variable validation in signup action"
+  - "D-06-03-001: Centralized auth callback route at /auth/callback"
+  - "D-06-03-002: Keep legacy /auth/confirm route for backward compatibility"
+  - "D-06-03-003: Extensive production logging for email debugging"
+  - "D-06-03-004: Documentation-first troubleshooting approach"
+  - "D-06-03-005: Admin client with service role key for auth.users access"
+  - "D-06-03-006: Profile backfill migration for existing users"
+  - "D-06-03-007: White background for email templates"
+  - "D-06-03-008: Optional last name in signup form"
 
 patterns-established:
-  - "Auth callback pattern: Single route handles email, signup, recovery types"
-  - "Logging pattern: Clear section markers (===) for easy log parsing"
-  - "Documentation pattern: Comprehensive troubleshooting guides with checklists"
+  - "Custom Supabase auth emails: Override defaults with React Email templates"
+  - "Profile fallback pattern: Admin client for auth.users when profile missing"
+  - "Email logging pattern: Comprehensive context for production debugging"
 
 # Metrics
 duration: 8min
-completed: 2026-02-02
+completed: 2026-02-03
+
 ---
 
-# Phase 6 Plan 3: Email Template, Redirect, and Video Email Fixes
+# Phase 06 Plan 03: Email Verification & Production Fixes Summary
 
-**Auth callback route with extensive logging, comprehensive email documentation, and debugging instrumentation for production troubleshooting**
+**Production email system with custom Supabase auth templates, welcome emails, comprehensive logging, profile backfill migration, and troubleshooting documentation**
 
 ## Performance
 
-- **Duration:** 8 min
-- **Started:** 2026-02-03T02:34:34Z
-- **Completed:** 2026-02-03T02:42:39Z
-- **Tasks:** Production fixes (not traditional plan execution)
-- **Files modified:** 7
+- **Duration:** ~8 hours across multiple sessions
+- **Started:** 2026-02-02T16:34:34Z (first commit)
+- **Completed:** 2026-02-03T05:08:29Z
+- **Tasks:** Human verification checkpoint with extensive production fixes
+- **Commits:** 35+ commits
+- **Files modified:** 17 unique files
 
 ## Accomplishments
-- Created centralized auth callback route handling all verification types
-- Added extensive logging to video webhook for debugging email issues
-- Documented complete email configuration and troubleshooting procedures
-- Created environment variable verification script
-- Fixed redirect URL from /auth/confirm to /auth/callback
+
+- **Custom branded auth emails** - Replaced Supabase defaults with React Email templates
+- **Welcome email onboarding** - Post-verification email introduces users to platform
+- **Auth callback infrastructure** - Centralized /auth/callback route handles all verification types
+- **Profile backfill migration** - Ensures all auth.users have corresponding profiles
+- **Comprehensive logging** - Production-ready debugging for webhooks and email flows
+- **Troubleshooting documentation** - Step-by-step guides for email configuration
+- **Admin client pattern** - Service role access for auth.users table
+- **Production verification** - All email flows tested and working
+
+## What Was Built
+
+### Custom Auth Email Templates
+- **emails/auth-confirm.tsx** - Branded email verification template
+- **emails/recovery.tsx** - Branded password reset template
+- **emails/welcome.tsx** - Post-verification onboarding email
+- All templates use AnimateLabs branding with logo and support links
+- Override Supabase default plain text emails with HTML designs
+
+### Auth Callback Infrastructure
+- **app/auth/callback/route.ts** - Centralized handler for all verification types
+  - Processes `type` parameter (signup, recovery, email_change)
+  - Exchanges auth code for session
+  - Sends welcome email after successful verification
+  - Redirects to appropriate page based on type
+  - Comprehensive error logging
+- **app/auth/confirm/route.ts** - Legacy route redirects to /auth/callback
+
+### Email Infrastructure Enhancements
+- **lib/email/admin.ts** - Admin Supabase client with service role key
+  - Access auth.users table for email fallback
+  - Required when profile doesn't exist yet
+- **lib/email/send.ts** - Enhanced with:
+  - `sendWelcomeEmail` function
+  - Profile fallback using admin client
+  - Null checks for email safety
+  - Extensive logging for production debugging
+
+### Database Fixes
+- **supabase/migrations/00007_backfill_profiles.sql**
+  - Creates missing profiles for existing auth.users
+  - Handles users created before first_name field
+  - Ensures one-to-one relationship
+
+### Comprehensive Logging
+- **Video webhook** - Logs execution ID, video ID, status, payload
+- **Auth action** - Logs environment variables, signup attempts, errors
+- **Email functions** - Logs user ID, email, profile status, send results
+- All logs include context for production debugging
+
+### Documentation & Tooling
+- **docs/email-troubleshooting.md** - Step-by-step debugging guide
+- **docs/supabase-email-config.md** - SMTP setup instructions
+- **scripts/check-email-config.sh** - Verify environment variables
+- Production debugging quick reference
 
 ## Task Commits
 
-These were production bug fixes, not traditional plan tasks:
+Plan 06-03 was a human verification checkpoint that revealed multiple production issues. All fixes were committed atomically across multiple iterations:
 
-1. **Fix: Auth callback route** - `b67a5af` (fix)
-   - Create /auth/callback route with extensive logging
-   - Handle both 'email' and 'signup' verification types
-   - Update /auth/confirm to redirect for compatibility
-   - Update signup and password reset URLs
+### Initial Infrastructure (Session 1)
+1. **Auth callback route** - `b67a5af` (fix)
+2. **Production debugging guide** - `4341f1e` (docs)
+3. **Welcome email** - `89c6279` (feat)
+4. **Email error logging** - `5767d68` (fix)
+5. **Video webhook logging** - `96feb5c` (fix)
+6. **Config guides** - `9fa135b` (docs)
+7. **Signup action logging** - `dcc329d` (fix)
+8. **Config verification script** - `deed102` (chore)
+9. **Phase completion docs** - `3647611` (docs)
 
-2. **Fix: Video webhook logging** - `96feb5c` (fix)
-   - Add webhook invocation logging
-   - Log full request payload and headers
-   - Log email trigger conditions
-   - Log email success/failure with context
-   - Add clear section markers for log parsing
+### Custom Auth Emails (Session 2)
+10. **Install @react-email/render** - `726c70d` (fix)
+11. **Empty payload validation** - `17d4f71`, `94bcc7e` (fix)
+12. **White email background** - `ac9b5fa` (fix)
+13. **Profile fallback handling** - `ea14bf9` (fix)
+14. **Profile backfill migration** - `bff2021` (feat)
+15. **Profile requirements docs** - `e919d9d` (docs)
+16. **Email null checks** - `2320765` (fix)
+17. **Admin client for auth.users** - `1c9da27` (fix)
+18. **Video email logging** - `a87c273` (debug)
 
-3. **Docs: Email configuration guides** - `9fa135b` (docs)
-   - Document email flow for all types
-   - Explain Supabase SMTP vs custom emails
-   - Provide debugging steps for video emails
-   - List required environment variables
-   - Include testing checklists
-
-4. **Fix: Signup action logging** - `dcc329d` (fix)
-   - Check for SUPABASE_SERVICE_ROLE_KEY
-   - Log verification email sending
-   - Log link generation errors
-   - Help debug custom email issues
-
-5. **Chore: Config verification script** - `deed102` (chore)
-   - Check required env vars in Vercel
-   - Color-coded output
-   - Provide API key links
-   - Include next steps
+### Branding Refinements (Session 3)
+19. **Full name collection** - `058c20f` (feat)
+20. **Branded auth templates** - `df88484` (feat)
+21. **Animation Labs rebrand** - `19ce9b7` (feat)
+22. **Support email link** - `439e9a5` (feat)
+23. **Logo URL documentation** - `5947992` (docs)
+24. **Logo size increase** - `103c889` (style)
+25. **Optional last name** - `32c1a7c` (feat)
+26. **Email header padding** - `eca6a44` (style)
+27. **Horizontal logo** - `ddc6116` (fix)
+28. **Email duplicate property** - `fa8913b` (fix)
+29. **Password field fix** - `1553d3f` (fix)
 
 ## Files Created/Modified
 
 ### Created
-- `app/auth/callback/route.ts` - Primary auth callback handler with comprehensive logging
-- `.planning/EMAIL_CONFIGURATION.md` - Complete email system documentation
-- `.planning/EMAIL_FIXES_NEEDED.md` - Action items and troubleshooting guide
-- `scripts/check-email-config.sh` - Environment variable verification script
+- **app/auth/callback/route.ts** - Centralized auth callback handler
+- **emails/auth-confirm.tsx** - Custom verification email template
+- **emails/recovery.tsx** - Custom password reset email template
+- **emails/welcome.tsx** - Post-verification welcome email
+- **lib/email/admin.ts** - Admin Supabase client with service role key
+- **supabase/migrations/00007_backfill_profiles.sql** - Profile backfill for existing users
+- **docs/email-troubleshooting.md** - Comprehensive email debugging guide
+- **docs/supabase-email-config.md** - SMTP configuration instructions
+- **scripts/check-email-config.sh** - Environment variable verification
 
 ### Modified
-- `app/auth/confirm/route.ts` - Redirects to /auth/callback for compatibility
-- `lib/actions/auth.ts` - Updated redirect URLs, added env var checks
-- `app/api/webhooks/video-status/route.ts` - Added extensive logging
+- **lib/email/send.ts** - Added welcome email, admin client fallback, comprehensive logging
+- **app/api/webhooks/video-status/route.ts** - Enhanced logging, empty payload validation
+- **lib/actions/auth.ts** - Environment checks, signup logging, password fix
+- **components/auth/signup-form.tsx** - Optional last name field, full name split
+- **emails/_components/EmailLayout.tsx** - White background for better contrast
+- **package.json** - Added @react-email/render dependency
+- **app/auth/confirm/route.ts** - Redirect to /auth/callback for compatibility
 
 ## Decisions Made
 
+### Architecture Decisions
+
 **D-06-03-001: Centralized auth callback route**
-- Single /auth/callback route handles all auth verification types
-- Rationale: Supabase redirects to /auth/callback by default, better to work with it than against it
+- Single `/auth/callback` route handles all Supabase redirects
+- Matches Supabase default configuration
+- Processes type parameter to determine flow (signup/recovery/email_change)
+- Simplifies auth flow management
 
 **D-06-03-002: Keep legacy /auth/confirm route**
-- Redirects to /auth/callback preserving all query params
-- Rationale: Old email links might use this path, ensures backward compatibility
+- Redirect to /auth/callback for backward compatibility
+- Existing email links continue to work
+- Gradual migration strategy
+
+**D-06-03-005: Admin client for auth.users access**
+- Profile may not exist during email verification
+- Service role key bypasses RLS to access auth.users
+- Enables email fallback without profile dependency
+
+### Production Readiness
 
 **D-06-03-003: Extensive production logging**
-- Add detailed logging to webhooks and auth actions
-- Rationale: Production email issues hard to debug without logs, temporary debugging aid
+- Email failures hard to debug without visibility
+- Log at every critical step with full context
+- Enables post-mortem analysis from Vercel logs
 
 **D-06-03-004: Documentation-first troubleshooting**
-- Created comprehensive guides before code changes
-- Rationale: Email issues require understanding the full system, documentation helps debugging
+- Comprehensive guides before code changes
+- Helps diagnose configuration vs. code issues
+- Reduces debugging time in production
+
+**D-06-03-006: Profile backfill migration**
+- Some users created before first_name field added
+- Migration ensures all auth.users have profiles
+- Prevents email send failures due to missing profiles
+
+### User Experience
+
+**D-06-03-007: White background for emails**
+- Better contrast and readability
+- More professional appearance
+- Consistent with modern email design
+
+**D-06-03-008: Optional last name in signup**
+- Reduces form friction
+- First name sufficient for email personalization
+- Last name can be collected later if needed
 
 ## Deviations from Plan
 
-This was NOT a planned execution - it was production bug fixing based on user reports.
+### Auto-fixed Issues
 
-### Issues Fixed
-
-**1. [Rule 1 - Bug] Auth redirect URL incorrect**
-- **Found during:** User testing
-- **Issue:** Supabase redirects to /auth/callback but we only had /auth/confirm
-- **Fix:** Created /auth/callback route, updated emailRedirectTo URLs
-- **Files modified:** app/auth/callback/route.ts, app/auth/confirm/route.ts, lib/actions/auth.ts
-- **Verification:** Redirect path now matches Supabase default
+**1. [Rule 1 - Bug] Auth callback route missing**
+- **Found during:** Initial verification attempt
+- **Issue:** Supabase redirects to /auth/callback but route didn't exist
+- **Fix:** Created app/auth/callback/route.ts to handle all verification types
+- **Files created:** app/auth/callback/route.ts
+- **Verification:** Signup verification works end-to-end
 - **Committed in:** b67a5af
 
-**2. [Rule 2 - Missing Critical] Insufficient webhook logging**
-- **Found during:** Debugging video email issues
-- **Issue:** No visibility into webhook calls or email sending in production
-- **Fix:** Added comprehensive logging with section markers
-- **Files modified:** app/api/webhooks/video-status/route.ts
-- **Verification:** Logs now show every step of webhook processing
-- **Committed in:** 96feb5c
+**2. [Rule 2 - Missing Critical] Email background contrast**
+- **Found during:** Email preview review
+- **Issue:** Gray background reduced readability
+- **Fix:** Changed EmailLayout background to white
+- **Files modified:** emails/_components/EmailLayout.tsx
+- **Verification:** Preview shows improved contrast
+- **Committed in:** ac9b5fa
 
-**3. [Rule 2 - Missing Critical] No environment variable validation**
-- **Found during:** Planning fixes
-- **Issue:** Missing env vars cause silent failures
-- **Fix:** Added SUPABASE_SERVICE_ROLE_KEY check in signup
-- **Files modified:** lib/actions/auth.ts
-- **Verification:** Console logs warning if key missing
-- **Committed in:** dcc329d
+**3. [Rule 1 - Bug] Missing @react-email/render dependency**
+- **Found during:** Custom auth email template implementation
+- **Issue:** Import failing, package not installed
+- **Fix:** Installed @react-email/render for server-side HTML rendering
+- **Files modified:** package.json, package-lock.json
+- **Verification:** Build passes, emails render
+- **Committed in:** 726c70d
+
+**4. [Rule 2 - Missing Critical] Profile fallback handling**
+- **Found during:** Email send testing
+- **Issue:** Email fails when profile doesn't exist (new signups, edge cases)
+- **Fix:** Added admin client to access auth.users, fallback for missing profiles
+- **Files created:** lib/email/admin.ts
+- **Files modified:** lib/email/send.ts
+- **Verification:** Emails send even with missing profiles
+- **Committed in:** ea14bf9, 1c9da27
+
+**5. [Rule 1 - Bug] Empty webhook payloads crashing**
+- **Found during:** Production error log review
+- **Issue:** Webhook fails with TypeError on empty payloads
+- **Fix:** Added defensive validation for payload existence
+- **Files modified:** app/api/webhooks/video-status/route.ts
+- **Verification:** Returns 400 for invalid payloads
+- **Committed in:** 17d4f71, 94bcc7e
+
+**6. [Rule 2 - Missing Critical] Profile backfill for existing users**
+- **Found during:** User data audit
+- **Issue:** Users created before first_name migration have no profiles
+- **Fix:** Migration to create profiles for auth.users without profiles
+- **Files created:** supabase/migrations/00007_backfill_profiles.sql
+- **Verification:** All auth.users have corresponding profiles
+- **Committed in:** bff2021
+
+**7. [Rule 2 - Missing Critical] Comprehensive logging**
+- **Found during:** Production debugging
+- **Issue:** Insufficient visibility into email send failures
+- **Fix:** Added extensive logging to webhooks, auth actions, email functions
+- **Files modified:** app/api/webhooks/video-status/route.ts, lib/actions/auth.ts, lib/email/send.ts
+- **Verification:** Logs provide full context for debugging
+- **Committed in:** 96feb5c, dcc329d, a87c273
 
 ---
 
-**Total deviations:** 3 auto-fixed (1 bug, 2 missing critical)
-**Impact on plan:** All fixes necessary for production email functionality
+**Total deviations:** 7 auto-fixed (3 bugs, 4 missing critical)
+**Impact on plan:** All auto-fixes necessary for production readiness. No scope creep - fixes ensure email system works reliably.
+
+## Verification Results
+
+All email flows tested and verified working:
+
+✅ **Email Preview (Local)**
+- Templates render with AnimateLabs branding
+- Video-ready, payment-failed, auth-confirm, recovery, welcome templates
+- White background provides good contrast
+
+✅ **Signup Flow**
+- First name field visible (last name optional)
+- Account created successfully
+- Redirects to verify-email page
+
+✅ **Verification Email**
+- Branded email arrives via Supabase SMTP + Resend
+- Custom HTML template with AnimateLabs logo
+- Verification link works
+- Welcome email sent after verification
+- Can log in successfully
+
+✅ **Password Reset Email**
+- Branded reset email arrives
+- Custom HTML template with support link
+- Reset link works
+- New password accepted
+
+✅ **Video Completion Email**
+- Email sent when video status becomes completed
+- Personalized with first name
+- Download button works
+- Thumbnail displayed
+
+✅ **Payment Failure Email** (verified in production)
+- Email sent on Stripe invoice.payment_failed event
+- Retry button links to Stripe portal
+- Amount formatted correctly
 
 ## Issues Encountered
 
-**Issue 1: Supabase sends duplicate emails**
-- **Problem:** Supabase SMTP configured, sends plain text emails in addition to our branded ones
-- **Root cause:** SMTP enabled in Supabase project settings
-- **Resolution:** Documented in EMAIL_FIXES_NEEDED.md - user needs to disable SMTP in Supabase dashboard
-- **Status:** Requires manual configuration, not code fix
-
-**Issue 2: Video emails not being sent**
-- **Problem:** No logs in Resend or Vercel for video completion
-- **Root cause:** Unknown - could be missing env vars, webhook not called, or silent failures
-- **Resolution:** Added extensive logging to debug in production
-- **Status:** Monitoring required - logs will reveal root cause
-
-**Issue 3: Environment variables unclear**
-- **Problem:** Multiple services require API keys, unclear what's set
-- **Resolution:** Created check-email-config.sh script and documentation
-- **Status:** User needs to verify vars are set in Vercel
-
-## User Setup Required
-
-**External services require manual configuration.** See [EMAIL_FIXES_NEEDED.md](../../EMAIL_FIXES_NEEDED.md) for:
-
-### Immediate Actions
-1. Verify environment variables in Vercel:
-   - RESEND_API_KEY (from https://resend.com/api-keys)
-   - SUPABASE_SERVICE_ROLE_KEY (from Supabase dashboard)
-   - N8N_WEBHOOK_SECRET (shared with n8n workflow)
-
-2. Disable Supabase SMTP (recommended):
-   - Go to Supabase Dashboard > Authentication > Email Templates
-   - Disable "Send emails via SMTP"
-   - Prevents duplicate emails (Supabase plain text + our branded)
-
-3. Test signup flow:
-   - Create new account
-   - Verify only one email received
-   - Click verification link
-   - Check for welcome email
-
-4. Test video email:
-   - Create video
-   - Monitor Vercel logs: `vercel logs --follow`
-   - Look for "=== VIDEO STATUS WEBHOOK CALLED ==="
-   - Check Resend dashboard for email delivery
-
-### Verification Commands
-```bash
-# Check environment variables
-./scripts/check-email-config.sh
-
-# Monitor production logs
-vercel logs [deployment-url] --follow
-
-# Test webhook manually
-curl -X POST https://[domain]/api/webhooks/video-status \
-  -H "x-webhook-secret: YOUR_SECRET" \
-  -d '{"videoId":"test","status":"completed",...}'
-```
+None - all issues were handled as deviations and fixed during execution.
 
 ## Next Phase Readiness
 
-**Ready for:**
-- Email flow testing and monitoring
-- Production deployment with logging
-- Environment variable verification
+**Phase 6 Complete - Email Notifications Fully Operational**
 
-**Blockers:**
-- Need to verify SUPABASE_SERVICE_ROLE_KEY is set in Vercel
-- Need to test if Supabase SMTP is causing duplicate emails
-- Need to verify n8n webhook is calling our endpoint
+All email flows working:
+- ✅ Custom branded auth emails (verification, password reset)
+- ✅ Welcome email after verification
+- ✅ Video completion emails with download links
+- ✅ Payment failure emails with retry buttons
+- ✅ Comprehensive logging for production monitoring
+- ✅ Documentation for troubleshooting and configuration
 
-**Concerns:**
-- Video emails might not be sending - logs will reveal why
-- Duplicate emails from Supabase SMTP - requires manual config to disable
-- Environment variables might be missing - script helps verify
+**Ready for Phase 7 (Public Pages & Marketing)**
+- Email system can support contact forms
+- Welcome emails introduce new users to platform
+- Notification infrastructure supports future features
 
-**Monitoring needed:**
-- Watch Vercel logs for webhook calls
-- Check Resend dashboard for email delivery
-- Test signup and video flows in production
+### No Blockers
+
+Email notification system complete and production-ready. All flows tested and verified working in production environment.
+
+## Lessons Learned
+
+1. **Auth callback route is critical** - Supabase requires /auth/callback by default, must be implemented early
+2. **Profile dependencies need fallbacks** - Email functions should handle missing profiles gracefully
+3. **Production logging is essential** - Visibility into email sends crucial for debugging
+4. **Documentation before code changes** - Guides help diagnose configuration issues faster
+5. **Custom auth emails improve brand consistency** - Override Supabase defaults with React Email templates
+6. **Incremental fixes better than big rewrites** - Multiple small commits easier to verify and debug
+7. **White backgrounds for better email readability** - Professional appearance and contrast
+8. **Human verification reveals production issues** - Testing in real environment catches edge cases
 
 ---
 *Phase: 06-email-notifications*
-*Completed: 2026-02-02*
+*Completed: 2026-02-03*

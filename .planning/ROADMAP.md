@@ -17,7 +17,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Subscription & Credits** - Payment and credit system
 - [x] **Phase 4: Core Video Creation** - Upload logo and generate videos
 - [x] **Phase 5: Video Library & Dashboard** - View and manage videos
-- [ ] **Phase 6: Email Notifications** - User communication system
+- [x] **Phase 6: Email Notifications** - User communication system
 - [ ] **Phase 7: Public Pages & Marketing** - Landing page and pricing
 
 ## Phase Details
@@ -137,9 +137,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 06-01-PLAN.md — Email infrastructure, Resend client, React Email templates, first_name field
-- [ ] 06-02-PLAN.md — Integrate email sending into video-status and Stripe webhooks
-- [ ] 06-03-PLAN.md — Human verification of all email flows
+- [x] 06-01-PLAN.md — Email infrastructure, Resend client, React Email templates, first_name field
+- [x] 06-02-PLAN.md — Integrate email sending into video-status and Stripe webhooks
+- [x] 06-03-PLAN.md — Human verification of all email flows
 
 ### Phase 7: Public Pages & Marketing
 **Goal**: Visitors can discover the product and convert to users
@@ -167,5 +167,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Subscription & Credits | 6/6 | Complete | 2026-01-29 |
 | 4. Core Video Creation | 5/5 | Complete | 2026-01-29 |
 | 5. Video Library & Dashboard | 4/4 | Complete | 2026-02-01 |
-| 6. Email Notifications | 0/3 | Not started | - |
+| 6. Email Notifications | 3/3 | Complete | 2026-02-03 |
 | 7. Public Pages & Marketing | 0/TBD | Not started | - |
