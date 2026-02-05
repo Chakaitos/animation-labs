@@ -25,7 +25,50 @@ export function PricingSection() {
         </div>
 
         {/* Pricing cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {/* Try It Out Card */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Try It Out</CardTitle>
+              <CardDescription>Test before you commit</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-6">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-4xl font-bold">$5</span>
+                  <span className="text-muted-foreground">/credit</span>
+                </div>
+                <div className="text-sm text-muted-foreground mt-1">
+                  One-time purchase
+                </div>
+              </div>
+
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span>1 credit</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span>All animation styles</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span>10-15 min delivery</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                  <span>Email support</span>
+                </li>
+              </ul>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" className="w-full" asChild>
+                <Link href="/signup">Try Now</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
           {/* Starter Card */}
           <Card>
             <CardHeader>
