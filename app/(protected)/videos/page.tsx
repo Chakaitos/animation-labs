@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
-import { VideoGrid } from '@/components/videos/video-grid'
+import { VideoGridRealtime } from '@/components/videos/VideoGridRealtime'
 import { VideoFilters } from '@/components/videos/video-filters'
 import { VideoGridSkeleton } from '@/components/videos/video-card-skeleton'
 import { EmptyVideosState } from '@/components/videos/empty-state'
@@ -52,7 +52,7 @@ async function VideoList({
     return <EmptyVideosState />
   }
 
-  return <VideoGrid videos={videos} />
+  return <VideoGridRealtime userId={userId} initialVideos={videos} />
 }
 
 export default async function VideosPage({ searchParams }: PageProps) {

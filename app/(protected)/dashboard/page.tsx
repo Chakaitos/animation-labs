@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { CreditBalance } from '@/components/CreditBalance'
-import { VideoCard } from '@/components/videos/video-card'
+import { VideoGridRealtime } from '@/components/videos/VideoGridRealtime'
 import { EmptyVideosState } from '@/components/videos/empty-state'
 import { Plus, Video, CreditCard } from 'lucide-react'
 
@@ -122,11 +122,10 @@ export default async function DashboardPage() {
             </div>
 
             {recentVideos && recentVideos.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {recentVideos.map((video) => (
-                  <VideoCard key={video.id} video={video} />
-                ))}
-              </div>
+              <VideoGridRealtime
+                userId={user!.id}
+                initialVideos={recentVideos}
+              />
             ) : (
               <EmptyVideosState />
             )}
