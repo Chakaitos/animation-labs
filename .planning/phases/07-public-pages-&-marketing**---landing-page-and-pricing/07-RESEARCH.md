@@ -96,17 +96,17 @@ import ExampleGallery from '@/components/marketing/ExampleGallery'
 import PricingSection from '@/components/marketing/PricingSection'
 
 export const metadata: Metadata = {
-  title: 'AnimateLabs - Professional Logo Animations in Minutes',
+  title: 'Animation Labs - Professional Logo Animations in Minutes',
   description: 'Create stunning logo animation videos for intros and outros at $3-5 per video. 10-15 minute turnaround with professional quality.',
   openGraph: {
-    title: 'AnimateLabs - Professional Logo Animations',
+    title: 'Animation Labs - Professional Logo Animations',
     description: 'Professional logo animation videos at fraction of traditional cost',
     images: ['/logo.svg'],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AnimateLabs - Professional Logo Animations',
+    title: 'Animation Labs - Professional Logo Animations',
     description: 'Professional logo animation videos at fraction of traditional cost',
   },
 }
@@ -533,18 +533,18 @@ Problems that look simple but have existing solutions:
 ```typescript
 // app/page.tsx
 export const metadata: Metadata = {
-  title: 'AnimateLabs - Professional Logo Animations',
+  title: 'Animation Labs - Professional Logo Animations',
   description: 'Create stunning logo animations at $3-5 per video',
   openGraph: {
-    title: 'AnimateLabs - Professional Logo Animations',
+    title: 'Animation Labs - Professional Logo Animations',
     description: 'Create stunning logo animations at $3-5 per video',
     images: ['/og-image.jpg'], // 1200x630px recommended
-    url: 'https://animatelabs.com',
+    url: 'https://animationlabs.com',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AnimateLabs - Professional Logo Animations',
+    title: 'Animation Labs - Professional Logo Animations',
     description: 'Create stunning logo animations at $3-5 per video',
     images: ['/og-image.jpg'],
   },
@@ -627,10 +627,10 @@ import SocialProof from '@/components/marketing/SocialProof'
 import PricingSection from '@/components/marketing/PricingSection'
 
 export const metadata: Metadata = {
-  title: 'AnimateLabs - Professional Logo Animations in Minutes',
+  title: 'Animation Labs - Professional Logo Animations in Minutes',
   description: 'Create stunning logo animation videos for intros and outros at $3-5 per video. 10-15 minute turnaround with professional quality.',
   openGraph: {
-    title: 'AnimateLabs - Professional Logo Animations',
+    title: 'Animation Labs - Professional Logo Animations',
     description: 'Professional logo animations at fraction of traditional cost',
     images: ['/og-image.jpg'],
     type: 'website',
@@ -644,7 +644,7 @@ export default function HomePage() {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/">
-            <Image src="/logo.svg" alt="AnimateLabs" width={150} height={40} />
+            <Image src="/logo.svg" alt="Animation Labs" width={150} height={40} />
           </Link>
           <nav className="flex items-center gap-4">
             <Link href="/pricing" className="text-sm hover:text-primary">
@@ -673,7 +673,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground">
-              © 2026 AnimateLabs. All rights reserved.
+              © 2026 Animation Labs. All rights reserved.
             </p>
             <div className="flex gap-4 text-sm">
               <Link href="/pricing" className="hover:text-primary">
@@ -709,7 +709,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export const metadata: Metadata = {
-  title: 'Pricing - AnimateLabs',
+  title: 'Pricing - Animation Labs',
   description: 'Simple, transparent pricing for professional logo animations. Choose from Starter ($30/month) or Professional ($75/month) plans.',
 }
 
@@ -843,7 +843,7 @@ import { Card, CardContent } from '@/components/ui/card'
 
 const testimonials = [
   {
-    quote: "AnimateLabs saved my Q4. We needed 20 videos for a product launch and got them all in a single afternoon.",
+    quote: "Animation Labs saved my Q4. We needed 20 videos for a product launch and got them all in a single afternoon.",
     author: "Sarah Chen",
     role: "VP of Marketing",
     company: "TechFlow",
@@ -985,7 +985,7 @@ Things that couldn't be fully resolved:
 **Confidence breakdown:**
 - Standard stack: HIGH - Next.js 16, shadcn/ui, next/image all verified from official sources
 - Architecture: HIGH - Server Components, metadata API, Image optimization patterns from Next.js official docs
-- Pitfalls: MEDIUM - Combination of official docs and community best practices, specific to AnimateLabs context
+- Pitfalls: MEDIUM - Combination of official docs and community best practices, specific to Animation Labs context
 - Conversion optimization: MEDIUM - Statistics from credible sources (VWO, Wisernotify) but specific results vary by audience
 - Design patterns: HIGH - shadcn/ui blocks proven across 1000+ implementations, 2026 trends documented
 

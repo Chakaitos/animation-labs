@@ -3,9 +3,6 @@ import { PLANS, type PlanId } from '@/lib/stripe/config'
 import { SubscribePlanCard } from '@/components/SubscribePlanCard'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import { ArrowLeft } from 'lucide-react'
 
 // Plan pricing (displayed only - actual prices come from Stripe)
 const PLAN_PRICES: Record<PlanId, string> = {
@@ -33,24 +30,7 @@ export default async function SubscribePage() {
   const hasActiveSubscription = !!subscription
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Image src="/AL_transparent_compact.png" alt="AnimateLabs" width={180} height={48} />
-          </Link>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/dashboard">
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
-            </Link>
-          </Button>
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold mb-4">
             {currentPlan ? 'Your Current Plan' : 'Choose Your Plan'}
@@ -97,7 +77,6 @@ export default async function SubscribePage() {
             </p>
           </div>
         )}
-      </main>
     </div>
   )
 }

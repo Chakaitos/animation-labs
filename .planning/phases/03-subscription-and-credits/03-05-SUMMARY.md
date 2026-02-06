@@ -105,7 +105,7 @@ Created three reusable components:
 Created `/billing` route with comprehensive subscription management:
 
 **Layout:**
-- Header with AnimateLabs logo and UserMenu
+- Header with Animation Labs logo and UserMenu
 - Back button to dashboard
 - Responsive grid layout
 

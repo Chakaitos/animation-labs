@@ -9,7 +9,7 @@ export default function UpdatePasswordPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link href="/" className="mx-auto mb-4">
-            <Image src="/AL_transparent_compact.png" alt="AnimateLabs" width={250} height={66} priority />
+            <Image src="/AL_transparent_compact.png" alt="Animation Labs" width={250} height={66} priority />
           </Link>
           <CardTitle className="text-2xl">Set new password</CardTitle>
           <CardDescription>

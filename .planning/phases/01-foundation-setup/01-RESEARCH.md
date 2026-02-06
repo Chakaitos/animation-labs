@@ -702,7 +702,7 @@ export default function Home() {
     <main className="container mx-auto p-8">
       <Card>
         <CardHeader>
-          <CardTitle>Welcome to AnimateLabs</CardTitle>
+          <CardTitle>Welcome to Animation Labs</CardTitle>
           <CardDescription>
             Create professional logo animations in minutes
           </CardDescription>

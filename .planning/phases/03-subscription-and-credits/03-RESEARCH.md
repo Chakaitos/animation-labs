@@ -263,7 +263,7 @@ export async function createPortalSession() {
 
 ### Pattern 4: Credit System with Subscription
 **What:** Track subscription credits (reset monthly) vs overage credits (persist)
-**When to use:** AnimateLabs credit-based billing model
+**When to use:** Animation Labs credit-based billing model
 **Database approach:**
 ```sql
 -- Already implemented in 00001_initial_schema.sql

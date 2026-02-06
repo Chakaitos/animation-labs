@@ -2,7 +2,7 @@
 
 ## Current State
 
-AnimateLabs has custom branded email templates built with React Email. However, email delivery depends on proper environment configuration.
+Animation Labs has custom branded email templates built with React Email. However, email delivery depends on proper environment configuration.
 
 ## Environment Variables Required
 

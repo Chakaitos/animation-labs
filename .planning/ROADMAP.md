@@ -2,7 +2,7 @@
 
 ## Overview
 
-AnimateLabs delivers professional logo animations in 10-15 minutes at $3-5 per video. This roadmap takes the project from empty repository to live SaaS platform in 7 phases, starting with foundation work and building toward the core loop: sign up → subscribe → create video → download. The focus is shipping fast with the essential features that make the product work, deferring enhancements to v2.
+Animation Labs delivers professional logo animations in 10-15 minutes at $3-5 per video. This roadmap takes the project from empty repository to live SaaS platform in 7 phases, starting with foundation work and building toward the core loop: sign up → subscribe → create video → download. The focus is shipping fast with the essential features that make the product work, deferring enhancements to v2.
 
 ## Phases
 

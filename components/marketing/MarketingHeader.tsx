@@ -11,7 +11,7 @@ export function MarketingHeader() {
           <Link href="/" className="flex items-center">
             <Image
               src="/AL_transparent_compact.png"
-              alt="AnimateLabs"
+              alt="Animation Labs"
               width={250}
               height={66}
               priority

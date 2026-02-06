@@ -7,7 +7,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           {/* Copyright */}
           <p className="text-sm text-muted-foreground">
-            2026 AnimateLabs. All rights reserved.
+            2026 Animation Labs. All rights reserved.
           </p>
 
           {/* Navigation links */}

@@ -673,7 +673,7 @@ Things that couldn't be fully resolved:
 
 ## CONTEXT.md Alignment
 
-Per user decisions in `/Users/chakaitos/AnimateLabs/.planning/phases/02-authentication-account/02-CONTEXT.md`:
+Per user decisions in `/Users/chakaitos/Animation Labs/.planning/phases/02-authentication-account/02-CONTEXT.md`:
 
 | Decision | How Research Addresses It |
 |----------|---------------------------|

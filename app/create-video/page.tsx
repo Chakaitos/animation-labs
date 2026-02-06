@@ -1,16 +1,15 @@
 import { Metadata } from 'next'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 
 import { createClient } from '@/lib/supabase/server'
 import { getCreditBalance } from '@/lib/actions/billing'
 import { CreateVideoForm } from './_components/CreateVideoForm'
 import { Button } from '@/components/ui/button'
-import { UserMenu } from '@/components/navigation/user-menu'
+import { AppHeader } from '@/components/navigation/app-header'
 
 export const metadata: Metadata = {
-  title: 'Create Video | AnimateLabs',
+  title: 'Create Video | Animation Labs',
   description: 'Create a professional logo animation video',
 }
 
@@ -29,27 +28,7 @@ export default async function CreateVideoPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container flex h-16 items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Image
-              src="/AL_transparent_compact.png"
-              alt="AnimateLabs"
-              width={180}
-              height={48}
-              className="h-12 w-auto"
-            />
-          </Link>
-
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-muted-foreground">
-              {credits} credit{credits !== 1 ? 's' : ''} available
-            </span>
-            <UserMenu user={user} />
-          </div>
-        </div>
-      </header>
+      <AppHeader user={user} creditBalance={credits} />
 
       {/* Main Content */}
       <main className="container py-8">

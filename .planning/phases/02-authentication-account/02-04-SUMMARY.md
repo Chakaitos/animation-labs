@@ -37,7 +37,7 @@ key-decisions:
 patterns-established:
   - "Pattern 1: Security-focused form messaging - generic success regardless of user existence"
   - "Pattern 2: Client-side form validation with react-hook-form + Zod before server action"
-  - "Pattern 3: AnimateLabs logo in auth page headers"
+  - "Pattern 3: Animation Labs logo in auth page headers"
 
 # Metrics
 duration: 1min
@@ -59,7 +59,7 @@ completed: 2026-01-27
 ## Accomplishments
 - Password reset request form that always shows success (prevents email enumeration)
 - Update password form with strength validation and inline requirements hint
-- Both pages include AnimateLabs logo and consistent card-based layout
+- Both pages include Animation Labs logo and consistent card-based layout
 - Proper redirect flow: reset → email → update → login
 
 ## Task Commits
@@ -78,7 +78,7 @@ Each task was committed atomically:
 ## Decisions Made
 - **Inline success message for reset:** Used inline message instead of toast for reset success to keep user on page and provide clear next steps
 - **Password requirements hint:** Added inline hint showing password requirements (8+ chars, uppercase, lowercase, number) for better UX
-- **Consistent auth layout:** All auth pages use same card-based centered layout with AnimateLabs logo
+- **Consistent auth layout:** All auth pages use same card-based centered layout with Animation Labs logo
 
 ## Deviations from Plan
 

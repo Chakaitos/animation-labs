@@ -45,7 +45,7 @@ Supabase SMTP is configured, so Supabase automatically sends its own emails for 
 After applying fix:
 1. Create new account
 2. Should receive ONLY ONE email
-3. Email should have AnimateLabs branding
+3. Email should have Animation Labs branding
 4. Link should work and redirect to dashboard
 
 ---
@@ -197,7 +197,7 @@ Failed to send video ready email: { error: '...' }
 
 ### How to Set in Vercel
 
-1. Go to https://vercel.com/[team]/animatelabs/settings/environment-variables
+1. Go to https://vercel.com/[team]/animationlabs/settings/environment-variables
 2. Add missing variables
 3. Select "Production" environment
 4. Redeploy to apply changes
@@ -209,7 +209,7 @@ Failed to send video ready email: { error: '...' }
 ### Signup Flow
 - [ ] Create new account
 - [ ] Receive verification email (only one)
-- [ ] Email has AnimateLabs branding
+- [ ] Email has Animation Labs branding
 - [ ] Click verification link
 - [ ] Redirected to /auth/callback (no 404)
 - [ ] Email verified successfully
@@ -227,7 +227,7 @@ Failed to send video ready email: { error: '...' }
 ### Password Reset
 - [ ] Request password reset
 - [ ] Receive reset email (only one)
-- [ ] Email has AnimateLabs branding
+- [ ] Email has Animation Labs branding
 - [ ] Click reset link
 - [ ] Redirected to /auth/callback (no 404)
 - [ ] Can set new password

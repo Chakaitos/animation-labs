@@ -80,7 +80,7 @@ Recent decisions affecting current work:
 **From 02-03:**
 - React Hook Form pattern (D-02-03-001) — useForm + zodResolver + FormData for server actions
 - Toast notifications for errors (D-02-03-002) — Sonner toast.error() for server action failures
-- Auth page branding (D-02-03-003) — AnimateLabs logo on all auth pages
+- Auth page branding (D-02-03-003) — Animation Labs logo on all auth pages
 - Loading states (D-02-03-004) — Disable inputs + button text change during submission
 
 **From 02-05:**

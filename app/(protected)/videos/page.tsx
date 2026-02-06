@@ -1,9 +1,6 @@
 import { Suspense } from 'react'
-import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { createClient } from '@/lib/supabase/server'
-import { UserMenu } from '@/components/navigation/user-menu'
 import { VideoGrid } from '@/components/videos/video-grid'
 import { VideoFilters } from '@/components/videos/video-filters'
 import { VideoGridSkeleton } from '@/components/videos/video-card-skeleton'
@@ -61,12 +58,8 @@ async function VideoList({
 export default async function VideosPage({ searchParams }: PageProps) {
   const supabase = await createClient()
 
-  // Auth check
-  const { data: { user }, error } = await supabase.auth.getUser()
-
-  if (error || !user) {
-    redirect('/login')
-  }
+  // User is already authenticated by layout
+  const { data: { user } } = await supabase.auth.getUser()
 
   // Await searchParams to get query and status
   const params = await searchParams
@@ -74,19 +67,7 @@ export default async function VideosPage({ searchParams }: PageProps) {
   const status = params.status || 'all'
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto flex items-center justify-between px-4 py-4">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Image src="/AL_transparent_compact.png" alt="AnimateLabs" width={180} height={48} />
-          </Link>
-          <UserMenu user={user} />
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
         <div className="mb-6 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Video Library</h1>
@@ -104,9 +85,8 @@ export default async function VideosPage({ searchParams }: PageProps) {
         {/* Video Grid with Suspense */}
         {/* CRITICAL: key prop forces re-render on param changes */}
         <Suspense key={query + status} fallback={<VideoGridSkeleton />}>
-          <VideoList query={query} status={status} userId={user.id} />
+          <VideoList query={query} status={status} userId={user!.id} />
         </Suspense>
-      </main>
     </div>
   )
 }

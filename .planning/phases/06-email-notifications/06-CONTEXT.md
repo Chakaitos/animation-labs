@@ -15,12 +15,12 @@ User communication system that sends transactional emails for key lifecycle even
 
 ### Email design & branding
 - HTML emails with full branding (logo, colors, styled buttons)
-- AnimateLabs logo displayed prominently in header of every email
+- Animation Labs logo displayed prominently in header of every email
 - Color scheme matches website theme colors for consistent brand experience
 - Call-to-action links styled as prominent buttons (not plain text links)
 
 ### Content & tone
-- Friendly & conversational writing style (e.g., "Hey there! Welcome to AnimateLabs")
+- Friendly & conversational writing style (e.g., "Hey there! Welcome to Animation Labs")
 - Personalization uses first name — requires adding name field to profiles schema
 - Moderate email length with short paragraph + relevant details (brand name, timestamp, next steps)
 
@@ -44,7 +44,7 @@ User communication system that sends transactional emails for key lifecycle even
 <specifics>
 ## Specific Ideas
 
-- Friendly tone example: "Hey there! Welcome to AnimateLabs" (not "Dear User, Thank you for registering")
+- Friendly tone example: "Hey there! Welcome to Animation Labs" (not "Dear User, Thank you for registering")
 - Email types: verification (after signup), password reset (with secure link), video ready (with download button), payment failed (with retry action)
 - Name field needed: Update profiles table and signup flow to capture first name for personalization
 

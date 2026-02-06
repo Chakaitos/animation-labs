@@ -81,7 +81,7 @@ A complete Supabase integration layer that handles both client-side and server-s
 
 4. **Import Verification**
    - Updated homepage to verify server client import works
-   - Simple AnimateLabs landing page
+   - Simple Animation Labs landing page
    - TypeScript compilation passes
 
 ## Task-by-Task Completion
@@ -216,9 +216,9 @@ e447faf feat(01-02): create auth middleware for token refresh
 
 ## Artifacts
 
-- **Client utility:** /Users/chakaitos/AnimateLabs/lib/supabase/client.ts
-- **Server utility:** /Users/chakaitos/AnimateLabs/lib/supabase/server.ts
-- **Middleware:** /Users/chakaitos/AnimateLabs/middleware.ts
+- **Client utility:** /Users/chakaitos/Animation Labs/lib/supabase/client.ts
+- **Server utility:** /Users/chakaitos/Animation Labs/lib/supabase/server.ts
+- **Middleware:** /Users/chakaitos/Animation Labs/middleware.ts
 - **Documentation:** This summary
 
 ## Must-Haves Validation

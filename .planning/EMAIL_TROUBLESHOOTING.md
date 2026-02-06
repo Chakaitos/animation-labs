@@ -2,7 +2,7 @@
 
 ## Overview
 
-AnimateLabs uses Resend for transactional emails. This guide helps debug email delivery issues.
+Animation Labs uses Resend for transactional emails. This guide helps debug email delivery issues.
 
 ## Common Issues Checklist
 

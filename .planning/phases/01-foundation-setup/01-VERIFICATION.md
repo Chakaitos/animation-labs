@@ -38,7 +38,7 @@ From PLAN must_haves and phase requirements:
 | `tsconfig.json` | TypeScript configuration | ✓ VERIFIED | Exists, TypeScript compiles without errors |
 | `next.config.ts` | Next.js configuration | ✓ VERIFIED | Exists (133 bytes) |
 | `app/layout.tsx` | Root layout with Tailwind | ✓ VERIFIED | 35 lines, imports globals.css, includes font configuration and metadata |
-| `app/page.tsx` | Home page component | ✓ VERIFIED | 19 lines, imports Supabase server client (commented usage for later), displays AnimateLabs branding |
+| `app/page.tsx` | Home page component | ✓ VERIFIED | 19 lines, imports Supabase server client (commented usage for later), displays Animation Labs branding |
 | `app/globals.css` | Tailwind CSS 4 configuration | ✓ VERIFIED | 4KB file, uses @import "tailwindcss", @theme inline with CSS variables (Tailwind 4 pattern) |
 | `components.json` | shadcn/ui configuration | ✓ VERIFIED | 447 bytes, contains shadcn config |
 | `components/ui/button.tsx` | Button component | ✓ VERIFIED | 2KB, full implementation with variants (default, destructive, outline, secondary, ghost, link) |
@@ -91,7 +91,7 @@ Note: middleware.ts shows deprecation warning about "middleware" convention vs "
 None required for this phase. All success criteria can be verified programmatically.
 
 Optional manual checks (recommended but not blocking):
-1. **Visual Check:** Visit http://localhost:3000 and verify "AnimateLabs" heading displays correctly with Tailwind styling
+1. **Visual Check:** Visit http://localhost:3000 and verify "Animation Labs" heading displays correctly with Tailwind styling
 2. **Supabase Dashboard:** Deploy the migration SQL in Supabase SQL Editor (requires Supabase project setup first)
 
 ---

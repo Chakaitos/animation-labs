@@ -135,9 +135,9 @@ A fully initialized Next.js 16 application with:
 **2. [Rule 3 - Blocking] Directory name capitalization workaround**
 
 - **Found during:** Task 1
-- **Issue:** create-next-app rejects directory name "AnimateLabs" due to npm naming restrictions (no capital letters)
-- **Fix:** Created project in temporary directory with lowercase name, then moved files to AnimateLabs directory
-- **Rationale:** User's directory is already named AnimateLabs; can't rename without disrupting workspace
+- **Issue:** create-next-app rejects directory name "Animation Labs" due to npm naming restrictions (no capital letters)
+- **Fix:** Created project in temporary directory with lowercase name, then moved files to Animation Labs directory
+- **Rationale:** User's directory is already named Animation Labs; can't rename without disrupting workspace
 - **Files modified:** N/A (workaround in installation process)
 - **Commit:** 2dc6d66
 
@@ -256,7 +256,7 @@ b017cc9 feat(01-01): create environment variable structure
 
 ## Artifacts
 
-- **Source code:** /Users/chakaitos/AnimateLabs
+- **Source code:** /Users/chakaitos/Animation Labs
 - **Config files:** package.json, tsconfig.json, next.config.ts, components.json
 - **Environment templates:** .env.example, .env.local
 - **Documentation:** This summary

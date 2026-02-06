@@ -17,7 +17,7 @@ expected: Running `npm run dev` starts the development server without errors. Se
 result: pass
 
 ### 2. Homepage renders with Tailwind styling
-expected: Visiting http://localhost:3000 shows "AnimateLabs" heading and "Professional logo animations in minutes" text, styled with Tailwind CSS (centered, proper spacing, modern look).
+expected: Visiting http://localhost:3000 shows "Animation Labs" heading and "Professional logo animations in minutes" text, styled with Tailwind CSS (centered, proper spacing, modern look).
 result: pass
 
 ### 3. TypeScript compilation passes

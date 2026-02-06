@@ -83,7 +83,7 @@ metrics:
 
 # Phase 06 Plan 01: Email Infrastructure Setup Summary
 
-**One-liner:** Resend SDK with lazy loading, React Email templates with AnimateLabs branding, 3-retry exponential backoff, and first name capture for personalization
+**One-liner:** Resend SDK with lazy loading, React Email templates with Animation Labs branding, 3-retry exponential backoff, and first name capture for personalization
 
 ## What Was Built
 
@@ -94,7 +94,7 @@ metrics:
 - Documented API key requirement in `.env.example`
 
 ### React Email Templates
-- **EmailLayout component** - Shared layout with AnimateLabs logo header and footer
+- **EmailLayout component** - Shared layout with Animation Labs logo header and footer
 - **VideoReadyEmail template** - Friendly greeting, thumbnail, download button, timestamp
 - **PaymentFailedEmail template** - Urgent tone, amount due, retry button, reassurance
 
@@ -163,7 +163,7 @@ None - plan executed exactly as written.
 ### Created
 - **lib/email/client.ts** - Resend singleton with lazy loading via Proxy
 - **lib/email/send.ts** - `sendVideoReadyEmail`, `sendPaymentFailedEmail` with retry logic
-- **emails/_components/EmailLayout.tsx** - Shared layout with AnimateLabs branding
+- **emails/_components/EmailLayout.tsx** - Shared layout with Animation Labs branding
 - **emails/video-ready.tsx** - Video completion email template
 - **emails/payment-failed.tsx** - Payment failure email template
 - **supabase/migrations/00006_add_first_name.sql** - Add `first_name` column to profiles

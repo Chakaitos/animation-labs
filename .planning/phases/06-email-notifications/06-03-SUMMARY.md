@@ -101,7 +101,7 @@ completed: 2026-02-03
 - **emails/auth-confirm.tsx** - Branded email verification template
 - **emails/recovery.tsx** - Branded password reset template
 - **emails/welcome.tsx** - Post-verification onboarding email
-- All templates use AnimateLabs branding with logo and support links
+- All templates use Animation Labs branding with logo and support links
 - Override Supabase default plain text emails with HTML designs
 
 ### Auth Callback Infrastructure
@@ -322,7 +322,7 @@ Plan 06-03 was a human verification checkpoint that revealed multiple production
 All email flows tested and verified working:
 
 ✅ **Email Preview (Local)**
-- Templates render with AnimateLabs branding
+- Templates render with Animation Labs branding
 - Video-ready, payment-failed, auth-confirm, recovery, welcome templates
 - White background provides good contrast
 
@@ -333,7 +333,7 @@ All email flows tested and verified working:
 
 ✅ **Verification Email**
 - Branded email arrives via Supabase SMTP + Resend
-- Custom HTML template with AnimateLabs logo
+- Custom HTML template with Animation Labs logo
 - Verification link works
 - Welcome email sent after verification
 - Can log in successfully

@@ -1,7 +1,7 @@
--- AnimateLabs Initial Schema
+-- Animation Labs Initial Schema
 -- Created: Phase 1 - Foundation & Setup
 --
--- This migration creates the core tables for AnimateLabs:
+-- This migration creates the core tables for Animation Labs:
 -- - profiles: User profile data (extends auth.users)
 -- - subscriptions: Credit-based subscription plans
 -- - credit_transactions: Audit trail for credit usage

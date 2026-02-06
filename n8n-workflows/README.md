@@ -1,6 +1,6 @@
 # n8n Workflows
 
-This directory contains n8n workflow JSON files for AnimateLabs video processing.
+This directory contains n8n workflow JSON files for Animation Labs video processing.
 
 ---
 

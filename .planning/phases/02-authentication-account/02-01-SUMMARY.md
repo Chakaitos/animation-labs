@@ -98,7 +98,7 @@ Installed form validation dependencies and shadcn/ui components to provide a com
    - Available app-wide for success/error feedback
 
 5. **Metadata update**
-   - App title: "AnimateLabs"
+   - App title: "Animation Labs"
    - Description: "Professional logo animations in minutes"
 
 ## Technical Implementation

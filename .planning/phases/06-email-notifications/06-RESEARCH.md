@@ -6,7 +6,7 @@
 
 ## Summary
 
-Email notifications in AnimateLabs deliver transactional messages for authentication (verification, password reset), video completion, and payment failures. The locked decisions from CONTEXT.md constrain this phase to use Resend as the email service provider, React Email for templates, HTML emails with full branding, and a retry strategy with exponential backoff.
+Email notifications in Animation Labs deliver transactional messages for authentication (verification, password reset), video completion, and payment failures. The locked decisions from CONTEXT.md constrain this phase to use Resend as the email service provider, React Email for templates, HTML emails with full branding, and a retry strategy with exponential backoff.
 
 The standard approach combines three layers: **Supabase Auth handles verification/password reset emails** (configured with Resend as custom SMTP), while **application code sends video completion and payment failure emails** using Resend's SDK with React Email templates. This separation ensures auth emails leverage Supabase's built-in security (token generation, rate limiting) while giving full control over transactional email design and delivery.
 
@@ -128,7 +128,7 @@ export async function sendVideoReadyEmail(email: string, videoUrl: string, brand
   return await backOff(
     async () => {
       const result = await resend.emails.send({
-        from: 'AnimateLabs <noreply@animatelabs.com>',
+        from: 'Animation Labs <noreply@animationlabs.com>',
         to: email,
         subject: `Your ${brandName} video is ready!`,
         react: VideoReadyEmail({ videoUrl, brandName }),
@@ -228,7 +228,7 @@ Problems that look simple but have existing solutions:
 - No SLA or delivery guarantee
 
 **How to avoid:** Configure custom SMTP immediately, even for development:
-1. Create Resend account, verify domain (animatelabs.com)
+1. Create Resend account, verify domain (animationlabs.com)
 2. Navigate to Supabase Dashboard → Integrations → Resend
 3. Click "Connect" (auto-configures SMTP settings)
 4. OR manually copy SMTP credentials from Resend to Supabase Auth settings
@@ -394,8 +394,8 @@ Verified patterns from official sources:
 #    - Port: 465 or 587
 #    - Username: resend
 #    - Password: [Your Resend API Key]
-#    - Sender email: noreply@animatelabs.com
-#    - Sender name: AnimateLabs
+#    - Sender email: noreply@animationlabs.com
+#    - Sender name: Animation Labs
 ```
 
 ### React Email Template with Branding
@@ -426,8 +426,8 @@ export default function VideoReadyEmail({
           <Container className="mx-auto py-8 px-4 max-w-2xl">
             {/* Header with logo */}
             <Img
-              src="https://animatelabs.com/logo.svg"
-              alt="AnimateLabs"
+              src="https://animationlabs.com/logo.svg"
+              alt="Animation Labs"
               width="150"
               height="40"
               className="mb-6"
@@ -467,7 +467,7 @@ export default function VideoReadyEmail({
 
             {/* Footer */}
             <Text className="text-gray-400 text-xs mt-6 text-center">
-              AnimateLabs - Professional logo animations in minutes
+              Animation Labs - Professional logo animations in minutes
             </Text>
           </Container>
         </Body>
@@ -504,7 +504,7 @@ export async function sendVideoReadyEmail(userId: string, videoUrl: string, bran
   return await backOff(
     async () => {
       const result = await resend.emails.send({
-        from: 'AnimateLabs <noreply@animatelabs.com>',
+        from: 'Animation Labs <noreply@animationlabs.com>',
         to: profile.email,
         subject: `Your ${brandName} video is ready!`,
         react: VideoReadyEmail({
@@ -674,7 +674,7 @@ Things that couldn't be fully resolved:
 **Confidence breakdown:**
 - Standard stack: HIGH - Resend + React Email officially documented for Next.js, native Supabase integration confirmed
 - Architecture: HIGH - Two-tier strategy (Supabase Auth + App emails) verified in official docs, retry pattern from official SDK examples
-- Pitfalls: MEDIUM - Common issues identified from community sources and documentation warnings, but not all tested in AnimateLabs context
+- Pitfalls: MEDIUM - Common issues identified from community sources and documentation warnings, but not all tested in Animation Labs context
 - Email client compatibility: MEDIUM - React Email component testing verified, but Tailwind limitations based on community reports
 
 **Research date:** 2026-02-02

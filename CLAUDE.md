@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-AnimateLabs — Professional logo animation SaaS delivering videos in 10-15 minutes at $3-5 per video.
+Animation Labs — Professional logo animation SaaS delivering videos in 10-15 minutes at $3-5 per video.
 
 **Stack:** Next.js 16, TypeScript, Tailwind CSS 4, shadcn/ui, Supabase, Stripe, n8n, Resend
 
@@ -22,7 +22,7 @@ Use these skills at the appropriate times:
 ## Project Structure
 
 ```
-animatelabs/
+animationlabs/
 ├── app/                    # Next.js App Router
 │   ├── layout.tsx         # Root layout
 │   ├── page.tsx           # Home page
@@ -47,7 +47,7 @@ animatelabs/
 **Logo:** `/public/logo.svg` (transparent SVG, 127KB)
 - Use in navigation, marketing pages, and any branded UI elements
 - Access in components: `/logo.svg` (Next.js serves from public root)
-- Example: `<Image src="/logo.svg" alt="AnimateLabs" width={150} height={40} />`
+- Example: `<Image src="/logo.svg" alt="Animation Labs" width={150} height={40} />`
 
 ## Commands
 

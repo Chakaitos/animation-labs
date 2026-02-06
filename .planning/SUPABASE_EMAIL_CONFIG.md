@@ -297,7 +297,7 @@ Required for all approaches:
 RESEND_API_KEY=re_...
 
 # App URL (for email links)
-NEXT_PUBLIC_APP_URL=https://animatelabs.ai
+NEXT_PUBLIC_APP_URL=https://animationlabs.ai
 
 # Supabase (already configured)
 NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co

@@ -436,7 +436,7 @@ async function handlePaymentFailed(invoice: Stripe.Invoice) {
     const amountDue = (invoice.amount_due || 0) / 100
 
     // Get retry URL (Stripe hosted invoice page)
-    const retryUrl = invoice.hosted_invoice_url || 'https://animatelabs.com/billing'
+    const retryUrl = invoice.hosted_invoice_url || 'https://animationlabs.com/billing'
 
     // Send email (fire-and-forget)
     sendPaymentFailedEmail(

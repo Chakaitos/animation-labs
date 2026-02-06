@@ -2,7 +2,7 @@
 
 ## Profile Records
 
-All email personalization in AnimateLabs depends on the `profiles` table having a record for each user.
+All email personalization in Animation Labs depends on the `profiles` table having a record for each user.
 
 ### Automatic Profile Creation
 

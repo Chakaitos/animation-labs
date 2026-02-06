@@ -1,11 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { UserMenu } from '@/components/navigation/user-menu'
 import { CreditPackCard } from '@/components/CreditPackCard'
 import { CreditHistory } from '@/components/CreditHistory'
 import { CreditBalance } from '@/components/CreditBalance'
@@ -35,19 +33,7 @@ export default async function BillingPage() {
   const subscription = result.subscription
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <Image src="/AL_transparent_compact.png" alt="AnimateLabs" width={180} height={48} />
-          </Link>
-          <UserMenu user={user} />
-        </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex items-center gap-4 mb-8">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/dashboard">
@@ -174,7 +160,6 @@ export default async function BillingPage() {
 
         {/* Credit History */}
         {subscription && <CreditHistory />}
-      </main>
     </div>
   )
 }

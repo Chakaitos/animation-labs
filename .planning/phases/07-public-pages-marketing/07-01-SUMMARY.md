@@ -82,7 +82,7 @@ Each task was committed atomically:
    - Bottom CTA for scrollers
 
 3. **Task 3: Create Marketing Header component** - `4998aa5` (feat)
-   - AnimateLabs logo linking to home
+   - Animation Labs logo linking to home
    - Navigation: Pricing, Login, Get Started
    - Responsive gap spacing for mobile
 

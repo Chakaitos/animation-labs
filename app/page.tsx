@@ -7,11 +7,11 @@ import { PricingSection } from "@/components/marketing/PricingSection"
 import { Footer } from "@/components/marketing/Footer"
 
 export const metadata: Metadata = {
-  title: "AnimateLabs - Professional Logo Animations in Minutes",
+  title: "Animation Labs - Professional Logo Animations in Minutes",
   description:
     "Create stunning logo animation videos for intros and outros at $3-5 per video. 10-15 minute turnaround with professional quality.",
   openGraph: {
-    title: "AnimateLabs - Professional Logo Animations",
+    title: "Animation Labs - Professional Logo Animations",
     description:
       "Professional logo animations at a fraction of traditional cost. $3-5 per video, delivered in minutes.",
     images: ["/og-image.jpg"],
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AnimateLabs - Professional Logo Animations",
+    title: "Animation Labs - Professional Logo Animations",
     description:
       "Professional logo animations at a fraction of traditional cost.",
   },

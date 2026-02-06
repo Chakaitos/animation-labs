@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/accordion"
 
 export const metadata: Metadata = {
-  title: "Pricing - AnimateLabs",
+  title: "Pricing - Animation Labs",
   description:
     "Simple, transparent pricing for professional logo animations. Choose from Starter ($30/month) or Professional ($75/month) plans.",
 }

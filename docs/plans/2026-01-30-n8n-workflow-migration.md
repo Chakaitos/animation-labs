@@ -72,7 +72,7 @@ In n8n UI:
 1. Go to **Credentials** → **New**
 2. Select **Supabase API**
 3. Enter:
-   - Name: `AnimateLabs Supabase (Service Role)`
+   - Name: `Animation Labs Supabase (Service Role)`
    - Host: `https://your-project.supabase.co`
    - Service Role Secret: `{{$env.SUPABASE_SERVICE_ROLE_KEY}}`
 4. Click **Save**
@@ -166,7 +166,7 @@ Expected: Webhook triggers, passes validation
 Use **n8n-mcp-skills:n8n-node-configuration**:
 
 Add **Supabase** node after webhook validation:
-- **Credential:** AnimateLabs Supabase (Service Role)
+- **Credential:** Animation Labs Supabase (Service Role)
 - **Operation:** Get Rows
 - **Table:** `videos`
 - **Return All:** No

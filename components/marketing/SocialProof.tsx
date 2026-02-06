@@ -9,7 +9,7 @@ const stats = [
 const testimonials = [
   {
     quote:
-      "AnimateLabs saved my Q4. We needed 20 videos for a product launch and got them all in a single afternoon.",
+      "Animation Labs saved my Q4. We needed 20 videos for a product launch and got them all in a single afternoon.",
     author: "Sarah Chen",
     role: "VP of Marketing",
     company: "TechFlow",

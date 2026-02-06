@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AnimateLabs",
+  title: "Animation Labs",
   description: "Professional logo animations in minutes",
 };
 

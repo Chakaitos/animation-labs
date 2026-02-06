@@ -18,14 +18,14 @@ interface UserMenuProps {
 }
 
 export function UserMenu({ user }: UserMenuProps) {
-  const initials = user.email?.slice(0, 2).toUpperCase() ?? 'U'
+  const initials = user.email?.slice(0, 1).toUpperCase() ?? 'U'
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-full">
         <Avatar>
           <AvatarImage src={user.user_metadata?.avatar_url} alt={user.email || 'User'} />
-          <AvatarFallback>{initials}</AvatarFallback>
+          <AvatarFallback className="bg-emerald-500 text-white">{initials}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">

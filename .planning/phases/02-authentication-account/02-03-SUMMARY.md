@@ -40,7 +40,7 @@ key-files:
 key-decisions:
   - "Use react-hook-form with zodResolver for client-side validation"
   - "Display server errors via Sonner toast notifications"
-  - "Include AnimateLabs logo on all auth pages"
+  - "Include Animation Labs logo on all auth pages"
   - "Link between auth pages for easy navigation"
 
 patterns-established:
@@ -84,7 +84,7 @@ Each task was committed atomically:
 ## Files Created/Modified
 - `components/auth/signup-form.tsx` - Client component with email/password/confirm fields, zod validation, calls signUp action
 - `components/auth/login-form.tsx` - Client component with email/password fields, forgot password link, calls signIn action
-- `app/(auth)/signup/page.tsx` - Signup page with AnimateLabs branding and SignupForm
+- `app/(auth)/signup/page.tsx` - Signup page with Animation Labs branding and SignupForm
 - `app/(auth)/login/page.tsx` - Login page with optional message banner for post-password-reset flow
 - `app/(auth)/verify-email/page.tsx` - Post-signup instructions page with email troubleshooting tips
 
@@ -93,7 +93,7 @@ Each task was committed atomically:
 - **Toast notifications:** Display server action errors via Sonner toast.error() rather than inline form errors
 - **Loading states:** Disable all inputs and show loading text during submission to prevent double-submits
 - **Navigation links:** Each auth page links to related pages (signup ↔ login, verify-email → login)
-- **Logo branding:** Include AnimateLabs logo.svg on all auth pages for consistent branding
+- **Logo branding:** Include Animation Labs logo.svg on all auth pages for consistent branding
 
 ## Deviations from Plan
 
