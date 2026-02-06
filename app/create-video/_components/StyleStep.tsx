@@ -129,7 +129,7 @@ export function StyleStep({ form, onNext, onBack }: StyleStepProps) {
                       : 'Add any specific instructions or preferences...'
                   }
                   className="min-h-[100px]"
-                  maxLength={500}
+                  maxLength={1000}
                 />
               </FormControl>
               <FormDescription>
