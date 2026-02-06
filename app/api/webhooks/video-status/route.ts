@@ -190,23 +190,62 @@ export async function POST(request: Request) {
     })
   }
 
-  // Send email notification when video completes
-  if (data && data.length > 0 && status === 'completed') {
+  // Handle post-update actions based on status
+  if (data && data.length > 0) {
     const video = data[0]
 
-    // Send email asynchronously - don't block webhook response
-    sendVideoReadyEmail(
-      video.user_id,
-      video.video_url || videoUrl,
-      video.brand_name,
-      video.thumbnail_url || thumbnailUrl
-    ).catch(err => {
-      console.error('Video webhook: Email send failed', {
-        videoId: video.id,
-        error: err instanceof Error ? err.message : 'Unknown error',
+    // Send email notification when video completes
+    if (status === 'completed') {
+      sendVideoReadyEmail(
+        video.user_id,
+        video.video_url || videoUrl,
+        video.brand_name,
+        video.thumbnail_url || thumbnailUrl
+      ).catch(err => {
+        console.error('Video webhook: Email send failed', {
+          videoId: video.id,
+          error: err instanceof Error ? err.message : 'Unknown error',
+        })
+        // Don't throw - email failure shouldn't fail the webhook
       })
-      // Don't throw - email failure shouldn't fail the webhook
-    })
+    }
+
+    // Refund credits when video fails
+    if (status === 'failed') {
+      // Get the video's credits_used to refund the correct amount
+      const { data: videoData } = await supabase
+        .from('videos')
+        .select('credits_used')
+        .eq('id', videoId)
+        .single()
+
+      if (videoData) {
+        const creditsToRefund = videoData.credits_used || 1
+
+        const { data: refundSuccess, error: refundError } = await supabase.rpc('refund_credits', {
+          p_user_id: video.user_id,
+          p_video_id: video.id,
+          p_credits: creditsToRefund,
+          p_description: `Refund: ${video.brand_name} - ${errorMessage || 'Video processing failed'}`,
+        })
+
+        if (refundError || !refundSuccess) {
+          console.error('Video webhook: Credit refund failed', {
+            videoId: video.id,
+            userId: video.user_id,
+            credits: creditsToRefund,
+            error: refundError?.message || 'Unknown error',
+          })
+          // Don't fail webhook - video status was updated, refund failure is logged
+        } else {
+          console.log('Video webhook: Credits refunded', {
+            videoId: video.id,
+            userId: video.user_id,
+            credits: creditsToRefund,
+          })
+        }
+      }
+    }
   }
 
   return NextResponse.json({
