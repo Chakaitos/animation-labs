@@ -34,13 +34,12 @@ export default async function CreateVideoPage() {
         <div className="container flex h-16 items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Image
-              src="/logo.svg"
+              src="/AL_transparent_compact.png"
               alt="AnimateLabs"
-              width={32}
-              height={32}
-              className="h-8 w-auto"
+              width={180}
+              height={48}
+              className="h-12 w-auto"
             />
-            <span className="font-semibold">AnimateLabs</span>
           </Link>
 
           <div className="flex items-center gap-4">

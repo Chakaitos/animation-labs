@@ -4,7 +4,6 @@ import { UseFormReturn } from 'react-hook-form'
 
 import {
   VideoFormValues,
-  VIDEO_DURATIONS,
   VIDEO_QUALITIES,
 } from '@/lib/validations/video-schema'
 import { Button } from '@/components/ui/button'
@@ -33,12 +32,6 @@ interface DetailsStepProps {
   onBack: () => void
 }
 
-const DURATION_LABELS: Record<string, string> = {
-  '4': '4 seconds - Quick intro',
-  '6': '6 seconds - Standard',
-  '8': '8 seconds - Extended',
-}
-
 const QUALITY_LABELS: Record<string, string> = {
   standard: 'Standard',
   premium: 'Premium',
@@ -51,7 +44,6 @@ export function DetailsStep({ form, onNext, onBack }: DetailsStepProps) {
     // Validate fields for this step
     const isValid = await form.trigger([
       'brandName',
-      'duration',
       'quality',
       'aspectRatio',
     ])
@@ -92,35 +84,6 @@ export function DetailsStep({ form, onNext, onBack }: DetailsStepProps) {
           )}
         />
 
-        {/* Duration */}
-        <FormField
-          control={form.control}
-          name="duration"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Duration</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
-                <FormControl>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select duration" />
-                  </SelectTrigger>
-                </FormControl>
-                <SelectContent>
-                  {VIDEO_DURATIONS.map((duration) => (
-                    <SelectItem key={duration} value={duration}>
-                      {DURATION_LABELS[duration]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormDescription>
-                Longer videos have more elaborate animations
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         {/* Quality */}
         <FormField
           control={form.control}
@@ -144,11 +107,11 @@ export function DetailsStep({ form, onNext, onBack }: DetailsStepProps) {
               </Select>
               <FormDescription>
                 {selectedQuality === 'premium' ? (
-                  <span className="font-medium text-orange-600">
+                  <span className="font-medium text-[#F97316]">
                     Premium videos cost 2 credits
                   </span>
                 ) : (
-                  'Higher quality videos are recommended for marketing'
+                  'Higher quality videos are recommended for marketing. All videos are 8 seconds.'
                 )}
               </FormDescription>
               <FormMessage />

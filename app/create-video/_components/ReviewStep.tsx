@@ -14,12 +14,6 @@ interface ReviewStepProps {
   isSubmitting: boolean
 }
 
-const DURATION_LABELS: Record<string, string> = {
-  '4': '4 seconds',
-  '6': '6 seconds',
-  '8': '8 seconds',
-}
-
 const QUALITY_LABELS: Record<string, string> = {
   standard: 'Standard',
   premium: 'Premium',
@@ -67,16 +61,10 @@ export function ReviewStep({ form, file, onBack, isSubmitting }: ReviewStepProps
               <p className="font-medium">{values.brandName}</p>
             </div>
 
-            {/* Duration */}
-            <div>
-              <p className="text-sm font-medium text-muted-foreground mb-1">Duration</p>
-              <p className="font-medium">{DURATION_LABELS[values.duration]}</p>
-            </div>
-
             {/* Quality */}
             <div>
               <p className="text-sm font-medium text-muted-foreground mb-1">Quality</p>
-              <p className="font-medium">{QUALITY_LABELS[values.quality]}</p>
+              <p className="font-medium">{QUALITY_LABELS[values.quality]} (8 seconds)</p>
             </div>
 
             {/* Aspect Ratio */}

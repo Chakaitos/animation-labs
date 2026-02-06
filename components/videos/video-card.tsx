@@ -53,13 +53,13 @@ export function VideoCard({ video }: VideoCardProps) {
   const getStatusIcon = () => {
     switch (video.status) {
       case 'completed':
-        return <CheckCircle className="size-12 text-green-600" />
+        return <CheckCircle className="size-12 text-[#10B981]" />
       case 'processing':
-        return <Loader2 className="size-12 animate-spin text-blue-600" />
+        return <Loader2 className="size-12 animate-spin text-[#F97316]" />
       case 'pending':
-        return <Loader2 className="size-12 text-gray-600" />
+        return <Loader2 className="size-12 text-[#F59E0B]" />
       case 'failed':
-        return <XCircle className="size-12 text-red-600" />
+        return <XCircle className="size-12 text-destructive" />
     }
   }
 

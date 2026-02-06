@@ -10,7 +10,7 @@ export default function VerifyEmailPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link href="/" className="mx-auto mb-4">
-            <Image src="/logo.svg" alt="AnimateLabs" width={150} height={40} priority />
+            <Image src="/AL_transparent_compact.png" alt="AnimateLabs" width={250} height={66} priority />
           </Link>
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <Mail className="h-6 w-6 text-primary" />

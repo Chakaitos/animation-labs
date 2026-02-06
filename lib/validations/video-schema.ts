@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
-// Video duration options (in seconds) - matches UI dropdown
-export const VIDEO_DURATIONS = ['4', '6', '8'] as const
-export type VideoDuration = typeof VIDEO_DURATIONS[number]
+// Video duration - all videos are 8 seconds
+export const DEFAULT_VIDEO_DURATION = '8' as const
+export type VideoDuration = typeof DEFAULT_VIDEO_DURATION
 
 // Video quality options - matches UI dropdown
 export const VIDEO_QUALITIES = ['standard', 'premium'] as const
@@ -37,9 +37,6 @@ export const videoSchema = z
       .string()
       .min(1, 'Brand name is required')
       .max(100, 'Brand name must be 100 characters or less'),
-    duration: z.enum(VIDEO_DURATIONS, {
-      message: 'Please select a duration',
-    }),
     quality: z.enum(VIDEO_QUALITIES, {
       message: 'Please select a quality',
     }),
@@ -82,7 +79,6 @@ export type VideoFormValues = z.infer<typeof videoSchema>
 // Default values for the form (opinionated defaults from CONTEXT.md)
 export const videoFormDefaults: VideoFormValues = {
   brandName: '',
-  duration: '6',
   quality: 'standard',
   aspectRatio: 'landscape',
   style: 'modern',

@@ -38,7 +38,7 @@ export default async function SubscribePage() {
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Image src="/logo.svg" alt="AnimateLabs" width={120} height={32} />
+            <Image src="/AL_transparent_compact.png" alt="AnimateLabs" width={180} height={48} />
           </Link>
           <Button variant="ghost" size="sm" asChild>
             <Link href="/dashboard">

@@ -9,7 +9,7 @@ export default function ResetPasswordPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link href="/" className="mx-auto mb-4">
-            <Image src="/logo.svg" alt="AnimateLabs" width={150} height={40} priority />
+            <Image src="/AL_transparent_compact.png" alt="AnimateLabs" width={250} height={66} priority />
           </Link>
           <CardTitle className="text-2xl">Reset your password</CardTitle>
           <CardDescription>

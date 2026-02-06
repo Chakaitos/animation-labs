@@ -48,71 +48,130 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Light Mode Colors - Animation Labs Design System */
+  --background: #FFFFFF;
+  --foreground: #111827;
+
+  /* Surface colors */
+  --card: #F9FAFB;
+  --card-foreground: #111827;
+  --popover: #F9FAFB;
+  --popover-foreground: #111827;
+  --surface-hover: #F3F4F6;
+  --border: #E5E7EB;
+
+  /* Primary - Logo Green */
+  --primary: #1DD1A1;
+  --primary-foreground: #FFFFFF;
+  --primary-hover: #19B88E;
+  --primary-pressed: #15A07A;
+
+  /* Secondary/Muted */
+  --secondary: #6B7280;
+  --secondary-foreground: #FFFFFF;
+  --muted: #F9FAFB;
+  --muted-foreground: #9CA3AF;
+
+  /* Accent */
+  --accent: #F9FAFB;
+  --accent-foreground: #111827;
+
+  /* Semantic Colors */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --destructive: #EF4444;
+  --processing: #F97316;
+  --info: #3B82F6;
+
+  /* Text hierarchy */
+  --text-primary: #111827;
+  --text-secondary: #6B7280;
+  --text-tertiary: #9CA3AF;
+
+  /* Input & Ring */
+  --input: #E5E7EB;
+  --ring: #9CA3AF;
+
+  /* Chart colors */
+  --chart-1: #10B981;
+  --chart-2: #F59E0B;
+  --chart-3: #EF4444;
+  --chart-4: #F97316;
+  --chart-5: #3B82F6;
+
+  /* Sidebar */
+  --sidebar: #F9FAFB;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #1DD1A1;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #F3F4F6;
+  --sidebar-accent-foreground: #111827;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #9CA3AF;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  /* Dark Mode Colors - Animation Labs Design System */
+  --background: #0A0A0A;
+  --foreground: #F9FAFB;
+
+  /* Surface colors */
+  --card: #1A1A1A;
+  --card-foreground: #F9FAFB;
+  --popover: #1A1A1A;
+  --popover-foreground: #F9FAFB;
+  --surface-hover: #252525;
+  --border: #333333;
+
+  /* Primary - Logo Green (same in dark mode) */
+  --primary: #1DD1A1;
+  --primary-foreground: #0A0A0A;
+  --primary-hover: #19B88E;
+  --primary-pressed: #15A07A;
+
+  /* Secondary/Muted */
+  --secondary: #D1D5DB;
+  --secondary-foreground: #0A0A0A;
+  --muted: #1A1A1A;
+  --muted-foreground: #9CA3AF;
+
+  /* Accent */
+  --accent: #252525;
+  --accent-foreground: #F9FAFB;
+
+  /* Semantic Colors (slightly adjusted for dark mode) */
+  --success: #10B981;
+  --warning: #F59E0B;
+  --destructive: #EF4444;
+  --processing: #F97316;
+  --info: #3B82F6;
+
+  /* Text hierarchy */
+  --text-primary: #F9FAFB;
+  --text-secondary: #D1D5DB;
+  --text-tertiary: #9CA3AF;
+
+  /* Input & Ring */
+  --input: #252525;
+  --ring: #9CA3AF;
+
+  /* Chart colors */
+  --chart-1: #10B981;
+  --chart-2: #F59E0B;
+  --chart-3: #EF4444;
+  --chart-4: #F97316;
+  --chart-5: #3B82F6;
+
+  /* Sidebar */
+  --sidebar: #1A1A1A;
+  --sidebar-foreground: #F9FAFB;
+  --sidebar-primary: #1DD1A1;
+  --sidebar-primary-foreground: #0A0A0A;
+  --sidebar-accent: #252525;
+  --sidebar-accent-foreground: #F9FAFB;
+  --sidebar-border: #333333;
+  --sidebar-ring: #9CA3AF;
 }
 
 @layer base {

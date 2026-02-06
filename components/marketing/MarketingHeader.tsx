@@ -10,10 +10,11 @@ export function MarketingHeader() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo.svg"
+              src="/AL_transparent_compact.png"
               alt="AnimateLabs"
-              width={150}
-              height={40}
+              width={250}
+              height={66}
+              priority
             />
           </Link>
 

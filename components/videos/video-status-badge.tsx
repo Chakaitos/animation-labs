@@ -12,19 +12,19 @@ export function VideoStatusBadge({ status }: VideoStatusBadgeProps) {
     completed: {
       icon: CheckCircle,
       label: 'Ready',
-      variant: 'default' as const,
+      variant: 'success' as const,
       spinning: false,
     },
     processing: {
       icon: Loader2,
       label: 'Processing',
-      variant: 'secondary' as const,
+      variant: 'processing' as const,
       spinning: true,
     },
     pending: {
       icon: Loader2,
       label: 'Queued',
-      variant: 'secondary' as const,
+      variant: 'warning' as const,
       spinning: false,
     },
     failed: {

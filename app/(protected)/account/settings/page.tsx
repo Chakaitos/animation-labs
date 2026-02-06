@@ -22,7 +22,7 @@ export default async function AccountSettingsPage() {
       <header className="border-b">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/dashboard">
-            <Image src="/logo.svg" alt="AnimateLabs" width={120} height={32} priority />
+            <Image src="/AL_transparent_compact.png" alt="AnimateLabs" width={180} height={48} priority />
           </Link>
           <UserMenu user={user} />
         </div>

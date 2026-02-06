@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 
-import { videoSchema, videoFormDefaults, type VideoFormValues } from '@/lib/validations/video-schema'
+import { videoSchema, videoFormDefaults, DEFAULT_VIDEO_DURATION, type VideoFormValues } from '@/lib/validations/video-schema'
 import { createVideo, type CreateVideoResult } from '@/lib/actions/video'
 import { Form } from '@/components/ui/form'
 
@@ -53,7 +53,7 @@ export function CreateVideoForm() {
       const formData = new FormData()
       formData.append('logo', file)
       formData.append('brandName', values.brandName)
-      formData.append('duration', values.duration)
+      formData.append('duration', DEFAULT_VIDEO_DURATION) // All videos are 8 seconds
       formData.append('quality', values.quality)
       formData.append('aspectRatio', values.aspectRatio)
       formData.append('style', values.style)

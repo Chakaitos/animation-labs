@@ -79,7 +79,7 @@ export default async function VideosPage({ searchParams }: PageProps) {
       <header className="border-b">
         <div className="container mx-auto flex items-center justify-between px-4 py-4">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Image src="/logo.svg" alt="AnimateLabs" width={120} height={32} />
+            <Image src="/AL_transparent_compact.png" alt="AnimateLabs" width={180} height={48} />
           </Link>
           <UserMenu user={user} />
         </div>

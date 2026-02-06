@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { videoSchema, type VideoFormValues } from '@/lib/validations/video-schema'
+import { videoSchema, DEFAULT_VIDEO_DURATION, type VideoFormValues } from '@/lib/validations/video-schema'
 import { validateImageFile } from '@/lib/utils/file-validation'
 import { getStylePresetConfig } from '@/lib/config/style-presets'
 import { redirect } from 'next/navigation'
@@ -40,7 +40,6 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
   // 2. Validate form data
   const rawData = {
     brandName: formData.get('brandName'),
-    duration: formData.get('duration'),
     quality: formData.get('quality'),
     aspectRatio: formData.get('aspectRatio'),
     style: formData.get('style'),
@@ -118,7 +117,7 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
       brand_name: validated.data.brandName,
       status: 'processing',
       logo_url: publicUrl,
-      duration_seconds: parseInt(validated.data.duration, 10),
+      duration_seconds: parseInt(DEFAULT_VIDEO_DURATION, 10), // All videos are 8 seconds
       quality: validated.data.quality,
       aspect_ratio: validated.data.aspectRatio,
       style: validated.data.style,
@@ -173,7 +172,7 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
         brand_name: validated.data.brandName,
         quality: validated.data.quality,
         aspect_ratio: validated.data.aspectRatio,
-        duration: parseInt(validated.data.duration, 10),
+        duration: parseInt(DEFAULT_VIDEO_DURATION, 10), // All videos are 8 seconds
         style_preset: getStylePresetConfig(
           validated.data.style,
           validated.data.creativeDirection
