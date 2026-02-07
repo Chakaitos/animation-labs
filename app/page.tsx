@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { MarketingHeader } from "@/components/marketing/MarketingHeader"
 import { Hero } from "@/components/marketing/Hero"
 import { ExampleGallery } from "@/components/marketing/ExampleGallery"
+import { HowToSection } from "@/components/marketing/HowToSection"
 import { SocialProof } from "@/components/marketing/SocialProof"
 import { PricingSection } from "@/components/marketing/PricingSection"
 import { Footer } from "@/components/marketing/Footer"
@@ -32,6 +33,7 @@ export default function HomePage() {
       <main>
         <Hero />
         <ExampleGallery />
+        <HowToSection />
         <SocialProof />
         <PricingSection />
       </main>
