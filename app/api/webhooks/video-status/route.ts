@@ -212,15 +212,32 @@ export async function POST(request: Request) {
 
     // Refund credits when video fails
     if (status === 'failed') {
+      console.log('Video webhook: Video failed, attempting credit refund', {
+        videoId: video.id,
+        userId: video.user_id,
+        brandName: video.brand_name,
+      })
+
       // Get the video's credits_used to refund the correct amount
-      const { data: videoData } = await supabase
+      const { data: videoData, error: fetchError } = await supabase
         .from('videos')
         .select('credits_used')
         .eq('id', videoId)
         .single()
 
-      if (videoData) {
+      if (fetchError) {
+        console.error('Video webhook: Failed to fetch video credits_used', {
+          videoId: videoId,
+          error: fetchError.message,
+        })
+      } else if (videoData) {
         const creditsToRefund = videoData.credits_used || 1
+
+        console.log('Video webhook: Calling refund_credits RPC', {
+          videoId: video.id,
+          userId: video.user_id,
+          credits: creditsToRefund,
+        })
 
         const { data: refundSuccess, error: refundError } = await supabase.rpc('refund_credits', {
           p_user_id: video.user_id,
@@ -234,16 +251,23 @@ export async function POST(request: Request) {
             videoId: video.id,
             userId: video.user_id,
             credits: creditsToRefund,
+            refundSuccess,
             error: refundError?.message || 'Unknown error',
+            errorDetails: refundError,
           })
           // Don't fail webhook - video status was updated, refund failure is logged
         } else {
-          console.log('Video webhook: Credits refunded', {
+          console.log('Video webhook: ✅ Credits successfully refunded', {
             videoId: video.id,
             userId: video.user_id,
             credits: creditsToRefund,
+            brandName: video.brand_name,
           })
         }
+      } else {
+        console.error('Video webhook: No video data found for refund', {
+          videoId: videoId,
+        })
       }
     }
   }
