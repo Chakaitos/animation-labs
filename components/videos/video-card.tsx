@@ -8,6 +8,7 @@ import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { VideoStatusBadge } from './video-status-badge'
 import { DeleteVideoDialog } from './delete-video-dialog'
+import { RequestRevisionButton } from './RequestRevisionButton'
 
 type VideoStatus = 'pending' | 'processing' | 'completed' | 'failed'
 
@@ -24,11 +25,24 @@ interface Video {
 
 interface VideoCardProps {
   video: Video
+  revisionRequest?: {
+    id: string
+    status: 'pending' | 'approved' | 'denied'
+    reason?: string
+  } | null
+  revisionCreditsRemaining?: number
+  revisionCreditsTotal?: number
 }
 
-export function VideoCard({ video }: VideoCardProps) {
+export function VideoCard({
+  video,
+  revisionRequest,
+  revisionCreditsRemaining = 0,
+  revisionCreditsTotal = 0,
+}: VideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canDownload = video.status === 'completed' && video.video_url
+  const canRequestRevision = (video.status === 'completed' || video.status === 'failed')
 
   // Format aspect ratio for display
   const formatAspectRatio = (ratio: 'landscape' | 'portrait') => {
@@ -121,16 +135,28 @@ export function VideoCard({ video }: VideoCardProps) {
       </CardContent>
 
       {/* Actions */}
-      <CardFooter className="gap-2">
-        {canDownload && (
-          <Button variant="outline" size="sm" asChild className="flex-1">
-            <a href={`/api/download/${video.id}`}>
-              <Download />
-              Download
-            </a>
-          </Button>
+      <CardFooter className="flex-col gap-2">
+        <div className="flex w-full gap-2">
+          {canDownload && (
+            <Button variant="outline" size="sm" asChild className="flex-1">
+              <a href={`/api/download/${video.id}`}>
+                <Download />
+                Download
+              </a>
+            </Button>
+          )}
+          <DeleteVideoDialog videoId={video.id} brandName={video.brand_name} />
+        </div>
+        {canRequestRevision && (
+          <div className="w-full">
+            <RequestRevisionButton
+              videoId={video.id}
+              existingRequest={revisionRequest}
+              availableCredits={revisionCreditsRemaining}
+              totalCredits={revisionCreditsTotal}
+            />
+          </div>
         )}
-        <DeleteVideoDialog videoId={video.id} brandName={video.brand_name} />
       </CardFooter>
     </Card>
   )

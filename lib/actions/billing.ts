@@ -105,7 +105,7 @@ export async function getCreditBalance() {
 
   const { data: subscription, error } = await supabase
     .from('subscriptions')
-    .select('credits_remaining, overage_credits, status')
+    .select('credits_remaining, overage_credits, revision_credits_remaining, revision_credits_total, status')
     .eq('user_id', user.id)
     .single()
 
@@ -117,6 +117,8 @@ export async function getCreditBalance() {
   if (!subscription) {
     return {
       balance: {
+        revision: 0,
+        revisionTotal: 0,
         subscription: 0,
         overage: 0,
         total: 0,
@@ -126,9 +128,11 @@ export async function getCreditBalance() {
 
   return {
     balance: {
+      revision: subscription.revision_credits_remaining || 0,
+      revisionTotal: subscription.revision_credits_total || 0,
       subscription: subscription.credits_remaining || 0,
       overage: subscription.overage_credits || 0,
-      total: (subscription.credits_remaining || 0) + (subscription.overage_credits || 0),
+      total: (subscription.revision_credits_remaining || 0) + (subscription.credits_remaining || 0) + (subscription.overage_credits || 0),
     },
   }
 }

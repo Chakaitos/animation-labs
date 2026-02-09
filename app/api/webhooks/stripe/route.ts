@@ -133,6 +133,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       return
     }
 
+    // Calculate revision credits based on plan tier
+    const revisionCreditsTotal = planId === 'starter' ? 1 : planId === 'professional' ? 3 : 0
+
     // Check if user already has a subscription
     const { data: existingSub, error: checkError } = await getSupabaseAdmin()
       .from('subscriptions')
@@ -159,6 +162,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           status: 'active',
           credits_remaining: plan.credits,
           credits_total: plan.credits,
+          revision_credits_total: revisionCreditsTotal,
+          revision_credits_remaining: revisionCreditsTotal,
           stripe_customer_id: session.customer as string,
           stripe_subscription_id: subscriptionId,
           current_period_start: new Date(periodStart * 1000).toISOString(),
@@ -199,6 +204,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           status: 'active',
           credits_remaining: plan.credits,
           credits_total: plan.credits,
+          revision_credits_total: revisionCreditsTotal,
+          revision_credits_remaining: revisionCreditsTotal,
           stripe_customer_id: session.customer as string,
           stripe_subscription_id: subscriptionId,
           current_period_start: new Date(periodStart * 1000).toISOString(),
@@ -336,9 +343,12 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
 
   // Update plan and credits if plan changed
   if (planId && plan) {
+    const revisionCreditsTotal = planId === 'starter' ? 1 : planId === 'professional' ? 3 : 0
     updateData.plan = planId
     updateData.credits_remaining = plan.credits
     updateData.credits_total = plan.credits
+    updateData.revision_credits_total = revisionCreditsTotal
+    updateData.revision_credits_remaining = revisionCreditsTotal
   }
 
   await getSupabaseAdmin()
@@ -376,6 +386,9 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 
   if (!plan) return
 
+  // Calculate revision credits based on plan tier
+  const revisionCreditsTotal = planId === 'starter' ? 1 : planId === 'professional' ? 3 : 0
+
   // Get our subscription record
   const { data: sub } = await getSupabaseAdmin()
     .from('subscriptions')
@@ -385,12 +398,14 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
 
   if (!sub) return
 
-  // Reset subscription credits (overage credits persist)
+  // Reset subscription credits and revision credits (overage credits persist)
   await getSupabaseAdmin()
     .from('subscriptions')
     .update({
       credits_remaining: plan.credits,
       credits_total: plan.credits,
+      revision_credits_total: revisionCreditsTotal,
+      revision_credits_remaining: revisionCreditsTotal,
       current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
       current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
     })
