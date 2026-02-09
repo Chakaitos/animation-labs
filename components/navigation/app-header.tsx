@@ -8,6 +8,8 @@ import { Button } from '@/components/ui/button'
 import { UserMenu } from './user-menu'
 import { CreditBalanceIndicator } from './credit-balance-indicator'
 import { cn } from '@/lib/utils'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 interface AppHeaderProps {
   user: User
@@ -16,6 +18,18 @@ interface AppHeaderProps {
 
 export function AppHeader({ user, creditBalance }: AppHeaderProps) {
   const pathname = usePathname()
+  const { theme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const currentTheme = mounted ? (resolvedTheme || theme) : 'light'
+  const logoSrc = currentTheme === 'dark'
+    ? '/AL_dark_mode.png'
+    : '/AL_transparent_compact.png'
 
   const isActive = (path: string) => pathname === path
 
@@ -26,11 +40,12 @@ export function AppHeader({ user, creditBalance }: AppHeaderProps) {
           {/* Logo */}
           <Link href="/dashboard" className="flex items-center">
             <Image
-              src="/logo.svg"
+              src={logoSrc}
               alt="Animation Labs"
-              width={150}
-              height={40}
+              width={200}
+              height={53}
               priority
+              key={currentTheme}
             />
           </Link>
 
