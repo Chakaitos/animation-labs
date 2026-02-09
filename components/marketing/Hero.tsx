@@ -20,9 +20,6 @@ export function Hero() {
               Professional Logo Animations{" "}
               <span className="text-primary">At a Fraction of the Cost</span>
             </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground">
-              $3-5 per video, delivered in 10-15 minutes
-            </p>
           </div>
 
           {/* Hero video */}
