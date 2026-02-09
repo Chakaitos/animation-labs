@@ -89,6 +89,14 @@
   --text-secondary: #6B7280;
   --text-tertiary: #9CA3AF;
 
+  /* Section backgrounds - refined atmospheric tones */
+  --section-primary: #FFFFFF;
+  --section-secondary: #F9FAFB;
+  --section-tertiary: #F3F4F6;
+  --section-accent: linear-gradient(180deg, #FAFBFC 0%, #F5F7FA 100%);
+  --section-gradient-subtle: linear-gradient(135deg, #FFFFFF 0%, #F9FAFB 50%, #F3F4F6 100%);
+  --section-gradient-primary: linear-gradient(135deg, #F0FDF9 0%, #FFFFFF 100%);
+
   /* Input & Ring */
   --input: #E5E7EB;
   --ring: #9CA3AF;
@@ -151,6 +159,14 @@
   --text-primary: #F9FAFB;
   --text-secondary: #D1D5DB;
   --text-tertiary: #9CA3AF;
+
+  /* Section backgrounds - dark mode atmospheric tones */
+  --section-primary: #0A0A0A;
+  --section-secondary: #141414;
+  --section-tertiary: #1A1A1A;
+  --section-accent: linear-gradient(180deg, #0F0F0F 0%, #1A1A1A 100%);
+  --section-gradient-subtle: linear-gradient(135deg, #0A0A0A 0%, #141414 50%, #1A1A1A 100%);
+  --section-gradient-primary: linear-gradient(135deg, #0A1A14 0%, #0A0A0A 100%);
 
   /* Input & Ring */
   --input: #252525;

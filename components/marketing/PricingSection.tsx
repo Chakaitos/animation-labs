@@ -12,8 +12,12 @@ import { Check } from "lucide-react"
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="bg-muted/30 py-16">
-      <div className="container mx-auto px-4">
+    <section id="pricing" className="relative bg-white dark:bg-zinc-950 py-16 overflow-hidden">
+      {/* Radial gradient accent - soft primary glow from bottom */}
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-emerald-100/30 dark:bg-emerald-500/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 bg-gradient-to-t from-slate-50/60 dark:from-zinc-900/60 via-transparent to-transparent" />
+
+      <div className="container relative mx-auto px-4">
         {/* Section header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">

@@ -3,8 +3,16 @@ import { Button } from "@/components/ui/button"
 
 export function Hero() {
   return (
-    <section className="py-16 md:py-24">
-      <div className="container mx-auto px-4">
+    <section className="relative py-16 md:py-24 overflow-hidden bg-gradient-to-br from-white via-slate-50 to-emerald-50/30 dark:from-zinc-950 dark:via-zinc-900 dark:to-emerald-950/20">
+      {/* Subtle noise texture overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+        style={{
+          backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNhKSIvPjwvc3ZnPg==')"
+        }}
+      />
+
+      <div className="container relative mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Headline section */}
           <div className="text-center mb-12">

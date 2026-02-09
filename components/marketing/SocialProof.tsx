@@ -25,8 +25,17 @@ const testimonials = [
 
 export function SocialProof() {
   return (
-    <section className="bg-muted/20 py-16">
-      <div className="container mx-auto px-4">
+    <section className="relative bg-gradient-to-b from-slate-50 via-slate-100/60 to-slate-50 dark:from-zinc-900 dark:via-zinc-800/60 dark:to-zinc-900 py-16 overflow-hidden">
+      {/* Subtle grid pattern overlay */}
+      <div
+        className="absolute inset-0 opacity-30 dark:opacity-20"
+        style={{
+          backgroundImage: "linear-gradient(rgba(0,0,0,.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.02) 1px, transparent 1px)",
+          backgroundSize: "64px 64px"
+        }}
+      />
+
+      <div className="container relative mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Stats bar */}
           <div className="grid grid-cols-3 gap-8 mb-16">

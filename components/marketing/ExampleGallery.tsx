@@ -43,8 +43,11 @@ const examples = [
 
 export function ExampleGallery() {
   return (
-    <section id="examples" className="py-16 md:py-24 bg-muted/30">
-      <div className="container mx-auto px-4">
+    <section id="examples" className="relative py-16 md:py-24 bg-gradient-to-b from-slate-100 via-slate-50 to-slate-100 dark:from-zinc-900 dark:via-zinc-800 dark:to-zinc-900 overflow-hidden">
+      {/* Decorative gradient orb */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-100/30 dark:bg-emerald-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
+
+      <div className="container relative mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Section header */}
           <h2 className="text-3xl font-bold text-center mb-12">

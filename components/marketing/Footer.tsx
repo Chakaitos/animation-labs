@@ -1,22 +1,48 @@
+"use client"
+
 import Link from "next/link"
 import Image from "next/image"
 import { Twitter, Linkedin, Instagram, Youtube } from "lucide-react"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 
 export function Footer() {
+  const { theme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // Avoid hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const currentTheme = mounted ? (resolvedTheme || theme) : "light"
+  const logoSrc = currentTheme === "dark"
+    ? "/AL_dark_mode.png"
+    : "/AL_transparent_compact.png"
+
   return (
-    <footer className="border-t mt-auto">
-      <div className="container mx-auto px-4 py-12 md:py-16">
+    <footer className="relative border-t mt-auto bg-gradient-to-b from-slate-50 to-slate-100 dark:from-zinc-900 dark:to-zinc-800 overflow-hidden">
+      {/* Subtle texture overlay */}
+      <div
+        className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+        style={{
+          backgroundImage: "url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNhKSIvPjwvc3ZnPg==')"
+        }}
+      />
+
+      <div className="container relative mx-auto px-4 py-12 md:py-16">
         {/* Main footer grid - 3 columns */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 max-w-5xl mx-auto">
           {/* Brand column */}
           <div className="space-y-4 md:col-span-1 text-center flex flex-col items-center">
             <Link href="/" className="inline-block">
               <Image
-                src="/AL_transparent_compact.png"
+                src={logoSrc}
                 alt="Animation Labs"
                 width={250}
                 height={66}
                 className="h-14 w-auto"
+                key={currentTheme}
               />
             </Link>
             <p className="text-sm text-muted-foreground max-w-xs">
