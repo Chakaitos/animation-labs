@@ -61,7 +61,33 @@ const FAQS = [
 
 export default function PricingPage() {
   const [interval, setInterval] = useState<'month' | 'year'>('month')
+  const [isLoading, setIsLoading] = useState<string | null>(null)
   const isAnnual = interval === 'year'
+
+  const handleSubscribe = async (planId: 'starter' | 'professional') => {
+    setIsLoading(planId)
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: planId, interval }),
+      })
+
+      const data = await response.json()
+
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        console.error('Checkout error:', data.error)
+        alert('Failed to start checkout. Please try again.')
+        setIsLoading(null)
+      }
+    } catch (error) {
+      console.error('Checkout error:', error)
+      alert('Failed to start checkout. Please try again.')
+      setIsLoading(null)
+    }
+  }
 
   return (
     <div className="min-h-screen">
@@ -146,8 +172,13 @@ export default function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/signup">Select Plan</Link>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => handleSubscribe('starter')}
+                disabled={isLoading === 'starter'}
+              >
+                {isLoading === 'starter' ? 'Loading...' : 'Get Started'}
               </Button>
             </CardFooter>
           </Card>
@@ -194,8 +225,12 @@ export default function PricingPage() {
               </ul>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" asChild>
-                <Link href="/signup">Select Plan</Link>
+              <Button
+                className="w-full"
+                onClick={() => handleSubscribe('professional')}
+                disabled={isLoading === 'professional'}
+              >
+                {isLoading === 'professional' ? 'Loading...' : 'Get Started'}
               </Button>
             </CardFooter>
           </Card>
