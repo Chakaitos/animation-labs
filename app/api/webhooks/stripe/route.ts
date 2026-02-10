@@ -25,12 +25,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
   }
 
+  // Use preview webhook secret if available (for preview deployments)
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET_PREVIEW || process.env.STRIPE_WEBHOOK_SECRET
+
   let event: Stripe.Event
   try {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
+      webhookSecret!
     )
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error'
