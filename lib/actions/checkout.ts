@@ -24,7 +24,7 @@ export async function createSubscriptionCheckout(planId: PlanId) {
   }
 
   const plan = PLANS[planId]
-  if (!plan || !plan.priceId) {
+  if (!plan || !plan.monthly.priceId) {
     return { error: 'Invalid plan selected' }
   }
 
@@ -51,7 +51,7 @@ export async function createSubscriptionCheckout(planId: PlanId) {
       payment_method_types: ['card'],
       line_items: [
         {
-          price: plan.priceId,
+          price: plan.monthly.priceId,
           quantity: 1,
         },
       ],

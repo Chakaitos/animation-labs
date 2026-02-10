@@ -340,13 +340,13 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
     current_period_end: new Date(periodEnd * 1000).toISOString(),
   }
 
-  // Update plan and credits if plan changed
+  // Update plan, interval, rollover, and reset credits if plan changed
   if (planData && plan) {
     updateData.plan = planData.planId
-    updateData.credits_remaining = plan.credits
-    updateData.credits_total = plan.credits
     updateData.billing_interval = planData.interval
     updateData.rollover_cap = planData.rolloverCap
+    updateData.credits_remaining = plan.credits
+    updateData.credits_total = plan.credits
   }
 
   await getSupabaseAdmin()
