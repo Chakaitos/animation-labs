@@ -387,30 +387,58 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
   // Get our subscription record
   const { data: sub } = await getSupabaseAdmin()
     .from('subscriptions')
-    .select('id, user_id')
+    .select('id, user_id, credits_remaining, rollover_cap, billing_interval')
     .eq('stripe_subscription_id', subscriptionId)
     .single()
 
   if (!sub) return
 
-  // Reset subscription credits (overage credits persist)
+  // Calculate rollover (capped)
+  const unused = sub.credits_remaining
+  const rollover = Math.min(unused, sub.rollover_cap)
+  const expired = unused - rollover
+  const newBalance = plan.credits + rollover
+
+  // Update subscription credits
   await getSupabaseAdmin()
     .from('subscriptions')
     .update({
-      credits_remaining: plan.credits,
+      credits_remaining: newBalance,
       credits_total: plan.credits,
       current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
       current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
     })
     .eq('id', sub.id)
 
-  // Log renewal
+  // Log expired credits if any
+  if (expired > 0) {
+    await getSupabaseAdmin().from('credit_transactions').insert({
+      user_id: sub.user_id,
+      subscription_id: sub.id,
+      amount: -expired,
+      type: 'expiry',
+      description: `${expired} credit${expired > 1 ? 's' : ''} expired (rollover cap: ${sub.rollover_cap})`,
+    })
+  }
+
+  // Log rolled over credits if any
+  if (rollover > 0) {
+    await getSupabaseAdmin().from('credit_transactions').insert({
+      user_id: sub.user_id,
+      subscription_id: sub.id,
+      amount: rollover,
+      type: 'bonus',
+      description: `${rollover} credit${rollover > 1 ? 's' : ''} rolled over from previous period`,
+    })
+  }
+
+  // Log renewal credit grant
   await getSupabaseAdmin().from('credit_transactions').insert({
     user_id: sub.user_id,
     subscription_id: sub.id,
     amount: plan.credits,
     type: 'subscription',
-    description: `${plan.name} plan (${planData.interval === 'year' ? 'annual' : 'monthly'}) renewed - credits reset`,
+    description: `${plan.name} plan renewed - ${plan.credits} credits granted (${sub.billing_interval === 'year' ? 'annual' : 'monthly'})`,
   })
 }
 
