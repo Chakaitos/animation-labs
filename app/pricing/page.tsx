@@ -240,7 +240,7 @@ export default function PricingPage() {
         <div className="max-w-2xl mx-auto mb-16 p-6 bg-muted/30 rounded-lg">
           <h3 className="font-semibold mb-2">Technical Failure Guarantee</h3>
           <p className="text-sm text-muted-foreground">
-            If technical issues prevent video delivery, we'll refund your
+            If technical issues prevent video delivery, we&apos;ll refund your
             credit. This guarantee covers system failures, not subjective
             quality preferences. Check our{" "}
             <Link href="/#examples" className="text-primary hover:underline">
