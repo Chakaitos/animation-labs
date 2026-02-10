@@ -125,10 +125,10 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     }
 
     const priceId = subscription.items.data[0]?.price.id
-    const planId = priceId ? getPlanByPriceId(priceId) : null
-    const plan = planId ? PLANS[planId] : null
+    const planData = priceId ? getPlanByPriceId(priceId) : null
+    const plan = planData ? PLANS[planData.planId] : null
 
-    if (!plan || !planId) {
+    if (!plan || !planData) {
       console.error('Stripe webhook: Unknown price ID', { priceId })
       return
     }
@@ -155,10 +155,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       const { error: updateError } = await getSupabaseAdmin()
         .from('subscriptions')
         .update({
-          plan: planId,
+          plan: planData.planId,
           status: 'active',
           credits_remaining: plan.credits,
           credits_total: plan.credits,
+          billing_interval: planData.interval,
+          rollover_cap: planData.rolloverCap,
           stripe_customer_id: session.customer as string,
           stripe_subscription_id: subscriptionId,
           current_period_start: new Date(periodStart * 1000).toISOString(),
@@ -177,7 +179,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         subscription_id: existingSub.id,
         amount: plan.credits,
         type: 'subscription',
-        description: `${plan.name} plan subscription activated`,
+        description: `${plan.name} plan (${planData.interval === 'year' ? 'annual' : 'monthly'}) subscription activated`,
       })
 
       if (txError) {
@@ -195,10 +197,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         .from('subscriptions')
         .insert({
           user_id: userId,
-          plan: planId,
+          plan: planData.planId,
           status: 'active',
           credits_remaining: plan.credits,
           credits_total: plan.credits,
+          billing_interval: planData.interval,
+          rollover_cap: planData.rolloverCap,
           stripe_customer_id: session.customer as string,
           stripe_subscription_id: subscriptionId,
           current_period_start: new Date(periodStart * 1000).toISOString(),
@@ -219,7 +223,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           subscription_id: newSub.id,
           amount: plan.credits,
           type: 'subscription',
-          description: `${plan.name} plan subscription started`,
+          description: `${plan.name} plan (${planData.interval === 'year' ? 'annual' : 'monthly'}) subscription started`,
         })
 
         if (txError) {
@@ -267,6 +271,8 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
           credits_remaining: 0,
           credits_total: 0,
           overage_credits: 0,
+          billing_interval: 'month',
+          rollover_cap: 0,
           stripe_customer_id: session.customer as string,
         })
         .select('id')
@@ -319,8 +325,8 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   }
 
   const priceId = subscription.items.data[0]?.price.id
-  const planId = priceId ? getPlanByPriceId(priceId) : null
-  const plan = planId ? PLANS[planId] : null
+  const planData = priceId ? getPlanByPriceId(priceId) : null
+  const plan = planData ? PLANS[planData.planId] : null
 
   // Use fallback for period dates (same as checkout handler)
   const periodStart = subWithPeriod.current_period_start || subscription.created
@@ -335,10 +341,12 @@ async function handleSubscriptionUpdated(subscription: Stripe.Subscription) {
   }
 
   // Update plan and credits if plan changed
-  if (planId && plan) {
-    updateData.plan = planId
+  if (planData && plan) {
+    updateData.plan = planData.planId
     updateData.credits_remaining = plan.credits
     updateData.credits_total = plan.credits
+    updateData.billing_interval = planData.interval
+    updateData.rollover_cap = planData.rolloverCap
   }
 
   await getSupabaseAdmin()
@@ -371,10 +379,10 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     expand: ['items.data.price']
   }) as any
   const priceId = subscription.items.data[0]?.price.id
-  const planId = priceId ? getPlanByPriceId(priceId) : null
-  const plan = planId ? PLANS[planId] : null
+  const planData = priceId ? getPlanByPriceId(priceId) : null
+  const plan = planData ? PLANS[planData.planId] : null
 
-  if (!plan) return
+  if (!plan || !planData) return
 
   // Get our subscription record
   const { data: sub } = await getSupabaseAdmin()
@@ -402,7 +410,7 @@ async function handlePaymentSucceeded(invoice: Stripe.Invoice) {
     subscription_id: sub.id,
     amount: plan.credits,
     type: 'subscription',
-    description: `${plan.name} plan renewed - credits reset`,
+    description: `${plan.name} plan (${planData.interval === 'year' ? 'annual' : 'monthly'}) renewed - credits reset`,
   })
 }
 
