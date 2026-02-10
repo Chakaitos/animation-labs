@@ -129,7 +129,16 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     const plan = planData ? PLANS[planData.planId] : null
 
     if (!plan || !planData) {
-      console.error('Stripe webhook: Unknown price ID', { priceId })
+      // Debug: Log configured price IDs
+      console.error('Stripe webhook: Unknown price ID', {
+        receivedPriceId: priceId,
+        configuredPriceIds: {
+          starter_monthly: PLANS.starter.monthly.priceId,
+          starter_annual: PLANS.starter.annual.priceId,
+          professional_monthly: PLANS.professional.monthly.priceId,
+          professional_annual: PLANS.professional.annual.priceId,
+        }
+      })
       return
     }
 
