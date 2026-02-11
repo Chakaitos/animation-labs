@@ -41,7 +41,10 @@ export function ExamplesGrid({ examples, onExampleClick }: ExamplesGridProps) {
 
           {/* Tags */}
           <div className="mt-3 flex flex-wrap gap-2">
-            <Badge variant="secondary" className="text-xs">
+            <Badge
+              variant="secondary"
+              className="text-xs bg-primary text-white dark:bg-primary dark:text-white border-none"
+            >
               {example.style}
             </Badge>
             <Badge variant="outline" className="text-xs">

@@ -5,23 +5,23 @@ import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all duration-200 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
   {
     variants: {
       variant: {
-        default: "bg-primary text-white hover:opacity-90 active:opacity-80 shadow-sm",
+        default: "bg-primary text-white shadow-sm hover:bg-white hover:text-primary hover:shadow-md dark:hover:bg-slate-900 dark:hover:text-primary border border-transparent hover:border-primary active:scale-[0.98]",
         destructive:
-          "bg-destructive text-white hover:bg-destructive/90 active:bg-destructive/80 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 shadow-sm",
+          "bg-destructive text-white shadow-sm hover:bg-white hover:text-destructive hover:shadow-md dark:hover:bg-slate-900 dark:hover:text-destructive border border-transparent hover:border-destructive active:scale-[0.98] focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40",
         outline:
-          "border border-border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground",
+          "border border-input bg-background shadow-xs hover:bg-primary hover:text-white hover:border-primary hover:shadow-md dark:hover:bg-primary active:scale-[0.98]",
         secondary:
-          "bg-secondary text-white hover:bg-secondary/80 active:bg-secondary/70 shadow-sm",
+          "bg-secondary text-white shadow-sm hover:bg-white hover:text-secondary hover:shadow-md dark:hover:bg-slate-900 dark:hover:text-secondary border border-transparent hover:border-secondary active:scale-[0.98]",
         ghost:
-          "hover:bg-accent hover:text-accent-foreground",
+          "hover:bg-accent hover:text-accent-foreground active:scale-[0.98]",
         link: "text-primary underline-offset-4 hover:underline",
-        success: "bg-[#10B981] text-white hover:opacity-90 active:opacity-80 shadow-sm",
-        warning: "bg-[#F59E0B] text-white hover:opacity-90 active:opacity-80 shadow-sm",
-        processing: "bg-[#F97316] text-white hover:opacity-90 active:opacity-80 shadow-sm",
+        success: "bg-[#10B981] text-white shadow-sm hover:bg-white hover:text-[#10B981] hover:shadow-md dark:hover:bg-slate-900 dark:hover:text-[#10B981] border border-transparent hover:border-[#10B981] active:scale-[0.98]",
+        warning: "bg-[#F59E0B] text-white shadow-sm hover:bg-white hover:text-[#F59E0B] hover:shadow-md dark:hover:bg-slate-900 dark:hover:text-[#F59E0B] border border-transparent hover:border-[#F59E0B] active:scale-[0.98]",
+        processing: "bg-[#F97316] text-white shadow-sm hover:bg-white hover:text-[#F97316] hover:shadow-md dark:hover:bg-slate-900 dark:hover:text-[#F97316] border border-transparent hover:border-[#F97316] active:scale-[0.98]",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",
