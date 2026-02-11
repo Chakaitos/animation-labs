@@ -8,13 +8,28 @@ export async function GET(request: NextRequest) {
   const token_hash = searchParams.get('token_hash')
   const type = searchParams.get('type') as EmailOtpType | null
   const next = searchParams.get('next') ?? '/dashboard'
+  const error_param = searchParams.get('error')
+  const error_description = searchParams.get('error_description')
 
   console.log('Auth callback invoked:', {
     hasTokenHash: !!token_hash,
     type,
     next,
-    url: request.url,
+    error: error_param,
+    errorDescription: error_description,
+    fullUrl: request.url,
   })
+
+  // Check for error from Supabase redirect
+  if (error_param) {
+    console.error('Auth callback error from Supabase:', {
+      error: error_param,
+      description: error_description,
+    })
+    return NextResponse.redirect(
+      new URL(`/auth-error?error=${error_param}&description=${error_description}`, request.url)
+    )
+  }
 
   // Prevent open redirect attacks - only allow internal paths
   const redirectTo = next.startsWith('/') ? next : '/dashboard'
@@ -22,13 +37,19 @@ export async function GET(request: NextRequest) {
   if (token_hash && type) {
     const supabase = await createClient()
 
-    const { error } = await supabase.auth.verifyOtp({
+    console.log('Attempting to verify OTP:', { type })
+
+    const { data, error } = await supabase.auth.verifyOtp({
       type,
       token_hash,
     })
 
     if (!error) {
-      console.log('Email verified successfully:', { type })
+      console.log('Email verified successfully:', {
+        type,
+        hasSession: !!data.session,
+        hasUser: !!data.user,
+      })
 
       // Email verified successfully - send welcome email
       // Only send on signup verification (not password reset, etc.)
@@ -67,12 +88,24 @@ export async function GET(request: NextRequest) {
       console.log('Redirecting to:', redirectTo)
       return NextResponse.redirect(new URL(redirectTo, request.url))
     } else {
-      console.error('Email verification failed:', error)
+      console.error('Email verification failed:', {
+        error: error.message,
+        status: error.status,
+        name: error.name,
+      })
+      return NextResponse.redirect(
+        new URL(`/auth-error?error=verification-failed&message=${encodeURIComponent(error.message)}`, request.url)
+      )
     }
-  } else {
-    console.error('Missing token_hash or type:', { hasTokenHash: !!token_hash, type })
   }
 
+  // No token_hash or type provided
+  console.error('Missing required params:', {
+    hasTokenHash: !!token_hash,
+    type,
+    searchParams: Object.fromEntries(searchParams.entries()),
+  })
+
   // Redirect to error page on failure
-  return NextResponse.redirect(new URL('/auth-error?error=verification-failed', request.url))
+  return NextResponse.redirect(new URL('/auth-error?error=missing-params', request.url))
 }
