@@ -95,8 +95,8 @@ export function ExampleGallery() {
 
           {/* Section CTA */}
           <div className="flex justify-center mt-12">
-            <Button size="lg" asChild>
-              <Link href="/signup">Get Started</Link>
+            <Button size="lg" variant="outline" asChild>
+              <Link href="/examples">View All Examples</Link>
             </Button>
           </div>
         </div>

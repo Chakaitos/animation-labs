@@ -40,6 +40,12 @@ export function MarketingHeader() {
           {/* Navigation */}
           <nav className="flex items-center gap-2 sm:gap-4">
             <Link
+              href="/examples"
+              className="text-sm hover:text-primary transition-colors"
+            >
+              Examples
+            </Link>
+            <Link
               href="/pricing"
               className="text-sm hover:text-primary transition-colors"
             >
