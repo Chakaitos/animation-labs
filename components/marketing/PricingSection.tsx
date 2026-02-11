@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -8,9 +11,15 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Switch } from "@/components/ui/switch"
 import { Check } from "lucide-react"
+import { PLANS } from "@/lib/stripe/config"
 
 export function PricingSection() {
+  const [interval, setInterval] = useState<'month' | 'year'>('month')
+  const isAnnual = interval === 'year'
+
   return (
     <section id="pricing" className="relative bg-white dark:bg-zinc-950 py-16 overflow-hidden">
       {/* Radial gradient accent - soft primary glow from bottom */}
@@ -19,18 +28,35 @@ export function PricingSection() {
 
       <div className="container relative mx-auto px-4">
         {/* Section header */}
-        <div className="text-center mb-12">
+        <div className="text-center mb-8">
           <h2 className="text-3xl font-bold mb-4">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-muted-foreground">
-            Pay per video or choose a monthly plan. No hidden fees.
+          <p className="text-muted-foreground mb-6">
+            Pay per video or choose a plan. No hidden fees.
           </p>
+
+          {/* Monthly/Annual toggle */}
+          <div className="flex items-center justify-center gap-3 text-sm">
+            <span className={isAnnual ? "" : "font-semibold"}>Monthly</span>
+            <Switch
+              checked={isAnnual}
+              onCheckedChange={(checked) => setInterval(checked ? 'year' : 'month')}
+            />
+            <span className={isAnnual ? "font-semibold" : ""}>
+              Annual
+            </span>
+            {isAnnual && (
+              <Badge variant="secondary" className="ml-2 bg-primary text-white dark:bg-primary dark:text-white border-none">
+                Save 17%
+              </Badge>
+            )}
+          </div>
         </div>
 
         {/* Pricing cards */}
         <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {/* Try It Out Card */}
+          {/* Try It Out Card - $5 single credit */}
           <Card>
             <CardHeader>
               <CardTitle>Try It Out</CardTitle>
@@ -40,7 +66,7 @@ export function PricingSection() {
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
                   <span className="text-4xl font-bold">$5</span>
-                  <span className="text-muted-foreground">/credit</span>
+                  <span className="text-muted-foreground">/video</span>
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
                   One-time purchase
@@ -50,7 +76,7 @@ export function PricingSection() {
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>1 credit</span>
+                  <span>1 video</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
@@ -76,24 +102,30 @@ export function PricingSection() {
           {/* Starter Card */}
           <Card>
             <CardHeader>
-              <CardTitle>Starter</CardTitle>
-              <CardDescription>Perfect for occasional needs</CardDescription>
+              <CardTitle>{PLANS.starter.name}</CardTitle>
+              <CardDescription>{PLANS.starter.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold">$30</span>
-                  <span className="text-muted-foreground">/month</span>
+                  <span className="text-4xl font-bold">
+                    ${isAnnual ? PLANS.starter.annual.price : PLANS.starter.monthly.price}
+                  </span>
+                  <span className="text-muted-foreground">
+                    /{isAnnual ? 'year' : 'month'}
+                  </span>
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
-                  ~$3 per video
+                  {isAnnual
+                    ? `$${(PLANS.starter.annual.price / 12).toFixed(0)}/month billed annually`
+                    : '~$3 per video'}
                 </div>
               </div>
 
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>10 credits/month</span>
+                  <span>10 videos/month</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
@@ -107,6 +139,12 @@ export function PricingSection() {
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <span>Email support</span>
                 </li>
+                {isAnnual && PLANS.starter.annual.rolloverCap > 0 && (
+                  <li className="flex items-start gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Up to {PLANS.starter.annual.rolloverCap} credits roll over</span>
+                  </li>
+                )}
               </ul>
             </CardContent>
             <CardFooter>
@@ -119,29 +157,35 @@ export function PricingSection() {
           {/* Professional Card */}
           <Card className="border-primary shadow-lg relative">
             {/* Recommended badge */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full font-medium">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs px-3 py-1 rounded-full font-medium">
               Recommended
             </div>
 
             <CardHeader>
-              <CardTitle>Professional</CardTitle>
-              <CardDescription>Best value for regular use</CardDescription>
+              <CardTitle>{PLANS.professional.name}</CardTitle>
+              <CardDescription>{PLANS.professional.description}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="mb-6">
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-bold">$75</span>
-                  <span className="text-muted-foreground">/month</span>
+                  <span className="text-4xl font-bold">
+                    ${isAnnual ? PLANS.professional.annual.price : PLANS.professional.monthly.price}
+                  </span>
+                  <span className="text-muted-foreground">
+                    /{isAnnual ? 'year' : 'month'}
+                  </span>
                 </div>
                 <div className="text-sm text-muted-foreground mt-1">
-                  Only $2.50 per video
+                  {isAnnual
+                    ? `$${(PLANS.professional.annual.price / 12).toFixed(0)}/month billed annually`
+                    : 'Only $2.50 per video'}
                 </div>
               </div>
 
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>30 credits/month</span>
+                  <span>30 videos/month</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
@@ -155,6 +199,12 @@ export function PricingSection() {
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
                   <span>Priority email support</span>
                 </li>
+                {isAnnual && PLANS.professional.annual.rolloverCap > 0 && (
+                  <li className="flex items-start gap-2">
+                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+                    <span>Up to {PLANS.professional.annual.rolloverCap} credits roll over</span>
+                  </li>
+                )}
               </ul>
             </CardContent>
             <CardFooter>
@@ -170,12 +220,12 @@ export function PricingSection() {
           <p>
             Technical Failure Guarantee: If technical issues prevent video
             delivery, we&apos;ll refund your credit. See our{" "}
-            <a
-              href="#examples"
+            <Link
+              href="/examples"
               className="underline hover:text-primary transition-colors"
             >
               extensive examples
-            </a>{" "}
+            </Link>{" "}
             to know exactly what you&apos;ll get.
           </p>
         </div>

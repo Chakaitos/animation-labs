@@ -133,7 +133,47 @@ export default function PricingPage() {
         </div>
 
         {/* Pricing cards */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-16">
+        <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-16">
+          {/* Try It Out - $5 Single Credit */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Try It Out</CardTitle>
+              <CardDescription>Test before you commit</CardDescription>
+              <div className="mt-4">
+                <span className="text-4xl font-bold">$5</span>
+                <span className="text-muted-foreground">/video</span>
+              </div>
+              <p className="text-sm text-muted-foreground mt-1">
+                One-time purchase
+              </p>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-sm">1 video</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-sm">Standard quality (1080p)</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-sm">All animation styles</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <span className="text-sm">Email support</span>
+                </li>
+              </ul>
+            </CardContent>
+            <CardFooter>
+              <Button variant="outline" className="w-full" asChild>
+                <Link href="/signup">Try Now</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+
           {/* Starter Plan */}
           <Card>
             <CardHeader>
@@ -186,7 +226,7 @@ export default function PricingPage() {
           {/* Professional Plan */}
           <Card className="border-primary shadow-lg relative">
             {/* Recommended badge */}
-            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs px-3 py-1 rounded-full">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs px-3 py-1 rounded-full">
               Recommended
             </div>
             <CardHeader>
