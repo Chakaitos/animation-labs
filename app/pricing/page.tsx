@@ -1,4 +1,6 @@
-import type { Metadata } from "next"
+'use client'
+
+import { useState } from "react"
 import Link from "next/link"
 import { Check } from "lucide-react"
 import { MarketingHeader } from "@/components/marketing/MarketingHeader"
@@ -12,6 +14,7 @@ import {
   CardFooter,
 } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
@@ -21,12 +24,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-
-export const metadata: Metadata = {
-  title: "Pricing - Animation Labs",
-  description:
-    "Simple, transparent pricing for professional logo animations. Choose from Starter ($30/month) or Professional ($75/month) plans.",
-}
+import { PLANS } from "@/lib/stripe/config"
 
 const FAQS = [
   {
@@ -37,7 +35,7 @@ const FAQS = [
   {
     question: "What happens to unused credits?",
     answer:
-      "Subscription credits reset each month. We recommend choosing a plan that matches your monthly needs. You can always purchase additional credit packs if needed.",
+      "Monthly plans: Credits reset each billing cycle. Annual plans: Credits grant monthly with rollover - up to 3 credits for Starter and 10 for Professional can roll over to the next month. You can always purchase additional credit packs if needed.",
   },
   {
     question: "What is your refund policy?",
@@ -57,13 +55,39 @@ const FAQS = [
   {
     question: "Do you offer annual plans?",
     answer:
-      "Annual billing will be available soon, saving you $60/year on the Professional plan. Currently, we offer monthly subscriptions.",
+      "Yes! Annual billing is now available. Save 17% with annual plans - $300/year for Starter (instead of $360) and $750/year for Professional (instead of $900). Plus, annual plans include credit rollover benefits.",
   },
 ]
 
 export default function PricingPage() {
-  // Hardcoded to false - toggle is UI placeholder only (functionality deferred)
-  const isAnnual = false
+  const [interval, setInterval] = useState<'month' | 'year'>('month')
+  const [isLoading, setIsLoading] = useState<string | null>(null)
+  const isAnnual = interval === 'year'
+
+  const handleSubscribe = async (planId: 'starter' | 'professional') => {
+    setIsLoading(planId)
+    try {
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan: planId, interval }),
+      })
+
+      const data = await response.json()
+
+      if (data.url) {
+        window.location.href = data.url
+      } else {
+        console.error('Checkout error:', data.error)
+        alert('Failed to start checkout. Please try again.')
+        setIsLoading(null)
+      }
+    } catch (error) {
+      console.error('Checkout error:', error)
+      alert('Failed to start checkout. Please try again.')
+      setIsLoading(null)
+    }
+  }
 
   return (
     <div className="min-h-screen">
@@ -78,14 +102,21 @@ export default function PricingPage() {
           plans include access to all animation styles and email support.
         </p>
 
-        {/* Monthly/Annual toggle - UI placeholder */}
+        {/* Monthly/Annual toggle */}
         <div className="flex items-center justify-center gap-3 text-sm mb-8">
           <span className={isAnnual ? "" : "font-semibold"}>Monthly</span>
-          <Switch disabled checked={isAnnual} />
+          <Switch
+            checked={isAnnual}
+            onCheckedChange={(checked) => setInterval(checked ? 'year' : 'month')}
+          />
           <span className={isAnnual ? "font-semibold" : ""}>
-            Annual{" "}
-            <span className="text-xs text-primary">(Save $60/year)</span>
+            Annual
           </span>
+          {isAnnual && (
+            <Badge variant="secondary" className="ml-2">
+              Save 17%
+            </Badge>
+          )}
         </div>
 
         {/* Promo code input - UI placeholder */}
@@ -106,39 +137,48 @@ export default function PricingPage() {
           {/* Starter Plan */}
           <Card>
             <CardHeader>
-              <CardTitle>Starter</CardTitle>
-              <CardDescription>Perfect for occasional needs</CardDescription>
+              <CardTitle>{PLANS.starter.name}</CardTitle>
+              <CardDescription>{PLANS.starter.description}</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold">$30</span>
-                <span className="text-muted-foreground">/month</span>
+                <span className="text-4xl font-bold">
+                  ${isAnnual ? PLANS.starter.annual.price : PLANS.starter.monthly.price}
+                </span>
+                <span className="text-muted-foreground">
+                  /{isAnnual ? 'year' : 'month'}
+                </span>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                ~$3 per video
-              </p>
+              {isAnnual && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  ${(PLANS.starter.annual.price / 12).toFixed(2)}/month billed annually
+                </p>
+              )}
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span>10 videos per month</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span>Standard quality (1080p)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span>All animation styles</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span>Email support</span>
-                </li>
+                {PLANS.starter.features.map((feature, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">{feature}</span>
+                  </li>
+                ))}
+                {isAnnual && PLANS.starter.annual.rolloverCap > 0 && (
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">
+                      Up to {PLANS.starter.annual.rolloverCap} credits roll over monthly
+                    </span>
+                  </li>
+                )}
               </ul>
             </CardContent>
             <CardFooter>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/signup">Select Plan</Link>
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={() => handleSubscribe('starter')}
+                disabled={isLoading === 'starter'}
+              >
+                {isLoading === 'starter' ? 'Loading...' : 'Get Started'}
               </Button>
             </CardFooter>
           </Card>
@@ -150,43 +190,47 @@ export default function PricingPage() {
               Recommended
             </div>
             <CardHeader>
-              <CardTitle>Professional</CardTitle>
-              <CardDescription>Best value for regular use</CardDescription>
+              <CardTitle>{PLANS.professional.name}</CardTitle>
+              <CardDescription>{PLANS.professional.description}</CardDescription>
               <div className="mt-4">
-                <span className="text-4xl font-bold">$75</span>
-                <span className="text-muted-foreground">/month</span>
+                <span className="text-4xl font-bold">
+                  ${isAnnual ? PLANS.professional.annual.price : PLANS.professional.monthly.price}
+                </span>
+                <span className="text-muted-foreground">
+                  /{isAnnual ? 'year' : 'month'}
+                </span>
               </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                Only $2.50 per video
-              </p>
+              {isAnnual && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  ${(PLANS.professional.annual.price / 12).toFixed(2)}/month billed annually
+                </p>
+              )}
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span>30 videos per month</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span>Premium quality (4K)</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span>All animation styles</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span>Priority email support</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span>Faster processing</span>
-                </li>
+                {PLANS.professional.features.map((feature, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">{feature}</span>
+                  </li>
+                ))}
+                {isAnnual && PLANS.professional.annual.rolloverCap > 0 && (
+                  <li className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">
+                      Up to {PLANS.professional.annual.rolloverCap} credits roll over monthly
+                    </span>
+                  </li>
+                )}
               </ul>
             </CardContent>
             <CardFooter>
-              <Button className="w-full" asChild>
-                <Link href="/signup">Select Plan</Link>
+              <Button
+                className="w-full"
+                onClick={() => handleSubscribe('professional')}
+                disabled={isLoading === 'professional'}
+              >
+                {isLoading === 'professional' ? 'Loading...' : 'Get Started'}
               </Button>
             </CardFooter>
           </Card>
@@ -196,7 +240,7 @@ export default function PricingPage() {
         <div className="max-w-2xl mx-auto mb-16 p-6 bg-muted/30 rounded-lg">
           <h3 className="font-semibold mb-2">Technical Failure Guarantee</h3>
           <p className="text-sm text-muted-foreground">
-            If technical issues prevent video delivery, we'll refund your
+            If technical issues prevent video delivery, we&apos;ll refund your
             credit. This guarantee covers system failures, not subjective
             quality preferences. Check our{" "}
             <Link href="/#examples" className="text-primary hover:underline">

@@ -6,7 +6,18 @@ export const PLANS = {
     name: 'Starter',
     description: '10 videos per month',
     credits: 10,
-    priceId: process.env.STRIPE_PRICE_STARTER || '',
+    monthly: {
+      priceId: process.env.STRIPE_PRICE_STARTER || '',
+      price: 30,
+      displayPrice: '$30/month',
+      rolloverCap: 0,
+    },
+    annual: {
+      priceId: process.env.STRIPE_PRICE_STARTER_ANNUAL || '',
+      price: 300,
+      displayPrice: '$300/year',
+      rolloverCap: 3,
+    },
     features: [
       '10 videos per month',
       'Standard quality (1080p)',
@@ -18,7 +29,18 @@ export const PLANS = {
     name: 'Professional',
     description: '30 videos per month',
     credits: 30,
-    priceId: process.env.STRIPE_PRICE_PROFESSIONAL || '',
+    monthly: {
+      priceId: process.env.STRIPE_PRICE_PROFESSIONAL || '',
+      price: 75,
+      displayPrice: '$75/month',
+      rolloverCap: 0,
+    },
+    annual: {
+      priceId: process.env.STRIPE_PRICE_PROFESSIONAL_ANNUAL || '',
+      price: 750,
+      displayPrice: '$750/year',
+      rolloverCap: 10,
+    },
     features: [
       '30 videos per month',
       'Premium quality (4K)',
@@ -30,10 +52,34 @@ export const PLANS = {
 } as const
 
 export type PlanId = keyof typeof PLANS
+export type BillingInterval = 'month' | 'year'
 
-// Credit pack configuration for overage purchases
-// Single credit: Available to all users (no subscription required)
-// Credit packs: Require active subscription
+// Helper to get plan details by price ID (for webhook processing)
+export function getPlanByPriceId(priceId: string): {
+  planId: PlanId
+  interval: BillingInterval
+  rolloverCap: number
+} | null {
+  for (const [planId, plan] of Object.entries(PLANS)) {
+    if (plan.monthly.priceId === priceId) {
+      return {
+        planId: planId as PlanId,
+        interval: 'month',
+        rolloverCap: plan.monthly.rolloverCap,
+      }
+    }
+    if (plan.annual.priceId === priceId) {
+      return {
+        planId: planId as PlanId,
+        interval: 'year',
+        rolloverCap: plan.annual.rolloverCap,
+      }
+    }
+  }
+  return null
+}
+
+// Keep existing credit pack config unchanged
 export const CREDIT_PACKS = {
   single: {
     name: '1 Credit',
@@ -62,16 +108,6 @@ export const CREDIT_PACKS = {
 } as const
 
 export type CreditPackId = keyof typeof CREDIT_PACKS
-
-// Helper to get plan by price ID (for webhook processing)
-export function getPlanByPriceId(priceId: string): PlanId | null {
-  for (const [planId, plan] of Object.entries(PLANS)) {
-    if (plan.priceId === priceId) {
-      return planId as PlanId
-    }
-  }
-  return null
-}
 
 // Helper to get credit pack by price ID
 export function getCreditPackByPriceId(priceId: string): CreditPackId | null {

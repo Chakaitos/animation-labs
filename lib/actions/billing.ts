@@ -90,6 +90,8 @@ export async function getSubscription() {
       overageCredits: subscription.overage_credits || 0,
       currentPeriodStart: subscription.current_period_start,
       currentPeriodEnd: subscription.current_period_end,
+      billingInterval: subscription.billing_interval as 'month' | 'year',
+      rolloverCap: subscription.rollover_cap || 0,
     },
   }
 }

@@ -8,6 +8,7 @@ import { CreditPackCard } from '@/components/CreditPackCard'
 import { CreditHistory } from '@/components/CreditHistory'
 import { CreditBalance } from '@/components/CreditBalance'
 import { PortalButton } from '@/components/PortalButton'
+import { UpgradeToAnnualButton } from '@/components/UpgradeToAnnualButton'
 import { CREDIT_PACKS, type CreditPackId } from '@/lib/stripe/config'
 import { getSubscription } from '@/lib/actions/billing'
 import { ArrowLeft, Calendar, AlertCircle } from 'lucide-react'
@@ -81,6 +82,10 @@ export default async function BillingPage() {
                   <span className="font-semibold">{subscription.planName}</span>
                 </div>
                 <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Billing</span>
+                  <span className="font-semibold capitalize">{subscription.billingInterval === 'year' ? 'Annual' : 'Monthly'}</span>
+                </div>
+                <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Status</span>
                   <Badge variant={subscription.status === 'active' ? 'default' : 'destructive'}>
                     {subscription.status}
@@ -104,6 +109,13 @@ export default async function BillingPage() {
             {/* Credit Balance */}
             <div className="space-y-4">
               <CreditBalance />
+              {subscription.billingInterval === 'month' && (
+                <Card>
+                  <CardContent className="pt-6">
+                    <UpgradeToAnnualButton />
+                  </CardContent>
+                </Card>
+              )}
               <Card>
                 <CardContent className="pt-6">
                   <Button variant="outline" className="w-full" asChild>
