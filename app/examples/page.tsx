@@ -44,9 +44,8 @@ export default function ExamplesPage() {
                   Animation Examples
                 </h1>
                 <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                  Explore our gallery of professional logo animations. Each example includes the
-                  creative direction prompt used to create it—learn how to write effective prompts
-                  for your own videos.
+                  Explore our gallery of professional logo animations. Each example includes the style and
+                  creative direction prompt used to create it.
                 </p>
               </div>
 
