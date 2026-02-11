@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
+import { headers, cookies } from 'next/headers'
 import { sendVerificationEmail, sendPasswordResetEmail } from '@/lib/email/send'
 
 // Helper to get site URL for redirects
@@ -157,6 +157,13 @@ export async function updatePassword(formData: FormData) {
   if (error) {
     return { error: error.message }
   }
+
+  // Clear the password recovery marker cookie
+  const cookieStore = await cookies()
+  cookieStore.delete('password_recovery_pending')
+
+  // Sign out the user so they must log in with their new password
+  await supabase.auth.signOut()
 
   redirect('/login?message=password-updated')
 }

@@ -14,6 +14,7 @@ export function ClientAuthHandler() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const next = searchParams.get('next') ?? '/dashboard'
+  const type = searchParams.get('type')
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -23,9 +24,14 @@ export function ClientAuthHandler() {
       const hashParams = new URLSearchParams(window.location.hash.substring(1))
       const accessToken = hashParams.get('access_token')
       const refreshToken = hashParams.get('refresh_token')
+      const type_hash = hashParams.get('type') // Some flows put type in hash
 
       if (accessToken) {
-        console.log('Client: Processing implicit flow tokens from hash')
+        console.log('Client: Processing implicit flow tokens from hash', {
+          hasRefreshToken: !!refreshToken,
+          type: type || type_hash,
+          next,
+        })
 
         const supabase = createClient()
 
@@ -41,15 +47,28 @@ export function ClientAuthHandler() {
           return
         }
 
-        console.log('Client: Session set successfully, redirecting to:', next)
+        console.log('Client: Session set successfully')
 
-        // Clear hash and redirect
-        router.push(next)
+        // For password recovery, ensure user updates password
+        // Even though they have a session, they should set a new password
+        const isRecovery = type === 'recovery' ||
+                          type_hash === 'recovery' ||
+                          next.includes('update-password') ||
+                          next.includes('reset-password')
+
+        if (isRecovery) {
+          console.log('Client: Recovery flow detected, forcing password update')
+          // Force redirect to update-password page
+          router.push('/update-password')
+        } else {
+          console.log('Client: Normal flow, redirecting to:', next)
+          router.push(next)
+        }
       }
     }
 
     handleAuthCallback()
-  }, [router, next])
+  }, [router, next, type])
 
   return null // This component doesn't render anything
 }
