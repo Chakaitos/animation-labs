@@ -188,14 +188,14 @@ export function Footer() {
           {/* Legal links */}
           <nav className="flex items-center gap-2 text-xs" aria-label="Legal links">
             <Link
-              href="#terms"
+              href="/terms"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
               Terms and Conditions
             </Link>
             <span className="text-muted-foreground">·</span>
             <Link
-              href="#privacy"
+              href="/privacy"
               className="text-muted-foreground hover:text-primary transition-colors"
             >
               Privacy Policy
