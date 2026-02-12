@@ -38,15 +38,15 @@ async function verifySvixSignature(
     // Determine if secret is hex or base64
     const isHex = /^[0-9a-f]+$/i.test(secretWithoutPrefix)
 
-    let secretBytes: Uint8Array
+    let secretBuffer: ArrayBuffer
     if (isHex) {
       // Convert hex string to bytes (for user-generated secrets)
-      secretBytes = new Uint8Array(
-        secretWithoutPrefix.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) ?? []
-      )
+      const bytes = secretWithoutPrefix.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) ?? []
+      secretBuffer = new Uint8Array(bytes).buffer
     } else {
       // Base64 decode (for Supabase-generated secrets)
-      secretBytes = Uint8Array.from(atob(secretWithoutPrefix), (c) => c.charCodeAt(0))
+      const bytes = Uint8Array.from(atob(secretWithoutPrefix), (c) => c.charCodeAt(0))
+      secretBuffer = bytes.buffer
     }
 
     // Svix sends multiple signatures (v1,sig1 v1,sig2)
@@ -64,7 +64,7 @@ async function verifySvixSignature(
     // Import secret as crypto key
     const cryptoKey = await crypto.subtle.importKey(
       'raw',
-      secretBytes,
+      secretBuffer,
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['sign']
