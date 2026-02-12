@@ -8,7 +8,7 @@ beforeAll(() => {
   process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
   process.env.RESEND_API_KEY = 'test-resend-key'
   process.env.SUPABASE_WEBHOOK_SECRET = 'test-webhook-secret'
-  process.env.NODE_ENV = 'test'
+  // NODE_ENV is automatically set to 'test' by Vitest
 })
 
 // Clean up after each test
