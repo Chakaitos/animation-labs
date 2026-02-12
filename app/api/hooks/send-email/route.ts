@@ -30,8 +30,9 @@ async function verifySvixSignature(
   secretStr: string
 ): Promise<boolean> {
   try {
-    // Extract secret (remove whsec_ prefix if present)
-    const secret = secretStr.replace(/^whsec_/, '')
+    // Extract secret (remove whsec_ prefix if present, then base64 decode)
+    const secretBase64 = secretStr.replace(/^whsec_/, '')
+    const secretBytes = Uint8Array.from(atob(secretBase64), (c) => c.charCodeAt(0))
 
     // Svix sends multiple signatures (v1,sig1 v1,sig2)
     // We need to verify against at least one
@@ -41,10 +42,9 @@ async function verifySvixSignature(
     const bodyText = new TextDecoder().decode(rawBody)
     const signedMessage = `${webhookId}.${webhookTimestamp}.${bodyText}`
 
-    // Encode message and secret
+    // Encode message
     const encoder = new TextEncoder()
     const messageBytes = encoder.encode(signedMessage)
-    const secretBytes = encoder.encode(secret)
 
     // Import secret as crypto key
     const cryptoKey = await crypto.subtle.importKey(
