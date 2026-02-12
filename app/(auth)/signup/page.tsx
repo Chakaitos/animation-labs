@@ -9,7 +9,8 @@ export default function SignupPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <Link href="/" className="mx-auto mb-4">
-            <Image src="/AL_transparent_compact.png" alt="Animation Labs" width={250} height={66} priority />
+            <Image src="/AL_transparent_compact.png" alt="Animation Labs" width={250} height={66} priority className="dark:hidden" />
+            <Image src="/AL_dark_mode.png" alt="Animation Labs" width={250} height={66} priority className="hidden dark:block" />
           </Link>
           <CardTitle className="text-2xl">Create an account</CardTitle>
           <CardDescription>
