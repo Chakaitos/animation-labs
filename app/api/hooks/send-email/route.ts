@@ -30,9 +30,22 @@ async function verifySvixSignature(
   secretStr: string
 ): Promise<boolean> {
   try {
-    // Extract secret (remove whsec_ prefix if present, then base64 decode)
-    const secretBase64 = secretStr.replace(/^whsec_/, '')
-    const secretBytes = Uint8Array.from(atob(secretBase64), (c) => c.charCodeAt(0))
+    // Extract secret (remove whsec_ prefix if present)
+    const secretWithoutPrefix = secretStr.replace(/^whsec_/, '')
+
+    // Determine if secret is hex or base64
+    const isHex = /^[0-9a-f]+$/i.test(secretWithoutPrefix)
+
+    let secretBytes: Uint8Array
+    if (isHex) {
+      // Convert hex string to bytes
+      secretBytes = new Uint8Array(
+        secretWithoutPrefix.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) ?? []
+      )
+    } else {
+      // Base64 decode
+      secretBytes = Uint8Array.from(atob(secretWithoutPrefix), (c) => c.charCodeAt(0))
+    }
 
     // Svix sends multiple signatures (v1,sig1 v1,sig2)
     // We need to verify against at least one
