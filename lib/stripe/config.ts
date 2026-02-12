@@ -10,7 +10,7 @@ export const PLANS = {
       priceId: process.env.STRIPE_PRICE_STARTER || '',
       price: 30,
       displayPrice: '$30/month',
-      rolloverCap: 0,
+      rolloverCap: 3,
     },
     annual: {
       priceId: process.env.STRIPE_PRICE_STARTER_ANNUAL || '',
@@ -33,7 +33,7 @@ export const PLANS = {
       priceId: process.env.STRIPE_PRICE_PROFESSIONAL || '',
       price: 75,
       displayPrice: '$75/month',
-      rolloverCap: 0,
+      rolloverCap: 10,
     },
     annual: {
       priceId: process.env.STRIPE_PRICE_PROFESSIONAL_ANNUAL || '',
