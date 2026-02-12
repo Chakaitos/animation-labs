@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import * as jose from 'jose'
 
 /**
  * Supabase Send Email Hook
@@ -25,9 +26,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verify webhook secret (format: "Bearer <secret>")
-    const expectedSecret = `Bearer ${webhookSecret}`
-
     if (!authHeader) {
       console.error('Send Email Hook: No authorization header')
       return NextResponse.json(
@@ -36,13 +34,34 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (authHeader !== expectedSecret) {
-      console.error('Send Email Hook: Invalid webhook secret', {
-        receivedPrefix: authHeader.substring(0, 10),
-        expectedPrefix: expectedSecret.substring(0, 10),
+    // Extract JWT from "Bearer <token>" format
+    const token = authHeader.replace('Bearer ', '')
+
+    if (!token) {
+      console.error('Send Email Hook: No token in authorization header')
+      return NextResponse.json(
+        { error: 'No token in authorization header' },
+        { status: 401 }
+      )
+    }
+
+    // Verify JWT using webhook secret
+    try {
+      const secret = new TextEncoder().encode(webhookSecret)
+      const { payload } = await jose.jwtVerify(token, secret, {
+        issuer: 'supabase',
+      })
+
+      console.log('Send Email Hook: JWT verified successfully', {
+        iss: payload.iss,
+        exp: payload.exp,
+      })
+    } catch (jwtError) {
+      console.error('Send Email Hook: JWT verification failed', {
+        error: jwtError instanceof Error ? jwtError.message : 'Unknown error',
       })
       return NextResponse.json(
-        { error: 'Invalid authorization token' },
+        { error: 'Invalid JWT token' },
         { status: 401 }
       )
     }
