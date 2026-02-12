@@ -81,28 +81,22 @@ export function Footer() {
             </h3>
             <nav className="flex flex-col space-y-3" aria-label="Product links">
               <Link
-                href="#pricing"
+                href="/pricing"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Pricing
               </Link>
               <Link
-                href="#examples"
+                href="/examples"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Examples
               </Link>
               <Link
-                href="#how-it-works"
+                href="/#how-it-works"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 How It Works
-              </Link>
-              <Link
-                href="#faq"
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                FAQ
               </Link>
             </nav>
           </div>
@@ -120,7 +114,7 @@ export function Footer() {
                 Contact
               </Link>
               <Link
-                href="#faq"
+                href="/contact#faq"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 FAQ

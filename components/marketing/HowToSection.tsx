@@ -157,7 +157,7 @@ export function HowToSection() {
           </div>
 
           {/* How It Works */}
-          <div className="mb-16">
+          <div id="how-it-works" className="mb-16">
             <h3 className="text-2xl font-semibold text-center mb-8">
               How It Works
             </h3>

@@ -35,7 +35,7 @@ export default function HomePage() {
         <ExampleGallery />
         <HowToSection />
         <SocialProof />
-        <PricingSection />
+        {/* <PricingSection /> */}
       </main>
       <Footer />
     </div>
