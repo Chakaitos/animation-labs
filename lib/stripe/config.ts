@@ -44,6 +44,7 @@ export const PLANS = {
     },
     features: [
       '30 videos per month',
+      'Up to 10 credits roll over monthly',
       'Premium quality (4K)',
       'All animation styles',
       'Priority email support',
