@@ -15,45 +15,66 @@ import { NextRequest, NextResponse } from 'next/server'
 const DEBUG_MODE = false
 
 /**
- * Extract base64 key from Supabase dashboard secret
- * Dashboard provides: "v1,whsec_<base64>" or "v1,<base64>"
+ * Verify Svix webhook signature (used by Supabase)
+ *
+ * Svix signature format:
+ * - Header: webhook-signature: "v1,<base64sig1> v1,<base64sig2>"
+ * - Signed message: "${webhook-id}.${webhook-timestamp}.${body}"
+ * - Algorithm: HMAC-SHA256
  */
-function extractKeyFromSecret(secretStr: string): string {
-  const part = secretStr.split(',')[1] ?? secretStr
-  return part.replace(/^whsec_/, '')
-}
-
-/**
- * Verify HMAC-SHA256 signature from Supabase
- */
-async function verifySignature(
+async function verifySvixSignature(
   rawBody: ArrayBuffer,
-  signatureHeader: string,
+  webhookId: string,
+  webhookTimestamp: string,
+  webhookSignature: string,
   secretStr: string
 ): Promise<boolean> {
   try {
-    // Extract signature from header (format: "v1,<base64sig>" or "v1,whsec_<base64sig>")
-    const headerSig = signatureHeader.split(',')[1] ?? signatureHeader
-    const sigBase64 = headerSig.replace(/^whsec_/, '')
+    // Extract secret (remove whsec_ prefix if present)
+    const secret = secretStr.replace(/^whsec_/, '')
 
-    // Extract and decode the secret key
-    const keyBase64 = extractKeyFromSecret(secretStr)
-    const keyBytes = Uint8Array.from(atob(keyBase64), (c) => c.charCodeAt(0))
+    // Svix sends multiple signatures (v1,sig1 v1,sig2)
+    // We need to verify against at least one
+    const signatures = webhookSignature.split(' ')
 
-    // Import key for HMAC
+    // Build the signed message: "${id}.${timestamp}.${body}"
+    const bodyText = new TextDecoder().decode(rawBody)
+    const signedMessage = `${webhookId}.${webhookTimestamp}.${bodyText}`
+
+    // Encode message and secret
+    const encoder = new TextEncoder()
+    const messageBytes = encoder.encode(signedMessage)
+    const secretBytes = encoder.encode(secret)
+
+    // Import secret as crypto key
     const cryptoKey = await crypto.subtle.importKey(
       'raw',
-      keyBytes,
+      secretBytes,
       { name: 'HMAC', hash: 'SHA-256' },
       false,
-      ['verify']
+      ['sign']
     )
 
-    // Decode signature
-    const sigBytes = Uint8Array.from(atob(sigBase64), (c) => c.charCodeAt(0))
+    // Compute expected signature
+    const signatureBuffer = await crypto.subtle.sign('HMAC', cryptoKey, messageBytes)
+    const expectedSig = btoa(String.fromCharCode(...new Uint8Array(signatureBuffer)))
 
-    // Verify signature
-    return await crypto.subtle.verify('HMAC', cryptoKey, sigBytes, rawBody)
+    // Check if any provided signature matches
+    for (const sig of signatures) {
+      // Format: "v1,<base64>"
+      const [version, providedSig] = sig.split(',')
+      if (version !== 'v1') continue
+
+      if (providedSig === expectedSig) {
+        return true
+      }
+    }
+
+    console.error('Signature mismatch:', {
+      expected: expectedSig.substring(0, 20) + '...',
+      received: signatures[0]?.split(',')[1]?.substring(0, 20) + '...',
+    })
+    return false
   } catch (error) {
     console.error('Signature verification error:', error)
     return false
@@ -83,28 +104,37 @@ export async function POST(request: NextRequest) {
       timestamp: new Date().toISOString(),
     })
 
-    // Look for signature in multiple possible header names
-    const signatureHeader =
-      request.headers.get('x-hook-signature') ||
-      request.headers.get('x-signature') ||
-      request.headers.get('authorization')
+    // Get Svix webhook headers (used by Supabase)
+    const webhookId = request.headers.get('webhook-id')
+    const webhookTimestamp = request.headers.get('webhook-timestamp')
+    const webhookSignature = request.headers.get('webhook-signature')
 
-    if (!signatureHeader && !DEBUG_MODE) {
-      console.error('Send Email Hook: No signature header found', {
-        availableHeaders: Object.keys(headers),
-      })
-      return NextResponse.json(
-        { error: 'No signature header' },
-        { status: 401 }
-      )
+    if (!webhookId || !webhookTimestamp || !webhookSignature) {
+      if (!DEBUG_MODE) {
+        console.error('Send Email Hook: Missing Svix headers', {
+          hasId: !!webhookId,
+          hasTimestamp: !!webhookTimestamp,
+          hasSignature: !!webhookSignature,
+        })
+        return NextResponse.json(
+          { error: 'Missing webhook headers' },
+          { status: 401 }
+        )
+      }
     }
 
     // Get raw request body for signature verification
     const rawBody = await request.arrayBuffer()
 
-    // Verify signature (unless in debug mode)
-    if (!DEBUG_MODE && signatureHeader) {
-      const isValid = await verifySignature(rawBody, signatureHeader, webhookSecret)
+    // Verify Svix signature (unless in debug mode)
+    if (!DEBUG_MODE && webhookId && webhookTimestamp && webhookSignature) {
+      const isValid = await verifySvixSignature(
+        rawBody,
+        webhookId,
+        webhookTimestamp,
+        webhookSignature,
+        webhookSecret
+      )
 
       if (!isValid) {
         console.error('Send Email Hook: Invalid signature')
@@ -114,7 +144,7 @@ export async function POST(request: NextRequest) {
         )
       }
 
-      console.log('Send Email Hook: Signature verified successfully ✅')
+      console.log('Send Email Hook: Svix signature verified successfully ✅')
     } else if (DEBUG_MODE) {
       console.log('Send Email Hook: DEBUG_MODE - skipping verification')
     }
