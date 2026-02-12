@@ -39,34 +39,32 @@ export async function proxy(request: NextRequest) {
     const isRecoveryCallback = request.nextUrl.pathname === '/auth/callback' &&
                                request.nextUrl.searchParams.get('next')?.includes('update-password')
 
-    if (!isRecoveryCallback) {
-      // Check if user was updated recently (within last 5 minutes)
-      // This indicates they just went through password reset
-      const updatedAt = new Date(user.updated_at || user.created_at)
-      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000)
-      const isRecentlyUpdated = updatedAt > fiveMinutesAgo
+    // Set recovery marker cookie when recovery callback is detected
+    // This ensures the cookie is set BEFORE user lands on /update-password
+    if (isRecoveryCallback) {
+      console.log('Proxy: Recovery callback detected, setting marker cookie')
+      supabaseResponse.cookies.set('password_recovery_pending', 'true', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 15, // 15 minutes
+        path: '/',
+      })
+    }
 
+    // Enforce password update for non-callback pages
+    if (!isRecoveryCallback) {
       // Check if there's a recovery marker in cookies
       const hasRecoveryMarker = request.cookies.has('password_recovery_pending')
 
-      const needsPasswordUpdate = hasRecoveryMarker || isRecentlyUpdated
-
-      // If they need to update password but aren't on the update-password page
-      if (needsPasswordUpdate &&
+      // Enforce ONLY based on cookie (not timestamp)
+      // This prevents false positives from new signups and post-update loops
+      if (hasRecoveryMarker &&
           request.nextUrl.pathname !== '/update-password' &&
           !request.nextUrl.pathname.startsWith('/auth/') &&
           !request.nextUrl.pathname.startsWith('/api/') &&
           !request.nextUrl.pathname.startsWith('/_next/')) {
 
-        console.log('Proxy: Redirecting to password update (recovery session detected)')
-
-        // Set a cookie marker so we can track recovery state
-        supabaseResponse.cookies.set('password_recovery_pending', 'true', {
-          httpOnly: true,
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 60 * 15, // 15 minutes
-          path: '/',
-        })
+        console.log('Proxy: Redirecting to password update (recovery marker found)')
 
         // Redirect to update password page
         return NextResponse.redirect(new URL('/update-password', request.url))
