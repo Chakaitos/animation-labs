@@ -7,7 +7,7 @@ export const FAQS = [
   {
     question: "What happens to unused credits?",
     answer:
-      "Monthly plans: Credits reset each billing cycle. Annual plans: Credits grant monthly with rollover - up to 3 credits for Starter and 10 for Professional can roll over to the next month. You can always purchase additional credit packs if needed.",
+      "Credits grant monthly with rollover benefits. Up to 3 credits (Starter) or 10 credits (Professional) can roll over to the next month. Any credits above this cap expire at renewal. You can always purchase additional credit packs if needed.",
   },
   {
     question: "What is your refund policy?",

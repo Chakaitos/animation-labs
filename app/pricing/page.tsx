@@ -162,14 +162,7 @@ export default function PricingPage() {
                     <span className="text-sm">{feature}</span>
                   </li>
                 ))}
-                {isAnnual && PLANS.starter.annual.rolloverCap > 0 && (
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">
-                      Up to {PLANS.starter.annual.rolloverCap} credits roll over monthly
-                    </span>
-                  </li>
-                )}
+                {/* Rollover is now included in base features array */}
               </ul>
             </CardContent>
             <CardFooter>
@@ -215,14 +208,7 @@ export default function PricingPage() {
                     <span className="text-sm">{feature}</span>
                   </li>
                 ))}
-                {isAnnual && PLANS.professional.annual.rolloverCap > 0 && (
-                  <li className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                    <span className="text-sm">
-                      Up to {PLANS.professional.annual.rolloverCap} credits roll over monthly
-                    </span>
-                  </li>
-                )}
+                {/* Rollover is now included in base features array */}
               </ul>
             </CardContent>
             <CardFooter>
