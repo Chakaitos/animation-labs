@@ -116,7 +116,7 @@ export default function PricingPage() {
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-sm">Standard quality (1080p)</span>
+                  <span className="text-sm">Standard quality</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
@@ -221,20 +221,6 @@ export default function PricingPage() {
               </Button>
             </CardFooter>
           </Card>
-        </div>
-
-        {/* Technical Failure Guarantee */}
-        <div className="max-w-2xl mx-auto mb-16 p-6 bg-muted/30 rounded-lg">
-          <h3 className="font-semibold mb-2">Technical Failure Guarantee</h3>
-          <p className="text-sm text-muted-foreground">
-            If technical issues prevent video delivery, we&apos;ll refund your
-            credit. This guarantee covers system failures, not subjective
-            quality preferences. Check our{" "}
-            <Link href="/#examples" className="text-primary hover:underline">
-              extensive example gallery
-            </Link>{" "}
-            to ensure our animations meet your expectations before subscribing.
-          </p>
         </div>
 
         {/* Final CTA */}

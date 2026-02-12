@@ -76,19 +76,19 @@ export function PricingSection() {
               <ul className="space-y-3">
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>1 video</span>
+                  <span className="text-sm">1 video</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>All animation styles</span>
+                  <span className="text-sm">Standard quality</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>10-15 min delivery</span>
+                  <span className="text-sm">All animation styles</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>Email support</span>
+                  <span className="text-sm">Email support</span>
                 </li>
               </ul>
             </CardContent>
@@ -123,28 +123,12 @@ export function PricingSection() {
               </div>
 
               <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>10 videos/month</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>All animation styles</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>10-15 min delivery</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>Email support</span>
-                </li>
-                {isAnnual && PLANS.starter.annual.rolloverCap > 0 && (
-                  <li className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                    <span>Up to {PLANS.starter.annual.rolloverCap} credits roll over</span>
+                {PLANS.starter.features.map((feature, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">{feature}</span>
                   </li>
-                )}
+                ))}
               </ul>
             </CardContent>
             <CardFooter>
@@ -183,28 +167,12 @@ export function PricingSection() {
               </div>
 
               <ul className="space-y-3">
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>30 videos/month</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>All animation styles</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>10-15 min delivery</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                  <span>Priority email support</span>
-                </li>
-                {isAnnual && PLANS.professional.annual.rolloverCap > 0 && (
-                  <li className="flex items-start gap-2">
-                    <Check className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                    <span>Up to {PLANS.professional.annual.rolloverCap} credits roll over</span>
+                {PLANS.professional.features.map((feature, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                    <span className="text-sm">{feature}</span>
                   </li>
-                )}
+                ))}
               </ul>
             </CardContent>
             <CardFooter>
@@ -213,21 +181,6 @@ export function PricingSection() {
               </Button>
             </CardFooter>
           </Card>
-        </div>
-
-        {/* Technical guarantee */}
-        <div className="text-center mt-8 text-sm text-muted-foreground max-w-2xl mx-auto">
-          <p>
-            Technical Failure Guarantee: If technical issues prevent video
-            delivery, we&apos;ll refund your credit. See our{" "}
-            <Link
-              href="/examples"
-              className="underline hover:text-primary transition-colors"
-            >
-              extensive examples
-            </Link>{" "}
-            to know exactly what you&apos;ll get.
-          </p>
         </div>
       </div>
     </section>
