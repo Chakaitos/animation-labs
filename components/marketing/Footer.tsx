@@ -90,7 +90,7 @@ export function Footer() {
             </h3>
             <nav className="flex flex-col space-y-3" aria-label="Support links">
               <Link
-                href="#contact"
+                href="/contact"
                 className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 Contact

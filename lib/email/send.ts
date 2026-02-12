@@ -9,6 +9,7 @@ import PaymentFailedEmail from '@/emails/payment-failed'
 import VerificationEmail from '@/emails/verification'
 import PasswordResetEmail from '@/emails/password-reset'
 import WelcomeEmail from '@/emails/welcome'
+import ContactFormEmail from '@/emails/contact-form'
 
 // Create admin client for auth.admin access
 function getAdminClient() {
@@ -451,6 +452,76 @@ export async function sendWelcomeEmail(
     return result
   } catch (error) {
     console.error('Welcome email: Send failed after retries', {
+      email,
+      error: error instanceof Error ? error.message : 'Unknown error',
+    })
+    throw error
+  }
+}
+
+/**
+ * Send contact form submission email with retry logic
+ *
+ * @param name - Contact name
+ * @param email - Contact email address
+ * @param subject - Contact subject (optional)
+ * @param message - Contact message
+ */
+export async function sendContactFormEmail(
+  name: string,
+  email: string,
+  subject: string | undefined,
+  message: string
+) {
+  try {
+    // Use exponential backoff for retry logic
+    const result = await backOff(
+      async () => {
+        const { data, error } = await resend.emails.send({
+          from: 'Animation Labs <no-reply@animationlabs.ai>',
+          to: 'support@animationlabs.ai',
+          replyTo: email,
+          subject: `Contact Form: ${subject || 'General Inquiry'}`,
+          react: ContactFormEmail({
+            name,
+            email,
+            subject,
+            message,
+          }),
+        })
+
+        // CRITICAL: Resend doesn't throw on errors, check result.error explicitly
+        if (error) {
+          // Don't retry on validation errors
+          if (
+            error.message?.includes('invalid_email') ||
+            error.message?.includes('domain_not_verified')
+          ) {
+            console.error('Permanent email error (not retrying):', {
+              emailType: 'contact-form',
+              email,
+              error: error.message,
+            })
+            throw new Error(`Permanent email error: ${error.message}`)
+          }
+
+          // Throw to trigger retry
+          throw new Error(error.message || 'Unknown Resend error')
+        }
+
+        return data
+      },
+      {
+        numOfAttempts: 3,
+        startingDelay: 1000, // 1 second
+        timeMultiple: 5, // 1s -> 5s -> 25s
+        jitter: 'full',
+      }
+    )
+
+    return result
+  } catch (error) {
+    console.error('Contact form email: Send failed after retries', {
       email,
       error: error instanceof Error ? error.message : 'Unknown error',
     })
