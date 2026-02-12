@@ -27,7 +27,7 @@ function extractKeyFromSecret(secretStr: string): string {
  * Verify HMAC-SHA256 signature from Supabase
  */
 async function verifySignature(
-  rawBody: Uint8Array,
+  rawBody: ArrayBuffer,
   signatureHeader: string,
   secretStr: string
 ): Promise<boolean> {
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get raw request body for signature verification
-    const rawBody = new Uint8Array(await request.arrayBuffer())
+    const rawBody = await request.arrayBuffer()
 
     // Verify signature (unless in debug mode)
     if (!DEBUG_MODE && signatureHeader) {
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse payload
-    const payload = JSON.parse(new TextDecoder().decode(rawBody))
+    const payload = JSON.parse(new TextDecoder().decode(new Uint8Array(rawBody)))
 
     console.log('Send Email Hook: Request authenticated', {
       emailType: payload.email_action_type,
