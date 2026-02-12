@@ -20,6 +20,7 @@ export const PLANS = {
     },
     features: [
       '10 videos per month',
+      'Up to 3 credits roll over monthly',
       'Standard quality (1080p)',
       'All animation styles',
       'Email support',
