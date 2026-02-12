@@ -9,7 +9,6 @@ import { signUp } from '@/lib/actions/auth'
 import { signupSchema, type SignupFormValues } from '@/lib/validations/auth'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   Form,
   FormControl,
@@ -29,7 +28,6 @@ export function SignupForm() {
       email: '',
       password: '',
       confirmPassword: '',
-      acceptTerms: false,
     },
   })
 
@@ -127,45 +125,28 @@ export function SignupForm() {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="acceptTerms"
-          render={({ field }) => (
-            <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel className="text-sm font-normal">
-                  I agree to the{' '}
-                  <Link
-                    href="/terms"
-                    target="_blank"
-                    className="text-primary hover:underline font-medium"
-                  >
-                    Terms and Conditions
-                  </Link>{' '}
-                  and{' '}
-                  <Link
-                    href="/privacy"
-                    target="_blank"
-                    className="text-primary hover:underline font-medium"
-                  >
-                    Privacy Policy
-                  </Link>
-                </FormLabel>
-                <FormMessage />
-              </div>
-            </FormItem>
-          )}
-        />
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? 'Creating account...' : 'Create Account'}
         </Button>
+        <p className="text-center text-sm text-muted-foreground">
+          By signing up, you agree to our{' '}
+          <Link
+            href="/terms"
+            target="_blank"
+            className="text-foreground underline underline-offset-2 hover:text-primary transition-colors"
+          >
+            Terms and Conditions
+          </Link>{' '}
+          and{' '}
+          <Link
+            href="/privacy"
+            target="_blank"
+            className="text-foreground underline underline-offset-2 hover:text-primary transition-colors"
+          >
+            Privacy Policy
+          </Link>
+          .
+        </p>
         <p className="text-center text-sm text-muted-foreground">
           Already have an account?{' '}
           <Link href="/login" className="underline underline-offset-4 hover:text-primary">
