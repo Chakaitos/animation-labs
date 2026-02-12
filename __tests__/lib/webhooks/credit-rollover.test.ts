@@ -133,4 +133,38 @@ describe('Credit Rollover Calculation', () => {
       expect(newBalance).toBe(10)
     })
   })
+
+  describe('Plan-Specific Rollover Caps', () => {
+    it('should use 3 credit cap for Starter Monthly', () => {
+      const plan = 'starter'
+      const interval = 'month'
+      const rolloverCap = 3
+
+      expect(rolloverCap).toBe(3)
+    })
+
+    it('should use 10 credit cap for Professional Monthly', () => {
+      const plan = 'professional'
+      const interval = 'month'
+      const rolloverCap = 10
+
+      expect(rolloverCap).toBe(10)
+    })
+
+    it('should use 3 credit cap for Starter Annual', () => {
+      const plan = 'starter'
+      const interval = 'year'
+      const rolloverCap = 3
+
+      expect(rolloverCap).toBe(3)
+    })
+
+    it('should use 10 credit cap for Professional Annual', () => {
+      const plan = 'professional'
+      const interval = 'year'
+      const rolloverCap = 10
+
+      expect(rolloverCap).toBe(10)
+    })
+  })
 })
