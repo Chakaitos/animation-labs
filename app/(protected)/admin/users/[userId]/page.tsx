@@ -80,11 +80,16 @@ export default async function UserDetailPage(props: UserDetailPageProps) {
       </div>
 
       {/* Credit Adjustment Buttons */}
-      {subscription && (
-        <div className="flex gap-3">
-          <CreditAdjustmentButton userId={params.userId} type="add" />
+      <div className="flex gap-3">
+        <CreditAdjustmentButton userId={params.userId} type="add" />
+        {subscription && (
           <CreditAdjustmentButton userId={params.userId} type="deduct" />
-        </div>
+        )}
+      </div>
+      {!subscription && (
+        <p className="text-sm text-muted-foreground">
+          💡 This user has no subscription. Adding credits will automatically create a trial subscription.
+        </p>
       )}
 
       {/* Recent Videos */}
