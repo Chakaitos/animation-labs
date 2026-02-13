@@ -25,14 +25,20 @@ export default async function ProtectedLayout({
   const balanceResult = await getCreditBalance()
   const creditBalance = balanceResult.balance?.total ?? 0
 
-  // Check if user is admin
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single()
+  // Check if user is admin (safe if role column doesn't exist yet)
+  let isAdmin = false
+  try {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
 
-  const isAdmin = profile?.role === 'admin'
+    isAdmin = profile?.role === 'admin'
+  } catch (error) {
+    // Role column doesn't exist yet (migration not applied)
+    isAdmin = false
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
