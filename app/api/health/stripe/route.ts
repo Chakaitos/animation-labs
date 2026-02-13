@@ -26,7 +26,7 @@ export async function GET() {
 
     // Initialize Stripe client
     const stripe = new Stripe(stripeSecretKey, {
-      apiVersion: '2024-11-20.acacia',
+      apiVersion: '2025-12-15.clover',
     })
 
     // Make a lightweight API call to verify credentials
