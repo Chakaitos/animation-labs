@@ -16,7 +16,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
 import { adjustUserCredits } from '@/lib/actions/admin-credits'
 import { Loader2 } from 'lucide-react'
-import { useToast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 
 interface CreditAdjustmentDialogProps {
   userId: string
@@ -32,7 +32,6 @@ export function CreditAdjustmentDialog({
   onOpenChange,
 }: CreditAdjustmentDialogProps) {
   const router = useRouter()
-  const { toast } = useToast()
   const [isPending, startTransition] = useTransition()
   const [credits, setCredits] = useState('')
   const [reason, setReason] = useState('')
@@ -63,16 +62,9 @@ export function CreditAdjustmentDialog({
 
       if (result.error) {
         setError(result.error)
-        toast({
-          title: 'Error',
-          description: result.error,
-          variant: 'destructive',
-        })
+        toast.error(result.error)
       } else {
-        toast({
-          title: 'Success',
-          description: result.message,
-        })
+        toast.success(result.message || 'Credits adjusted successfully')
         setCredits('')
         setReason('')
         onOpenChange(false)
