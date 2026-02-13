@@ -10,7 +10,7 @@ export function UserSearchBar() {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const [searchValue, setSearchValue] = useState(searchParams.get('search') || '')
-  const debounceTimer = useRef<NodeJS.Timeout>()
+  const debounceTimer = useRef<NodeJS.Timeout | null>(null)
   const initialSearchValue = useRef(searchParams.get('search') || '')
 
   // Debounced search - only triggers after user stops typing for 500ms
