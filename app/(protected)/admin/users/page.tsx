@@ -22,21 +22,10 @@ export default async function UsersPage(props: UsersPageProps) {
   const currentPage = parseInt(searchParams.page || '1')
   const offset = (currentPage - 1) * USERS_PER_PAGE
 
-  // Build query
+  // Build query for profiles
   let query = supabase
     .from('profiles')
-    .select(`
-      id,
-      email,
-      full_name,
-      created_at,
-      role,
-      subscription:subscriptions!user_id(
-        plan,
-        status,
-        credits_remaining
-      )
-    `, { count: 'exact' })
+    .select('id, email, full_name, created_at, role', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(offset, offset + USERS_PER_PAGE - 1)
 
@@ -52,13 +41,22 @@ export default async function UsersPage(props: UsersPageProps) {
     console.error('Error fetching users:', error)
   }
 
-  // Get active subscription for each user (Supabase returns array, we want the active one)
-  const usersWithSubscription = users?.map((user: any) => ({
-    ...user,
-    subscription: Array.isArray(user.subscription)
-      ? user.subscription.find((s: any) => s.status === 'active') || null
-      : user.subscription,
-  })) || []
+  // Fetch subscriptions for these users separately
+  let usersWithSubscription = users || []
+  if (users && users.length > 0) {
+    const userIds = users.map(u => u.id)
+    const { data: subscriptions } = await supabase
+      .from('subscriptions')
+      .select('user_id, plan, status, credits_remaining')
+      .in('user_id', userIds)
+      .eq('status', 'active')
+
+    // Match subscriptions to users
+    usersWithSubscription = users.map(user => ({
+      ...user,
+      subscription: subscriptions?.find(s => s.user_id === user.id) || null
+    }))
+  }
 
   const totalPages = Math.ceil((count || 0) / USERS_PER_PAGE)
 
