@@ -11,9 +11,6 @@ import { NextRequest, NextResponse } from 'next/server'
  * @see https://supabase.com/docs/guides/auth/auth-hooks/send-email-hook
  */
 
-// Toggle for debugging (set to true to bypass verification temporarily)
-const DEBUG_MODE = false
-
 /**
  * Verify Svix webhook signature (used by Supabase)
  *
@@ -108,70 +105,42 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Log all headers for debugging
-    const headers: Record<string, string> = {}
-    request.headers.forEach((value, key) => {
-      headers[key] = value
-    })
-
-    console.log('Send Email Hook: Headers received:', {
-      headerKeys: Object.keys(headers),
-      timestamp: new Date().toISOString(),
-    })
-
     // Get Svix webhook headers (used by Supabase)
     const webhookId = request.headers.get('webhook-id')
     const webhookTimestamp = request.headers.get('webhook-timestamp')
     const webhookSignature = request.headers.get('webhook-signature')
 
     if (!webhookId || !webhookTimestamp || !webhookSignature) {
-      if (!DEBUG_MODE) {
-        console.error('Send Email Hook: Missing Svix headers', {
-          hasId: !!webhookId,
-          hasTimestamp: !!webhookTimestamp,
-          hasSignature: !!webhookSignature,
-        })
-        return NextResponse.json(
-          { error: 'Missing webhook headers' },
-          { status: 401 }
-        )
-      }
+      console.error('Send Email Hook: Missing Svix headers', {
+        hasId: !!webhookId,
+        hasTimestamp: !!webhookTimestamp,
+        hasSignature: !!webhookSignature,
+      })
+      return NextResponse.json(
+        { error: 'Missing webhook headers' },
+        { status: 401 }
+      )
     }
 
     // Get raw request body for signature verification
     const rawBody = await request.arrayBuffer()
 
-    // Verify Svix signature (unless in debug mode)
-    if (!DEBUG_MODE && webhookId && webhookTimestamp && webhookSignature) {
-      const isValid = await verifySvixSignature(
-        rawBody,
-        webhookId,
-        webhookTimestamp,
-        webhookSignature,
-        webhookSecret
+    // Verify Svix signature
+    const isValid = await verifySvixSignature(
+      rawBody,
+      webhookId,
+      webhookTimestamp,
+      webhookSignature,
+      webhookSecret
+    )
+
+    if (!isValid) {
+      console.error('Send Email Hook: Invalid signature')
+      return NextResponse.json(
+        { error: 'Invalid signature' },
+        { status: 401 }
       )
-
-      if (!isValid) {
-        console.error('Send Email Hook: Invalid signature')
-        return NextResponse.json(
-          { error: 'Invalid signature' },
-          { status: 401 }
-        )
-      }
-
-      console.log('Send Email Hook: Svix signature verified successfully ✅')
-    } else if (DEBUG_MODE) {
-      console.log('Send Email Hook: DEBUG_MODE - skipping verification')
     }
-
-    // Parse payload
-    const payload = JSON.parse(new TextDecoder().decode(new Uint8Array(rawBody)))
-
-    console.log('Send Email Hook: Request authenticated', {
-      emailType: payload.email_action_type,
-      recipientDomain: payload.user?.email?.split('@')[1],
-      timestamp: new Date().toISOString(),
-    })
 
     // Return 200 OK to suppress Supabase's default emails
     // Our custom emails are sent from lib/actions/auth.ts instead
