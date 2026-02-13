@@ -11,9 +11,16 @@ export function UserSearchBar() {
   const [isPending, startTransition] = useTransition()
   const [searchValue, setSearchValue] = useState(searchParams.get('search') || '')
   const debounceTimer = useRef<NodeJS.Timeout>()
+  const initialSearchValue = useRef(searchParams.get('search') || '')
 
   // Debounced search - only triggers after user stops typing for 500ms
   useEffect(() => {
+    // Don't trigger on mount if value hasn't changed
+    if (searchValue === initialSearchValue.current) {
+      initialSearchValue.current = searchValue
+      return
+    }
+
     if (debounceTimer.current) {
       clearTimeout(debounceTimer.current)
     }
