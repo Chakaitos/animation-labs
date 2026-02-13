@@ -3,6 +3,11 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { validateEnv } from "@/lib/env";
+
+// Validate environment variables at startup
+// This will throw an error and prevent the app from starting if any required variables are missing
+validateEnv();
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

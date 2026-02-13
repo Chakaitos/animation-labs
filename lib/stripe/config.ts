@@ -1,5 +1,6 @@
 // Subscription plan configuration
 // Price IDs are environment-specific (test vs live mode)
+// Environment variables are validated at startup via lib/env.ts
 
 export const PLANS = {
   starter: {
