@@ -22,20 +22,10 @@ export default async function VideosPage(props: VideosPageProps) {
   const currentPage = parseInt(searchParams.page || '1')
   const offset = (currentPage - 1) * VIDEOS_PER_PAGE
 
-  // Build query
+  // Build query for videos
   let query = supabase
     .from('videos')
-    .select(
-      `
-      id,
-      brand_name,
-      status,
-      created_at,
-      error_message,
-      user:profiles!inner(id, email)
-    `,
-      { count: 'exact' }
-    )
+    .select('id, brand_name, status, created_at, error_message, user_id', { count: 'exact' })
     .order('created_at', { ascending: false })
     .range(offset, offset + VIDEOS_PER_PAGE - 1)
 
@@ -44,7 +34,27 @@ export default async function VideosPage(props: VideosPageProps) {
     query = query.eq('status', status)
   }
 
-  const { data: videos, count } = await query
+  const { data: videos, count, error } = await query
+
+  if (error) {
+    console.error('Error fetching videos:', error)
+  }
+
+  // Fetch user emails separately
+  let videosWithUsers = videos || []
+  if (videos && videos.length > 0) {
+    const userIds = [...new Set(videos.map(v => v.user_id))]
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, email')
+      .in('id', userIds)
+
+    // Match profiles to videos
+    videosWithUsers = videos.map(video => ({
+      ...video,
+      user: profiles?.find(p => p.id === video.user_id) || { id: video.user_id, email: 'Unknown' }
+    }))
+  }
 
   const totalPages = Math.ceil((count || 0) / VIDEOS_PER_PAGE)
 
@@ -88,7 +98,7 @@ export default async function VideosPage(props: VideosPageProps) {
       <VideoFilterBar />
 
       {/* Videos Table */}
-      <VideoMonitoringTable videos={videos || []} />
+      <VideoMonitoringTable videos={videosWithUsers} />
 
       {/* Pagination */}
       {totalPages > 1 && (
