@@ -112,7 +112,15 @@ export async function getCreditBalance() {
     .single()
 
   if (error && error.code !== 'PGRST116') {
-    console.error('Error fetching credits:', error)
+    console.error('Error fetching credits:', {
+      error,
+      errorType: typeof error,
+      errorKeys: Object.keys(error),
+      code: error.code,
+      message: error.message,
+      details: error.details,
+      hint: error.hint,
+    })
     return { error: 'Failed to fetch credit balance' }
   }
 
