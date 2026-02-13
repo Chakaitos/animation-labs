@@ -40,9 +40,12 @@ export default async function VideosPage(props: VideosPageProps) {
     console.error('Error fetching videos:', error)
   }
 
-  // Fetch user emails separately
-  let videosWithUsers = videos || []
-  if (videos && videos.length > 0) {
+  // Fetch user emails separately and match to videos
+  const videosWithUsers = await (async () => {
+    if (!videos || videos.length === 0) {
+      return []
+    }
+
     const userIds = [...new Set(videos.map(v => v.user_id))]
     const { data: profiles } = await supabase
       .from('profiles')
@@ -50,11 +53,11 @@ export default async function VideosPage(props: VideosPageProps) {
       .in('id', userIds)
 
     // Match profiles to videos
-    videosWithUsers = videos.map(video => ({
+    return videos.map(video => ({
       ...video,
       user: profiles?.find(p => p.id === video.user_id) || { id: video.user_id, email: 'Unknown' }
     }))
-  }
+  })()
 
   const totalPages = Math.ceil((count || 0) / VIDEOS_PER_PAGE)
 
