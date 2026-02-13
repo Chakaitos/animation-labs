@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect, useRef } from 'react'
 import { Input } from '@/components/ui/input'
 import { Search } from 'lucide-react'
 
@@ -10,20 +10,34 @@ export function UserSearchBar() {
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const [searchValue, setSearchValue] = useState(searchParams.get('search') || '')
+  const debounceTimer = useRef<NodeJS.Timeout>()
 
-  const handleSearch = (value: string) => {
-    setSearchValue(value)
-    startTransition(() => {
-      const params = new URLSearchParams(searchParams)
-      if (value) {
-        params.set('search', value)
-        params.delete('page') // Reset to first page on new search
-      } else {
-        params.delete('search')
+  // Debounced search - only triggers after user stops typing for 500ms
+  useEffect(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current)
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      startTransition(() => {
+        const params = new URLSearchParams(searchParams)
+        if (searchValue.trim()) {
+          params.set('search', searchValue.trim())
+          params.delete('page') // Reset to first page on new search
+        } else {
+          params.delete('search')
+          params.delete('page')
+        }
+        router.push(`/admin/users?${params.toString()}`)
+      })
+    }, 500) // Wait 500ms after user stops typing
+
+    return () => {
+      if (debounceTimer.current) {
+        clearTimeout(debounceTimer.current)
       }
-      router.push(`/admin/users?${params.toString()}`)
-    })
-  }
+    }
+  }, [searchValue, router, searchParams])
 
   return (
     <div className="relative">
@@ -32,10 +46,15 @@ export function UserSearchBar() {
         type="search"
         placeholder="Search by email or name..."
         value={searchValue}
-        onChange={(e) => handleSearch(e.target.value)}
+        onChange={(e) => setSearchValue(e.target.value)}
         className="pl-10"
         disabled={isPending}
       />
+      {isPending && (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+          Searching...
+        </span>
+      )}
     </div>
   )
 }

@@ -45,7 +45,12 @@ export default async function UsersPage(props: UsersPageProps) {
     query = query.or(`email.ilike.%${search}%,full_name.ilike.%${search}%`)
   }
 
-  const { data: users, count } = await query
+  const { data: users, count, error } = await query
+
+  // Log error for debugging
+  if (error) {
+    console.error('Error fetching users:', error)
+  }
 
   // Get active subscription for each user (Supabase returns array, we want the active one)
   const usersWithSubscription = users?.map((user: any) => ({
@@ -71,6 +76,16 @@ export default async function UsersPage(props: UsersPageProps) {
       {/* Search Bar */}
       <div className="max-w-md">
         <UserSearchBar />
+        {search && (
+          <p className="text-sm text-muted-foreground mt-2">
+            Searching for: "{search}" - Found {count || 0} users
+          </p>
+        )}
+        {!search && count !== null && (
+          <p className="text-sm text-muted-foreground mt-2">
+            Total users: {count || 0}
+          </p>
+        )}
       </div>
 
       {/* Users Table */}
