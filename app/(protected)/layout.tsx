@@ -25,9 +25,18 @@ export default async function ProtectedLayout({
   const balanceResult = await getCreditBalance()
   const creditBalance = balanceResult.balance?.total ?? 0
 
+  // Check if user is admin
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  const isAdmin = profile?.role === 'admin'
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <AppHeader user={user} creditBalance={creditBalance} />
+      <AppHeader user={user} creditBalance={creditBalance} isAdmin={isAdmin} />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>

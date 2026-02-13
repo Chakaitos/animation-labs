@@ -10,13 +10,15 @@ import { CreditBalanceIndicator } from './credit-balance-indicator'
 import { cn } from '@/lib/utils'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
+import { Shield } from 'lucide-react'
 
 interface AppHeaderProps {
   user: User
   creditBalance?: number
+  isAdmin?: boolean
 }
 
-export function AppHeader({ user, creditBalance }: AppHeaderProps) {
+export function AppHeader({ user, creditBalance, isAdmin }: AppHeaderProps) {
   const pathname = usePathname()
   const { theme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
@@ -82,6 +84,17 @@ export function AppHeader({ user, creditBalance }: AppHeaderProps) {
             >
               Billing
             </Link>
+
+            {/* Admin Panel Link (only visible to admins) */}
+            {isAdmin && (
+              <Link
+                href="/admin/dashboard"
+                className="flex items-center gap-2 px-3 py-2 ml-2 text-sm font-medium text-orange-600 hover:text-orange-700 dark:text-orange-500 dark:hover:text-orange-400 bg-orange-50 dark:bg-orange-950/30 rounded-md transition-colors"
+              >
+                <Shield className="h-4 w-4" />
+                Admin Panel
+              </Link>
+            )}
           </nav>
 
           {/* Spacer */}
