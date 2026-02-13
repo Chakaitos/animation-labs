@@ -119,7 +119,7 @@ export function AdminNavigation({ user }: AdminNavigationProps) {
                 Exit Admin
               </Link>
             </Button>
-            <UserMenu user={user} />
+            {mounted && <UserMenu user={user} />}
           </div>
         </div>
       </div>

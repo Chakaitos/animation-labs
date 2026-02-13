@@ -102,8 +102,8 @@ export function AppHeader({ user, creditBalance, isAdmin }: AppHeaderProps) {
 
           {/* Credit Balance & User Menu */}
           <div className="flex items-center gap-4">
-            <CreditBalanceIndicator balance={creditBalance} />
-            <UserMenu user={user} />
+            {mounted && <CreditBalanceIndicator balance={creditBalance} />}
+            {mounted && <UserMenu user={user} />}
           </div>
         </div>
       </div>
