@@ -14,15 +14,17 @@ const TRACES_SAMPLE_RATE = IS_PRODUCTION
   ? parseFloat(process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE || '0.1')
   : 0;
 
-Sentry.init({
-  dsn: SENTRY_DSN,
-  environment: SENTRY_ENVIRONMENT,
+// Only initialize if we have a DSN
+if (SENTRY_DSN) {
+  Sentry.init({
+    dsn: SENTRY_DSN,
+    environment: SENTRY_ENVIRONMENT,
 
-  // Only track errors and performance in production
-  enabled: IS_PRODUCTION,
+    // Only send events in production (but always initialize so window.Sentry is available)
+    enabled: IS_PRODUCTION,
 
-  // Sample 10% of transactions for performance monitoring (stays within free tier)
-  tracesSampleRate: TRACES_SAMPLE_RATE,
+    // Sample 10% of transactions for performance monitoring (stays within free tier)
+    tracesSampleRate: TRACES_SAMPLE_RATE,
 
   // Capture 100% of errors (we want all errors, not sampled)
   // Note: tracesSampleRate is for performance, errors are always captured when they occur
@@ -34,9 +36,12 @@ Sentry.init({
   // We'll set custom user context in the app for email/plan info
   sendDefaultPii: true,
 
-  // Replay sampling - disabled (requires paid plan)
-  replaysSessionSampleRate: 0,
-  replaysOnErrorSampleRate: 0,
-});
+    // Replay sampling - disabled (requires paid plan)
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 0,
+  });
+} else {
+  console.warn('Sentry DSN not configured - error tracking disabled');
+}
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
