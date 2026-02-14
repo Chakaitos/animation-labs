@@ -69,9 +69,9 @@ export default async function VideosPage({ searchParams }: PageProps) {
   return (
     <div className="container mx-auto px-4 py-8">
         {/* Page Header */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <h1 className="text-2xl font-bold">Video Library</h1>
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link href="/create-video">
               <Plus className="mr-2 size-4" />
               Create Video

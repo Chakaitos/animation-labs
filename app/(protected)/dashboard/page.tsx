@@ -43,15 +43,15 @@ export default async function DashboardPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
+          <div className="min-w-0 flex-1">
             <h1 className="text-2xl font-bold">Dashboard</h1>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground truncate">
               Welcome back{user!.email ? `, ${user!.email.split('@')[0]}` : ''}!
             </p>
           </div>
           {hasSubscription && (
-            <Button asChild>
+            <Button asChild className="w-full sm:w-auto shrink-0">
               <Link href="/create-video">
                 <Plus className="h-4 w-4 mr-2" />
                 Create Video

@@ -116,7 +116,7 @@ export function VideoCard({ video }: VideoCardProps) {
           Created {new Date(video.created_at).toLocaleDateString()}
         </p>
         {video.status === 'failed' && video.error_message && (
-          <p className="text-sm text-destructive">{video.error_message}</p>
+          <p className="text-sm text-destructive break-words">{video.error_message}</p>
         )}
       </CardContent>
 

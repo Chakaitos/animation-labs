@@ -74,14 +74,14 @@ export default function PricingPage() {
             Annual
           </span>
           {isAnnual && (
-            <Badge variant="secondary" className="ml-2">
+            <Badge variant="secondary" className="ml-2 shrink-0">
               Save 17%
             </Badge>
           )}
         </div>
 
-        {/* Promo code input - UI placeholder */}
-        <div className="max-w-sm mx-auto mb-8">
+        {/* Promo code input - UI placeholder (hidden on mobile) */}
+        <div className="max-w-sm mx-auto mb-8 hidden sm:block">
           <Label htmlFor="promo" className="text-sm text-muted-foreground">
             Have a promo code?
           </Label>

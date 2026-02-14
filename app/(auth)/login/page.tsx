@@ -17,12 +17,26 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center p-6 sm:p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <Link href="/" className="mx-auto mb-4">
-            <Image src="/AL_transparent_compact.png" alt="Animation Labs" width={250} height={66} priority className="dark:hidden" />
-            <Image src="/AL_dark_mode.png" alt="Animation Labs" width={250} height={66} priority className="hidden dark:block" />
+          <Link href="/" className="mx-auto mb-4 inline-block">
+            <Image
+              src="/AL_transparent_compact.png"
+              alt="Animation Labs"
+              width={250}
+              height={66}
+              priority
+              className="dark:hidden w-[180px] sm:w-[220px] md:w-[250px] h-auto"
+            />
+            <Image
+              src="/AL_dark_mode.png"
+              alt="Animation Labs"
+              width={250}
+              height={66}
+              priority
+              className="hidden dark:block w-[180px] sm:w-[220px] md:w-[250px] h-auto"
+            />
           </Link>
           <CardTitle className="text-2xl">Welcome back</CardTitle>
           <CardDescription>

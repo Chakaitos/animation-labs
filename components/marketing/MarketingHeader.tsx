@@ -26,7 +26,7 @@ export function MarketingHeader() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="flex items-center">
+          <Link href="/" className="flex items-center shrink-0">
             <Image
               src={logoSrc}
               alt="Animation Labs"
@@ -34,6 +34,7 @@ export function MarketingHeader() {
               height={66}
               priority
               key={currentTheme}
+              className="w-[150px] sm:w-[200px] md:w-[250px] h-auto"
             />
           </Link>
 

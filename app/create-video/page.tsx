@@ -31,7 +31,7 @@ export default async function CreateVideoPage() {
       <AppHeader user={user} creditBalance={credits} />
 
       {/* Main Content */}
-      <main className="container py-8">
+      <main className="container py-8 px-4 sm:px-6">
         <div className="mx-auto max-w-2xl">
           {credits === 0 ? (
             // No credits - show upgrade prompt
@@ -40,11 +40,11 @@ export default async function CreateVideoPage() {
               <p className="text-muted-foreground mb-6">
                 You need at least 1 credit to create a video. Upgrade your plan or purchase credits to continue.
               </p>
-              <div className="flex gap-4 justify-center">
-                <Button asChild variant="outline">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button asChild variant="outline" className="w-full sm:w-auto">
                   <Link href="/dashboard">Back to Dashboard</Link>
                 </Button>
-                <Button asChild>
+                <Button asChild className="w-full sm:w-auto">
                   <Link href="/billing">Get More Credits</Link>
                 </Button>
               </div>

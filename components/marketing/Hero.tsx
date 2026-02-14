@@ -12,11 +12,11 @@ export function Hero() {
         }}
       />
 
-      <div className="container relative mx-auto px-4">
+      <div className="container relative mx-auto px-6 sm:px-4">
         <div className="max-w-6xl mx-auto">
           {/* Headline section */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4">
               Professional Logo Animations{" "}
               <span className="text-primary">At a Fraction of the Cost</span>
             </h1>
