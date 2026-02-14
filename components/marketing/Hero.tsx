@@ -32,6 +32,7 @@ export function Hero() {
               preload="metadata"
               poster="/examples/hero-poster.jpg"
               className="w-full h-full object-cover"
+              aria-label="Professional logo animation demo showcasing various animation styles and effects"
             >
               <source src="/examples/hero-demo.mp4" type="video/mp4" />
               Your browser does not support the video tag.

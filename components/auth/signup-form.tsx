@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -100,9 +101,13 @@ export function SignupForm() {
                   type="password"
                   autoComplete="new-password"
                   disabled={isLoading}
+                  aria-required="true"
                   {...field}
                 />
               </FormControl>
+              <FormDescription>
+                Must be at least 8 characters long
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}

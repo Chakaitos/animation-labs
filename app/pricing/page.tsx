@@ -37,7 +37,21 @@ export default function PricingPage() {
       const data = await response.json()
 
       if (data.url) {
-        window.location.href = data.url
+        // Validate that the URL is from Stripe before redirecting (security: prevent open redirect)
+        try {
+          const url = new URL(data.url)
+          if (url.hostname === 'checkout.stripe.com' || url.hostname.endsWith('.stripe.com')) {
+            window.location.href = data.url
+          } else {
+            console.error('Invalid checkout URL:', data.url)
+            alert('Invalid checkout URL. Please try again.')
+            setIsLoading(null)
+          }
+        } catch (error) {
+          console.error('Invalid URL format:', data.url)
+          alert('Invalid checkout URL. Please try again.')
+          setIsLoading(null)
+        }
       } else {
         console.error('Checkout error:', data.error)
         alert('Failed to start checkout. Please try again.')
@@ -52,8 +66,14 @@ export default function PricingPage() {
 
   return (
     <div className="min-h-screen">
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+      >
+        Skip to main content
+      </a>
       <MarketingHeader />
-      <main className="container mx-auto px-4 py-16">
+      <main id="main-content" tabIndex={-1} className="container mx-auto px-4 py-16">
         {/* Page header */}
         <h1 className="text-4xl font-bold text-center mb-4">
           Choose Your Plan

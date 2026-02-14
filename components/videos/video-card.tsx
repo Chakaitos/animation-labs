@@ -35,14 +35,14 @@ export function VideoCard({ video }: VideoCardProps) {
     return ratio === 'landscape' ? 'Landscape - 16:9' : 'Portrait - 9:16'
   }
 
-  // Handle video hover preview
-  const handleMouseEnter = () => {
+  // Handle video preview (mouse + keyboard)
+  const handleActivate = () => {
     if (videoRef.current) {
       videoRef.current.play()
     }
   }
 
-  const handleMouseLeave = () => {
+  const handleDeactivate = () => {
     if (videoRef.current) {
       videoRef.current.pause()
       videoRef.current.currentTime = 0
@@ -68,8 +68,13 @@ export function VideoCard({ video }: VideoCardProps) {
       {/* Thumbnail Container */}
       <div
         className="relative aspect-video bg-muted overflow-hidden"
-        onMouseEnter={video.status === 'completed' && video.video_url ? handleMouseEnter : undefined}
-        onMouseLeave={video.status === 'completed' && video.video_url ? handleMouseLeave : undefined}
+        onMouseEnter={video.status === 'completed' && video.video_url ? handleActivate : undefined}
+        onMouseLeave={video.status === 'completed' && video.video_url ? handleDeactivate : undefined}
+        onFocus={video.status === 'completed' && video.video_url ? handleActivate : undefined}
+        onBlur={video.status === 'completed' && video.video_url ? handleDeactivate : undefined}
+        tabIndex={video.status === 'completed' && video.video_url ? 0 : undefined}
+        role={video.status === 'completed' && video.video_url ? 'button' : undefined}
+        aria-label={video.status === 'completed' && video.video_url ? `Preview ${video.brand_name} animation` : undefined}
       >
         {video.status === 'completed' && video.video_url ? (
           // Show video preview for completed videos

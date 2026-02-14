@@ -71,7 +71,7 @@
   --secondary: #6B7280;
   --secondary-foreground: #FFFFFF;
   --muted: #F9FAFB;
-  --muted-foreground: #9CA3AF;
+  --muted-foreground: #6B7280; /* Changed from #9CA3AF (gray-400) to #6B7280 (gray-500) for better contrast */
 
   /* Accent */
   --accent: #F9FAFB;
@@ -192,8 +192,19 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
   }
+
+  /* Enhanced focus styles for keyboard navigation */
+  *:focus-visible {
+    @apply outline-ring outline-offset-2 outline-2;
+  }
+
+  /* Remove default focus for mouse users */
+  *:focus:not(:focus-visible) {
+    outline: none;
+  }
+
   body {
     @apply bg-background text-foreground;
   }
