@@ -4,10 +4,20 @@
 
 import * as Sentry from "@sentry/nextjs";
 
+console.log('🔍 Sentry client config loading...');
+
 // Only initialize Sentry in production
 const SENTRY_DSN = process.env.NEXT_PUBLIC_SENTRY_DSN;
 const SENTRY_ENVIRONMENT = process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || 'development';
 const IS_PRODUCTION = SENTRY_ENVIRONMENT === 'production';
+
+console.log('🔍 Sentry config values:', {
+  hasDSN: !!SENTRY_DSN,
+  dsnLength: SENTRY_DSN?.length,
+  environment: SENTRY_ENVIRONMENT,
+  isProduction: IS_PRODUCTION,
+  willInitialize: !!(SENTRY_DSN && IS_PRODUCTION)
+});
 
 // Performance sampling rate (10% in production, configurable via env var)
 const TRACES_SAMPLE_RATE = IS_PRODUCTION
@@ -16,29 +26,30 @@ const TRACES_SAMPLE_RATE = IS_PRODUCTION
 
 // Only initialize if we have a DSN and are in production
 if (SENTRY_DSN && IS_PRODUCTION) {
-  Sentry.init({
-    dsn: SENTRY_DSN,
-    environment: SENTRY_ENVIRONMENT,
+  console.log('✅ Calling Sentry.init() with DSN:', SENTRY_DSN.substring(0, 30) + '...');
 
-    // Sample 10% of transactions for performance monitoring (stays within free tier)
-    tracesSampleRate: TRACES_SAMPLE_RATE,
+  try {
+    Sentry.init({
+      dsn: SENTRY_DSN,
+      environment: SENTRY_ENVIRONMENT,
+      tracesSampleRate: TRACES_SAMPLE_RATE,
+      enableLogs: true,
+      sendDefaultPii: true,
+      replaysSessionSampleRate: 0,
+      replaysOnErrorSampleRate: 0,
+    });
 
-  // Capture 100% of errors (we want all errors, not sampled)
-  // Note: tracesSampleRate is for performance, errors are always captured when they occur
-
-  // Enable logs to be sent to Sentry
-  enableLogs: true,
-
-  // Enable sending user PII for better debugging
-  // We'll set custom user context in the app for email/plan info
-  sendDefaultPii: true,
-
-    // Replay sampling - disabled (requires paid plan)
-    replaysSessionSampleRate: 0,
-    replaysOnErrorSampleRate: 0,
-  });
+    console.log('✅ Sentry.init() completed');
+    console.log('✅ Sentry available:', typeof Sentry, Object.keys(Sentry).slice(0, 10));
+  } catch (error) {
+    console.error('❌ Sentry.init() failed:', error);
+  }
 } else {
-  console.warn('Sentry DSN not configured - error tracking disabled');
+  console.warn('⚠️ Sentry NOT initializing:', {
+    reason: !SENTRY_DSN ? 'No DSN' : !IS_PRODUCTION ? 'Not production' : 'Unknown',
+    hasDSN: !!SENTRY_DSN,
+    environment: SENTRY_ENVIRONMENT
+  });
 }
 
 export const onRouterTransitionStart = Sentry.captureRouterTransitionStart;
