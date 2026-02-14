@@ -2,7 +2,7 @@
 
 import { User } from '@supabase/supabase-js'
 import Link from 'next/link'
-import { Settings, LogOut } from 'lucide-react'
+import { Settings, LogOut, CreditCard } from 'lucide-react'
 import { signOut } from '@/lib/actions/auth'
 import {
   DropdownMenu,
@@ -33,6 +33,12 @@ export function UserMenu({ user }: UserMenuProps) {
           <p className="text-sm font-medium truncate">{user.email}</p>
         </div>
         <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <Link href="/billing" className="flex cursor-pointer items-center">
+            <CreditCard className="mr-2 h-4 w-4" />
+            Billing
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/account/settings" className="flex cursor-pointer items-center">
             <Settings className="mr-2 h-4 w-4" />
