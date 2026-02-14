@@ -32,12 +32,6 @@ Sentry.init({
   // We'll set custom user context (email, plan) via Sentry.setUser()
   sendDefaultPii: true,
 
-  // Track critical backend operations
-  integrations: [
-    // Add breadcrumbs for debugging context
-    Sentry.breadcrumbsIntegration({
-      console: true, // Log console.error/warn as breadcrumbs
-      fetch: true,   // Log fetch requests
-    }),
-  ],
+  // Breadcrumbs are enabled by default in Sentry v8+
+  // No need to manually configure integrations
 });
