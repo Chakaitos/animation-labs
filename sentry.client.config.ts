@@ -14,14 +14,11 @@ const TRACES_SAMPLE_RATE = IS_PRODUCTION
   ? parseFloat(process.env.NEXT_PUBLIC_SENTRY_TRACES_SAMPLE_RATE || '0.1')
   : 0;
 
-// Only initialize if we have a DSN
-if (SENTRY_DSN) {
+// Only initialize if we have a DSN and are in production
+if (SENTRY_DSN && IS_PRODUCTION) {
   Sentry.init({
     dsn: SENTRY_DSN,
     environment: SENTRY_ENVIRONMENT,
-
-    // Only send events in production (but always initialize so window.Sentry is available)
-    enabled: IS_PRODUCTION,
 
     // Sample 10% of transactions for performance monitoring (stays within free tier)
     tracesSampleRate: TRACES_SAMPLE_RATE,
