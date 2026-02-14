@@ -14,7 +14,7 @@ import { useRef } from "react"
 const stats = [
   { value: "1,000+", label: "Videos Created" },
   { value: "250+", label: "Happy Customers" },
-  { value: "5 minutes", label: "Avg. Delivery Time" },
+  { value: "5 mins", label: "Avg. Delivery Time" },
 ]
 
 const testimonials = [
@@ -89,7 +89,7 @@ export function SocialProof() {
             <div className="text-center mb-8">
               <div className="inline-block">
                 <h2 className="text-3xl font-bold mb-2">
-                  Trusted by Marketing Teams
+                  Trusted by Marketing Teams, Designers, and Businesses
                 </h2>
                 <div className="h-1 w-24 bg-gradient-to-r from-primary/50 via-primary to-primary/50 rounded-full mx-auto" />
               </div>
