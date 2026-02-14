@@ -41,6 +41,12 @@ if (SENTRY_DSN && IS_PRODUCTION) {
 
     console.log('✅ Sentry.init() completed');
     console.log('✅ Sentry available:', typeof Sentry, Object.keys(Sentry).slice(0, 10));
+
+    // Expose Sentry to window for easier debugging and manual error capture
+    if (typeof window !== 'undefined') {
+      (window as any).Sentry = Sentry;
+      console.log('✅ Exposed Sentry to window.Sentry');
+    }
   } catch (error) {
     console.error('❌ Sentry.init() failed:', error);
   }
