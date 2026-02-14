@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { ThemeProvider } from "@/components/theme-provider";
+import { SentryUserProvider } from "@/components/sentry-user-provider";
 import { validateEnv } from "@/lib/env";
 
 // Validate environment variables at startup
@@ -40,6 +41,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <SentryUserProvider />
           {children}
           <Toaster />
         </ThemeProvider>
