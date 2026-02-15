@@ -10,7 +10,8 @@
     "email:dev": "email dev --dir emails --port 3001",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:coverage": "vitest --coverage"
+    "test:coverage": "vitest --coverage",
+    "stripe:setup": "node scripts/stripe-setup-live.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
