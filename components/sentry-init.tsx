@@ -12,13 +12,7 @@ import { useEffect } from 'react'
 export function SentryInit() {
   useEffect(() => {
     // Import the Sentry config to trigger initialization
-    import('@/sentry.client.config').then(() => {
-      console.log('Sentry client initialized', {
-        loaded: !!(window as any).Sentry,
-        dsn: process.env.NEXT_PUBLIC_SENTRY_DSN ? 'configured' : 'missing',
-        env: process.env.NEXT_PUBLIC_SENTRY_ENVIRONMENT || 'not set'
-      })
-    }).catch(err => {
+    import('@/sentry.client.config').catch(err => {
       console.error('Failed to load Sentry client config:', err)
     })
   }, [])
