@@ -43,24 +43,26 @@ export async function POST(req: NextRequest) {
       brandContext,
     } = validationResult.data
 
-    // 3. Check rate limiting
-    const rateLimit = await checkRateLimit(user.id)
+    // 3. Check rate limiting (TEMPORARILY DISABLED FOR TESTING)
+    const maxRequests = parseInt(process.env.AI_RATE_LIMIT_MAX_REQUESTS || '5')
+    const rateLimit = await checkRateLimit(user.id, maxRequests)
 
-    if (!rateLimit.allowed) {
-      return NextResponse.json(
-        {
-          error: 'Rate limit exceeded. Please try again later.',
-          resetTime: rateLimit.resetTime,
-        },
-        {
-          status: 429,
-          headers: {
-            'X-RateLimit-Remaining': '0',
-            'X-RateLimit-Reset': rateLimit.resetTime.toString(),
-          },
-        }
-      )
-    }
+    // TODO: Re-enable after testing
+    // if (!rateLimit.allowed) {
+    //   return NextResponse.json(
+    //     {
+    //       error: 'Rate limit exceeded. Please try again later.',
+    //       resetTime: rateLimit.resetTime,
+    //     },
+    //     {
+    //       status: 429,
+    //       headers: {
+    //         'X-RateLimit-Remaining': '0',
+    //         'X-RateLimit-Reset': rateLimit.resetTime.toString(),
+    //       },
+    //     }
+    //   )
+    // }
 
     // 4. For first request (no conversation history), send first question with options
     if (conversationHistory.length === 0) {
