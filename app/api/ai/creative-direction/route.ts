@@ -129,6 +129,15 @@ export async function POST(req: NextRequest) {
       },
     ]
 
+    console.log('API Request:', {
+      phase,
+      questionCount,
+      clarificationCount,
+      userMessage,
+      historyLength: updatedHistory.length,
+      isClarifying: inputValidation.isClarifyingQuestion,
+    })
+
     // 9. Stream AI response
     const stream = await streamCreativeDirectionResponse(
       updatedHistory,

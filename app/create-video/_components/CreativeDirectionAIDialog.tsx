@@ -103,6 +103,13 @@ export function CreativeDirectionAIDialog({
       const text = await response.text()
       const { question, options } = parseAIResponse(text)
 
+      console.log('Initialization response:', {
+        text,
+        question,
+        options,
+        showOptions: !!options
+      })
+
       setState((prev) => ({
         ...prev,
         messages: [
@@ -216,7 +223,10 @@ export function CreativeDirectionAIDialog({
           onOpenChange(false)
           return
         }
-        throw new Error('AI request failed')
+
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        console.error('API Error:', response.status, errorData)
+        throw new Error(errorData.error || 'AI request failed')
       }
 
       // Stream the response
@@ -257,6 +267,14 @@ export function CreativeDirectionAIDialog({
 
       // Parse final response for options
       const { question, options } = parseAIResponse(aiResponse)
+
+      console.log('AI Response parsed:', {
+        aiResponse,
+        question,
+        options,
+        newPhase,
+        newQuestionCount
+      })
 
       // Check if this is the final generation (phase 5)
       const isFinalGeneration = newPhase === 5 && !options
