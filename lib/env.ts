@@ -98,6 +98,19 @@ const privateEnvSchema = z.object({
     .string()
     .min(1, 'Resend API key is required')
     .startsWith('re_', 'Must be a valid Resend API key'),
+
+  // Anthropic Claude API (for AI Creative Direction Assistant - Optional)
+  ANTHROPIC_API_KEY: z.string().min(1, 'Anthropic API key is required').optional(),
+
+  // Upstash Redis (for AI rate limiting - Optional)
+  UPSTASH_REDIS_REST_URL: z.string().url('Upstash Redis URL is required').optional(),
+  UPSTASH_REDIS_REST_TOKEN: z
+    .string()
+    .min(1, 'Upstash Redis token is required').optional(),
+
+  // AI Assistant Configuration (Optional)
+  AI_ASSISTANT_ENABLED: z.enum(['true', 'false']).default('true').optional(),
+  AI_RATE_LIMIT_MAX_REQUESTS: z.string().default('5').optional(),
 })
 
 /**
