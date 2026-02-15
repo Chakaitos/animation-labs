@@ -6,6 +6,7 @@ import Image from 'next/image'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { LogoPreparationGuide } from './LogoPreparationGuide'
 
 interface UploadStepProps {
   onComplete: (file: File) => void
@@ -70,6 +71,9 @@ export function UploadStep({ onComplete, currentFile }: UploadStepProps) {
           Upload your logo in JPG, PNG, or WebP format (max 25MB)
         </p>
       </div>
+
+      {/* Logo Preparation Guide */}
+      <LogoPreparationGuide />
 
       {/* Dropzone */}
       <div
