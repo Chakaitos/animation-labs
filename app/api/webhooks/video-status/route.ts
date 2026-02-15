@@ -156,7 +156,7 @@ export async function POST(request: Request) {
     query = query.or(`n8n_execution_id.is.null,n8n_execution_id.eq.${webhookId}`)
   }
 
-  const { data, error } = await query.select('id, status, user_id, brand_name, video_url, thumbnail_url')
+  const { data, error } = await query.select('id, status, user_id, brand_name, video_url, thumbnail_url, credits_used')
 
   if (error) {
     console.error('Video webhook: Database error', { videoId, error: error.message })
@@ -218,20 +218,18 @@ export async function POST(request: Request) {
         brandName: video.brand_name,
       })
 
-      // Get the video's credits_used to refund the correct amount
-      const { data: videoData, error: fetchError } = await supabase
-        .from('videos')
-        .select('credits_used')
-        .eq('id', videoId)
-        .single()
-
-      if (fetchError) {
-        console.error('Video webhook: Failed to fetch video credits_used', {
-          videoId: videoId,
-          error: fetchError.message,
+      // Verify we have all required data for refund (video already fetched above)
+      if (!video.user_id) {
+        console.error('Video webhook: Cannot refund - missing user_id', {
+          videoId: video.id,
         })
-      } else if (videoData) {
-        const creditsToRefund = videoData.credits_used || 1
+      } else if (video.credits_used === null || video.credits_used === undefined) {
+        console.error('Video webhook: Cannot refund - missing credits_used', {
+          videoId: video.id,
+          userId: video.user_id,
+        })
+      } else {
+        const creditsToRefund = video.credits_used
 
         console.log('Video webhook: Calling refund_credits RPC', {
           videoId: video.id,
@@ -264,10 +262,6 @@ export async function POST(request: Request) {
             brandName: video.brand_name,
           })
         }
-      } else {
-        console.error('Video webhook: No video data found for refund', {
-          videoId: videoId,
-        })
       }
     }
   }
