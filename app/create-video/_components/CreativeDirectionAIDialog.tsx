@@ -329,9 +329,10 @@ export function CreativeDirectionAIDialog({
           ))}
         </div>
 
-        {/* Messages Area */}
+        {/* Messages and Options Area - All Scrollable */}
         <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
-          <div className="space-y-4">
+          <div className="space-y-4 pb-4">
+            {/* Messages */}
             {state.messages.map((message, idx) => (
               <div
                 key={idx}
@@ -360,38 +361,37 @@ export function CreativeDirectionAIDialog({
                 </div>
               </div>
             )}
+
+            {/* Option Buttons - Inside ScrollArea */}
+            {state.showOptions && state.currentOptions && !state.isStreaming && (
+              <div className="space-y-2 pt-2">
+                {state.currentOptions.map((option) => (
+                  <Button
+                    key={option.letter}
+                    variant="outline"
+                    className="w-full justify-start text-left h-auto py-3 px-4 hover:bg-primary/10 hover:border-primary"
+                    onClick={() => handleOptionSelect(option)}
+                  >
+                    <div className="flex items-start gap-3 w-full">
+                      <span className="font-bold text-primary min-w-[1.5rem]">
+                        {option.letter}.
+                      </span>
+                      <span className="flex-1">{option.text}</span>
+                      {option.isOther && (
+                        <Edit3 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                      )}
+                    </div>
+                  </Button>
+                ))}
+              </div>
+            )}
           </div>
         </ScrollArea>
 
-        {/* Input Area */}
-        <div className="space-y-3 pt-4 border-t">
-          {/* Option Buttons */}
-          {state.showOptions && state.currentOptions && (
-            <div className="space-y-2">
-              {state.currentOptions.map((option) => (
-                <Button
-                  key={option.letter}
-                  variant="outline"
-                  className="w-full justify-start text-left h-auto py-3 px-4 hover:bg-primary/10 hover:border-primary"
-                  onClick={() => handleOptionSelect(option)}
-                  disabled={state.isStreaming}
-                >
-                  <div className="flex items-start gap-3 w-full">
-                    <span className="font-bold text-primary min-w-[1.5rem]">
-                      {option.letter}.
-                    </span>
-                    <span className="flex-1">{option.text}</span>
-                    {option.isOther && (
-                      <Edit3 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-                    )}
-                  </div>
-                </Button>
-              ))}
-            </div>
-          )}
-
+        {/* Input Area - Fixed at Bottom */}
+        <div className="space-y-3 pt-4 border-t flex-shrink-0">
           {/* Custom Input */}
-          {(selectedOtherOption || (!state.showOptions && !state.generatedDirection)) && (
+          {(selectedOtherOption || (!state.showOptions && !state.generatedDirection && !state.isStreaming)) && (
             <div className="flex gap-2">
               <Textarea
                 value={userInput}
