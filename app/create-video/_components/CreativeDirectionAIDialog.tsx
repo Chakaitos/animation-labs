@@ -273,11 +273,18 @@ export function CreativeDirectionAIDialog({
         question,
         options,
         newPhase,
-        newQuestionCount
+        newQuestionCount,
+        responseLength: aiResponse.length
       })
 
-      // Check if this is the final generation (phase 5)
-      const isFinalGeneration = newPhase === 5 && !options
+      // Check if this is the final generation (phase 5 OR questionCount >= 4)
+      const isFinalGeneration = (newPhase === 5 || newQuestionCount >= 4) && !options
+
+      // Ensure creative direction doesn't exceed 1500 chars
+      let finalDirection = aiResponse
+      if (isFinalGeneration && finalDirection.length > 1500) {
+        finalDirection = finalDirection.substring(0, 1497) + '...'
+      }
 
       setState((prev) => ({
         ...prev,
@@ -287,7 +294,7 @@ export function CreativeDirectionAIDialog({
         currentOptions: options,
         showOptions: !!options,
         isStreaming: false,
-        generatedDirection: isFinalGeneration ? aiResponse : null,
+        generatedDirection: isFinalGeneration ? finalDirection : null,
       }))
     } catch (error) {
       console.error('Send message error:', error)

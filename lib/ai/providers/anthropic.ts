@@ -45,7 +45,7 @@ export async function streamCreativeDirectionResponse(
 
   const stream = await anthropic.messages.stream({
     model,
-    max_tokens: phase <= 4 ? 300 : 500,
+    max_tokens: phase <= 4 ? 400 : 1000, // Increased for complete responses
     temperature: phase <= 4 ? 0.7 : 0.8,
     system: [
       {

@@ -33,8 +33,8 @@ export function parseAIResponse(response: string): {
   question: string
   options: Option[] | null
 } {
-  // Look for OPTIONS: section
-  const optionsMatch = response.match(/OPTIONS:\s*\n((?:[A-E]\..+\n?)+)/i)
+  // Look for OPTIONS: section (case insensitive, flexible whitespace)
+  const optionsMatch = response.match(/\*\*OPTIONS:\*\*|OPTIONS:/i)
 
   if (!optionsMatch) {
     // No options found, just a regular question or response
@@ -44,24 +44,32 @@ export function parseAIResponse(response: string): {
   // Extract question text (everything before OPTIONS:)
   const question = response.substring(0, optionsMatch.index).trim()
 
-  // Extract options
-  const optionsText = optionsMatch[1]
-  const optionLines = optionsText.split('\n').filter((line) => line.trim())
+  // Extract options text (everything after OPTIONS:)
+  const afterOptions = response.substring(optionsMatch.index + optionsMatch[0].length)
 
-  const options: Option[] = optionLines
-    .map((line) => {
-      const match = line.match(/^([A-E])\.\s*(.+)$/)
-      if (!match) return null
+  // Find all option lines (A., B., C., D., E.)
+  const optionPattern = /([A-E])\.\s*([^\n]+)/g
+  const options: Option[] = []
+  let match
 
-      const letter = match[1] as 'A' | 'B' | 'C' | 'D' | 'E'
-      const text = match[2].trim()
-      const isOther =
-        text.toLowerCase().includes('other') ||
-        text.toLowerCase().includes('describe my own')
+  while ((match = optionPattern.exec(afterOptions)) !== null) {
+    const letter = match[1] as 'A' | 'B' | 'C' | 'D' | 'E'
+    const text = match[2].trim()
+    const isOther =
+      text.toLowerCase().includes('other') ||
+      text.toLowerCase().includes('describe my own') ||
+      text.toLowerCase().includes("i'll describe")
 
-      return { letter, text, isOther }
-    })
-    .filter(Boolean) as Option[]
+    options.push({ letter, text, isOther })
+
+    // Stop if we found 5 options
+    if (options.length >= 5) break
+  }
+
+  // If we found fewer than 2 options, something's wrong - return no options
+  if (options.length < 2) {
+    return { question: response.trim(), options: null }
+  }
 
   return { question, options }
 }
