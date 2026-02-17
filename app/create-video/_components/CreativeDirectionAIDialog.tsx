@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
-import { ScrollArea } from '@/components/ui/scroll-area'
+// import { ScrollArea } from '@/components/ui/scroll-area' // Not needed - using native scroll
 import { Sparkles, Send, Loader2, Edit3, Check } from 'lucide-react'
 import { toast } from 'sonner'
 import { Message, Option } from '@/lib/validations/ai-schema'
@@ -304,33 +304,38 @@ export function CreativeDirectionAIDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-primary" />
-            Creative Direction AI Assistant
-          </DialogTitle>
-          <DialogDescription>
-            Answer a few questions to generate a professional creative brief
-          </DialogDescription>
-        </DialogHeader>
+      <DialogContent className="max-w-2xl h-[85vh] flex flex-col gap-0 p-0">
+        <div className="p-6 pb-4">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Creative Direction AI Assistant
+            </DialogTitle>
+            <DialogDescription>
+              Answer a few questions to generate a professional creative brief
+            </DialogDescription>
+          </DialogHeader>
 
-        {/* Progress Indicator */}
-        <div className="flex items-center gap-2 py-2">
-          {[1, 2, 3, 4, 5].map((step) => (
-            <div
-              key={step}
-              className={`h-2 flex-1 rounded-full transition-colors ${
-                step <= state.currentPhase
-                  ? 'bg-primary'
-                  : 'bg-muted'
-              }`}
-            />
-          ))}
+          {/* Progress Indicator */}
+          <div className="flex items-center gap-2 py-4">
+            {[1, 2, 3, 4, 5].map((step) => (
+              <div
+                key={step}
+                className={`h-2 flex-1 rounded-full transition-colors ${
+                  step <= state.currentPhase
+                    ? 'bg-primary'
+                    : 'bg-muted'
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
-        {/* Messages and Options Area - All Scrollable */}
-        <ScrollArea className="flex-1 pr-4" ref={scrollRef}>
+        {/* Messages and Options Area - Simple Scrollable Div */}
+        <div
+          className="flex-1 overflow-y-auto px-6"
+          ref={scrollRef}
+        >
           <div className="space-y-4 pb-4">
             {/* Messages */}
             {state.messages.map((message, idx) => (
@@ -386,10 +391,10 @@ export function CreativeDirectionAIDialog({
               </div>
             )}
           </div>
-        </ScrollArea>
+        </div>
 
         {/* Input Area - Fixed at Bottom */}
-        <div className="space-y-3 pt-4 border-t flex-shrink-0">
+        <div className="space-y-3 p-6 pt-4 border-t flex-shrink-0 bg-background">
           {/* Custom Input */}
           {(selectedOtherOption || (!state.showOptions && !state.generatedDirection && !state.isStreaming)) && (
             <div className="flex gap-2">
