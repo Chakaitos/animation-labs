@@ -23,6 +23,7 @@ import { PLANS } from "@/lib/stripe/config"
 export default function PricingPage() {
   const [interval, setInterval] = useState<'month' | 'year'>('month')
   const [isLoading, setIsLoading] = useState<string | null>(null)
+  const [promoCode, setPromoCode] = useState('')
   const isAnnual = interval === 'year'
 
   const handleSubscribe = async (planId: 'starter' | 'professional') => {
@@ -31,7 +32,11 @@ export default function PricingPage() {
       const response = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: planId, interval }),
+        body: JSON.stringify({
+          plan: planId,
+          interval,
+          promoCode: promoCode.trim() || undefined
+        }),
       })
 
       const data = await response.json()
@@ -100,7 +105,7 @@ export default function PricingPage() {
           )}
         </div>
 
-        {/* Promo code input - UI placeholder (hidden on mobile) */}
+        {/* Promo code input (hidden on mobile) */}
         <div className="max-w-sm mx-auto mb-8 hidden sm:block">
           <Label htmlFor="promo" className="text-sm text-muted-foreground">
             Have a promo code?
@@ -108,7 +113,8 @@ export default function PricingPage() {
           <Input
             id="promo"
             placeholder="Enter code"
-            disabled
+            value={promoCode}
+            onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
             className="mt-2"
           />
         </div>
