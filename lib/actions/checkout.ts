@@ -14,7 +14,7 @@ async function getSiteUrl() {
   return `${protocol}://${host}`
 }
 
-export async function createSubscriptionCheckout(planId: PlanId) {
+export async function createSubscriptionCheckout(planId: PlanId, promoCode?: string) {
   const supabase = await createClient()
   const siteUrl = await getSiteUrl()
 
@@ -44,7 +44,8 @@ export async function createSubscriptionCheckout(planId: PlanId) {
   }
 
   try {
-    const session = await stripe.checkout.sessions.create({
+    // Prepare checkout session config
+    const sessionConfig: Record<string, unknown> = {
       customer: existingSub?.stripe_customer_id || undefined,
       customer_email: existingSub?.stripe_customer_id ? undefined : user.email,
       mode: 'subscription',
@@ -67,7 +68,33 @@ export async function createSubscriptionCheckout(planId: PlanId) {
           plan_id: planId,
         },
       },
-    })
+      // Enable Stripe's promo code field in checkout UI
+      allow_promotion_codes: true,
+    }
+
+    // If user provided a promo code, try to pre-apply it
+    if (promoCode && promoCode.trim()) {
+      try {
+        const promoCodes = await stripe.promotionCodes.list({
+          code: promoCode.trim().toUpperCase(),
+          active: true,
+          limit: 1,
+        })
+
+        if (promoCodes.data.length > 0) {
+          // Valid code found - pre-apply it
+          sessionConfig.discounts = [{
+            promotion_code: promoCodes.data[0].id,
+          }]
+        }
+        // If invalid, allow_promotion_codes lets Stripe show the error
+      } catch (err) {
+        console.error('Error validating promo code:', err)
+        // Silently fail - user can still enter code in Stripe UI
+      }
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionConfig)
 
     if (!session.url) {
       return { error: 'Failed to create checkout session' }

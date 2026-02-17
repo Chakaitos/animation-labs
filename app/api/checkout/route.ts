@@ -5,9 +5,10 @@ import { PLANS, type PlanId, type BillingInterval } from '@/lib/stripe/config'
 
 export async function POST(req: NextRequest) {
   try {
-    const { plan, interval } = await req.json() as {
+    const { plan, interval, promoCode } = await req.json() as {
       plan: PlanId
       interval: BillingInterval
+      promoCode?: string
     }
 
     // Validate input
@@ -38,8 +39,8 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Create Stripe checkout session
-    const session = await stripe.checkout.sessions.create({
+    // Prepare checkout session config
+    const sessionConfig: Record<string, unknown> = {
       customer_email: user.email,
       line_items: [
         {
@@ -53,7 +54,34 @@ export async function POST(req: NextRequest) {
       metadata: {
         user_id: user.id,
       },
-    })
+      // Enable Stripe's promo code field in checkout UI
+      allow_promotion_codes: true,
+    }
+
+    // If user provided a promo code, try to pre-apply it
+    if (promoCode && promoCode.trim()) {
+      try {
+        const promoCodes = await stripe.promotionCodes.list({
+          code: promoCode.trim().toUpperCase(),
+          active: true,
+          limit: 1,
+        })
+
+        if (promoCodes.data.length > 0) {
+          // Valid code found - pre-apply it
+          sessionConfig.discounts = [{
+            promotion_code: promoCodes.data[0].id,
+          }]
+        }
+        // If invalid, allow_promotion_codes lets Stripe show the error
+      } catch (err) {
+        console.error('Error validating promo code:', err)
+        // Silently fail - user can still enter code in Stripe UI
+      }
+    }
+
+    // Create Stripe checkout session
+    const session = await stripe.checkout.sessions.create(sessionConfig)
 
     return NextResponse.json({ url: session.url })
   } catch (error) {
