@@ -36,7 +36,7 @@ export function parseAIResponse(response: string): {
   // Look for OPTIONS: section (case insensitive, flexible whitespace)
   const optionsMatch = response.match(/\*\*OPTIONS:\*\*|OPTIONS:/i)
 
-  if (!optionsMatch) {
+  if (!optionsMatch || optionsMatch.index === undefined) {
     // No options found, just a regular question or response
     return { question: response.trim(), options: null }
   }
