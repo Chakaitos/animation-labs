@@ -28,7 +28,7 @@ interface CreativeDirectionAIDialogProps {
 
 interface ConversationState {
   messages: Message[]
-  currentPhase: 1 | 2 | 3 | 4 | 5
+  currentPhase: 1 | 2 | 3 | 4
   questionCount: number
   clarificationCount: number
   isStreaming: boolean
@@ -196,7 +196,7 @@ export function CreativeDirectionAIDialog({
         ? state.clarificationCount + 1
         : state.clarificationCount
       const newPhase =
-        newQuestionCount >= 4 ? 5 : ((newQuestionCount + 1) as 1 | 2 | 3 | 4 | 5)
+        newQuestionCount >= 3 ? 4 : ((newQuestionCount + 1) as 1 | 2 | 3 | 4)
 
       const response = await fetch('/api/ai/creative-direction', {
         method: 'POST',
@@ -277,8 +277,8 @@ export function CreativeDirectionAIDialog({
         responseLength: aiResponse.length
       })
 
-      // Check if this is the final generation (phase 5 OR questionCount >= 4)
-      const isFinalGeneration = (newPhase === 5 || newQuestionCount >= 4) && !options
+      // Check if this is the final generation (phase 4 OR questionCount >= 3)
+      const isFinalGeneration = (newPhase === 4 || newQuestionCount >= 3) && !options
 
       // Ensure creative direction doesn't exceed 1500 chars
       let finalDirection = aiResponse
@@ -325,7 +325,7 @@ export function CreativeDirectionAIDialog({
 
           {/* Progress Indicator */}
           <div className="flex items-center gap-2 py-4">
-            {[1, 2, 3, 4, 5].map((step) => (
+            {[1, 2, 3, 4].map((step) => (
               <div
                 key={step}
                 className={`h-2 flex-1 rounded-full transition-colors ${
@@ -383,12 +383,13 @@ export function CreativeDirectionAIDialog({
                     variant="outline"
                     className="w-full justify-start text-left h-auto py-3 px-4 hover:bg-primary/10 hover:border-primary"
                     onClick={() => handleOptionSelect(option)}
+                    title={option.text} // Show full text on hover
                   >
                     <div className="flex items-start gap-3 w-full">
                       <span className="font-bold text-primary min-w-[1.5rem]">
                         {option.letter}.
                       </span>
-                      <span className="flex-1">{option.text}</span>
+                      <span className="flex-1">{option.shortLabel || option.text}</span>
                       {option.isOther && (
                         <Edit3 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                       )}

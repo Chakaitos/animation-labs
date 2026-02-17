@@ -33,9 +33,9 @@ export async function streamCreativeDirectionResponse(
     )
   }
 
-  // Use Haiku for questions (phases 1-4), Sonnet for final generation (phase 5)
+  // Use Haiku for questions (phases 1-3), Sonnet for final generation (phase 4)
   const model =
-    phase <= 4 ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-5-20250929'
+    phase <= 3 ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-5-20250929'
 
   // Convert our message format to Anthropic format
   const anthropicMessages = messages.map((msg) => ({
@@ -45,8 +45,8 @@ export async function streamCreativeDirectionResponse(
 
   const stream = await anthropic.messages.stream({
     model,
-    max_tokens: phase <= 4 ? 400 : 1000, // Increased for complete responses
-    temperature: phase <= 4 ? 0.7 : 0.8,
+    max_tokens: phase <= 3 ? 400 : 1000, // Increased for complete responses
+    temperature: phase <= 3 ? 0.7 : 0.8,
     system: [
       {
         type: 'text' as const,

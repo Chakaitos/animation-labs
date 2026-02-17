@@ -3,6 +3,7 @@ import { z } from 'zod'
 const optionSchema = z.object({
   letter: z.enum(['A', 'B', 'C', 'D', 'E']),
   text: z.string(),
+  shortLabel: z.string().optional(), // Short version for button
   isOther: z.boolean(),
 })
 
@@ -15,8 +16,8 @@ const messageSchema = z.object({
 })
 
 export const aiRequestSchema = z.object({
-  phase: z.number().int().min(1).max(5),
-  questionCount: z.number().int().min(0).max(4), // Main questions answered
+  phase: z.number().int().min(1).max(4),
+  questionCount: z.number().int().min(0).max(3), // Main questions answered
   clarificationCount: z.number().int().min(0).max(6), // Total clarifications
 
   // User input: either option selection OR custom text

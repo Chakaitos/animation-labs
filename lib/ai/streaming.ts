@@ -60,7 +60,18 @@ export function parseAIResponse(response: string): {
       text.toLowerCase().includes('describe my own') ||
       text.toLowerCase().includes("i'll describe")
 
-    options.push({ letter, text, isOther })
+    // Create short label (first 4-6 words or until first comma/period)
+    let shortLabel = text
+    if (!isOther) {
+      // Split by comma or period and take first part
+      const firstPart = text.split(/[,.]|with |that |where /)[0].trim()
+      // Take first 6 words max
+      const words = firstPart.split(' ')
+      shortLabel = words.slice(0, Math.min(6, words.length)).join(' ')
+      if (words.length > 6) shortLabel += '...'
+    }
+
+    options.push({ letter, text, shortLabel, isOther })
 
     // Stop if we found 5 options
     if (options.length >= 5) break
