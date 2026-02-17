@@ -103,13 +103,6 @@ export function CreativeDirectionAIDialog({
       const text = await response.text()
       const { question, options } = parseAIResponse(text)
 
-      console.log('Initialization response:', {
-        text,
-        question,
-        options,
-        showOptions: !!options
-      })
-
       setState((prev) => ({
         ...prev,
         messages: [
@@ -267,15 +260,6 @@ export function CreativeDirectionAIDialog({
 
       // Parse final response for options
       const { question, options } = parseAIResponse(aiResponse)
-
-      console.log('AI Response parsed:', {
-        aiResponse,
-        question,
-        options,
-        newPhase,
-        newQuestionCount,
-        responseLength: aiResponse.length
-      })
 
       // Check if this is the final generation (phase 4 OR questionCount >= 3)
       const isFinalGeneration = (newPhase === 4 || newQuestionCount >= 3) && !options

@@ -43,26 +43,25 @@ export async function POST(req: NextRequest) {
       brandContext,
     } = validationResult.data
 
-    // 3. Check rate limiting (TEMPORARILY DISABLED FOR TESTING)
+    // 3. Check rate limiting
     const maxRequests = parseInt(process.env.AI_RATE_LIMIT_MAX_REQUESTS || '5')
     const rateLimit = await checkRateLimit(user.id, maxRequests)
 
-    // TODO: Re-enable after testing
-    // if (!rateLimit.allowed) {
-    //   return NextResponse.json(
-    //     {
-    //       error: 'Rate limit exceeded. Please try again later.',
-    //       resetTime: rateLimit.resetTime,
-    //     },
-    //     {
-    //       status: 429,
-    //       headers: {
-    //         'X-RateLimit-Remaining': '0',
-    //         'X-RateLimit-Reset': rateLimit.resetTime.toString(),
-    //       },
-    //     }
-    //   )
-    // }
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        {
+          error: 'Rate limit exceeded. Please try again later.',
+          resetTime: rateLimit.resetTime,
+        },
+        {
+          status: 429,
+          headers: {
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimit.resetTime.toString(),
+          },
+        }
+      )
+    }
 
     // 4. For first request (no conversation history), send first question with options
     if (conversationHistory.length === 0) {
@@ -130,15 +129,6 @@ export async function POST(req: NextRequest) {
         isClarification: inputValidation.isClarifyingQuestion,
       },
     ]
-
-    console.log('API Request:', {
-      phase,
-      questionCount,
-      clarificationCount,
-      userMessage,
-      historyLength: updatedHistory.length,
-      isClarifying: inputValidation.isClarifyingQuestion,
-    })
 
     // 9. Stream AI response
     const stream = await streamCreativeDirectionResponse(
