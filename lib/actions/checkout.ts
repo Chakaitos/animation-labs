@@ -68,11 +68,10 @@ export async function createSubscriptionCheckout(planId: PlanId, promoCode?: str
           plan_id: planId,
         },
       },
-      // Enable Stripe's promo code field in checkout UI
-      allow_promotion_codes: true,
     }
 
-    // If user provided a promo code, try to pre-apply it
+    // Handle promo code: either pre-apply it OR enable Stripe's promo field
+    // Note: Can't use both allow_promotion_codes and discounts at the same time
     if (promoCode && promoCode.trim()) {
       try {
         const promoCodes = await stripe.promotionCodes.list({
@@ -82,16 +81,22 @@ export async function createSubscriptionCheckout(planId: PlanId, promoCode?: str
         })
 
         if (promoCodes.data.length > 0) {
-          // Valid code found - pre-apply it
+          // Valid code found - pre-apply it (don't set allow_promotion_codes)
           sessionConfig.discounts = [{
             promotion_code: promoCodes.data[0].id,
           }]
+        } else {
+          // Invalid code - still enable Stripe's field so user can try again
+          sessionConfig.allow_promotion_codes = true
         }
-        // If invalid, allow_promotion_codes lets Stripe show the error
       } catch (err) {
         console.error('Error validating promo code:', err)
-        // Silently fail - user can still enter code in Stripe UI
+        // On error, enable Stripe's field so user can enter code there
+        sessionConfig.allow_promotion_codes = true
       }
+    } else {
+      // No code provided - enable Stripe's promo code field
+      sessionConfig.allow_promotion_codes = true
     }
 
     const session = await stripe.checkout.sessions.create(sessionConfig)
