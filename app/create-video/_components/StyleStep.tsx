@@ -26,6 +26,10 @@ import {
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
+import { Sparkles } from 'lucide-react'
+import { toast } from 'sonner'
+import { CreativeDirectionExample } from './CreativeDirectionExample'
+import { CreativeDirectionAIDialog } from './CreativeDirectionAIDialog'
 
 interface StyleStepProps {
   form: UseFormReturn<VideoFormValues>
@@ -49,6 +53,7 @@ export function StyleStep({ form, onNext, onBack }: StyleStepProps) {
   const selectedStyle = form.watch('style')
   const dialogueType = form.watch('dialogueType')
   const [showDialogueText, setShowDialogueText] = useState(false)
+  const [aiDialogOpen, setAIDialogOpen] = useState(false)
 
   useEffect(() => {
     setShowDialogueText(dialogueType === 'custom')
@@ -120,6 +125,21 @@ export function StyleStep({ form, onNext, onBack }: StyleStepProps) {
                   <span className="text-muted-foreground font-normal ml-1">(optional)</span>
                 )}
               </FormLabel>
+              <div className="flex items-center gap-2 mb-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setAIDialogOpen(true)}
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  AI Assistant
+                </Button>
+                <span className="text-xs text-muted-foreground">
+                  Get help crafting a professional creative brief
+                </span>
+              </div>
+              <CreativeDirectionExample />
               <FormControl>
                 <Textarea
                   {...field}
@@ -140,6 +160,19 @@ export function StyleStep({ form, onNext, onBack }: StyleStepProps) {
               <FormMessage />
             </FormItem>
           )}
+        />
+
+        <CreativeDirectionAIDialog
+          open={aiDialogOpen}
+          onOpenChange={setAIDialogOpen}
+          onComplete={(text) => {
+            form.setValue('creativeDirection', text)
+            setAIDialogOpen(false)
+            toast.success('Creative direction added! Feel free to edit it.')
+          }}
+          brandName={form.watch('brandName')}
+          stylePreset={form.watch('style')}
+          aspectRatio={form.watch('aspectRatio')}
         />
 
         {/* Voiceover */}
