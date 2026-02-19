@@ -1,5 +1,15 @@
 import { z } from 'zod'
 
+export const logoAnalysisSchema = z.object({
+  industry: z.string(),
+  brandArchetype: z.string(),
+  animationTone: z.string(),
+  confidence: z.enum(['high', 'medium', 'low']),
+  needsBrandContext: z.boolean(),
+})
+
+export type LogoAnalysis = z.infer<typeof logoAnalysisSchema>
+
 const optionSchema = z.object({
   letter: z.enum(['A', 'B', 'C', 'D', 'E']),
   text: z.string(),
@@ -31,6 +41,7 @@ export const aiRequestSchema = z.object({
     brandName: z.string().min(1).max(100),
     stylePreset: z.string(),
     aspectRatio: z.enum(['landscape', 'portrait']),
+    logoAnalysis: logoAnalysisSchema.optional(),
   }),
 })
 

@@ -5,7 +5,7 @@ import { checkRateLimit } from '@/lib/ai/rate-limiter'
 import { validateUserInput } from '@/lib/ai/validation'
 import { streamCreativeDirectionResponse } from '@/lib/ai/providers/anthropic'
 import { anthropicStreamToReadableStream } from '@/lib/ai/streaming'
-import { questionTemplates } from '@/lib/ai/prompts/creative-direction-system'
+import { questionTemplates, getBrandAwareQ1 } from '@/lib/ai/prompts/creative-direction-system'
 
 export const runtime = 'edge'
 
@@ -65,18 +65,40 @@ export async function POST(req: NextRequest) {
 
     // 4. For first request (no conversation history), send first question with options
     if (conversationHistory.length === 0) {
-      const firstQuestion = questionTemplates[1](brandContext.brandName)
-      const formattedResponse = `${firstQuestion.question}\n\nOPTIONS:\n${firstQuestion.options
-        .map((opt) => `${opt.letter}. ${opt.text}`)
-        .join('\n')}`
+      const { logoAnalysis } = brandContext
 
-      return new NextResponse(formattedResponse, {
-        headers: {
-          'Content-Type': 'text/plain',
-          'X-RateLimit-Remaining': rateLimit.remaining.toString(),
-          'X-RateLimit-Reset': rateLimit.resetTime.toString(),
-        },
-      })
+      const formatQuestion = (q: { question: string; options: Array<{ letter: string; text: string }> }) =>
+        `${q.question}\n\nOPTIONS:\n${q.options.map((opt) => `${opt.letter}. ${opt.text}`).join('\n')}`
+
+      const rateHeaders = {
+        'Content-Type': 'text/plain',
+        'X-RateLimit-Remaining': rateLimit.remaining.toString(),
+        'X-RateLimit-Reset': rateLimit.resetTime.toString(),
+      }
+
+      // Path A: Low confidence / ambiguous logo → ask brand context question (Q0)
+      if (logoAnalysis?.needsBrandContext) {
+        const q0 =
+          "I'd love to help craft the perfect animation! To give you more relevant options, could you briefly describe what your business does or the vibe you're going for?"
+        return new NextResponse(q0, {
+          headers: {
+            ...rateHeaders,
+            'X-Brand-Context-Needed': 'true',
+          },
+        })
+      }
+
+      // Path B: High/medium confidence → brand-aware static Q1 (no API call)
+      if (logoAnalysis && logoAnalysis.confidence !== 'low') {
+        const q1 = getBrandAwareQ1(brandContext.brandName, logoAnalysis)
+        if (q1) {
+          return new NextResponse(formatQuestion(q1), { headers: rateHeaders })
+        }
+      }
+
+      // Path C: No analysis / fallback → existing generic static Q1
+      const firstQuestion = questionTemplates[1](brandContext.brandName)
+      return new NextResponse(formatQuestion(firstQuestion), { headers: rateHeaders })
     }
 
     // 5. Validate user input

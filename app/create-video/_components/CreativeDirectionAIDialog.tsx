@@ -13,7 +13,7 @@ import { Textarea } from '@/components/ui/textarea'
 // import { ScrollArea } from '@/components/ui/scroll-area' // Not needed - using native scroll
 import { Sparkles, Send, Loader2, Edit3, Check } from 'lucide-react'
 import { toast } from 'sonner'
-import { Message, Option } from '@/lib/validations/ai-schema'
+import { Message, Option, LogoAnalysis } from '@/lib/validations/ai-schema'
 import { parseAIResponse } from '@/lib/ai/streaming'
 import { questionTemplates } from '@/lib/ai/prompts/creative-direction-system'
 
@@ -24,6 +24,7 @@ interface CreativeDirectionAIDialogProps {
   brandName: string
   stylePreset: string
   aspectRatio: 'landscape' | 'portrait'
+  logoAnalysis?: LogoAnalysis | null
 }
 
 interface ConversationState {
@@ -45,6 +46,7 @@ export function CreativeDirectionAIDialog({
   brandName,
   stylePreset,
   aspectRatio,
+  logoAnalysis,
 }: CreativeDirectionAIDialogProps) {
   const [state, setState] = useState<ConversationState>({
     messages: [],
@@ -92,6 +94,7 @@ export function CreativeDirectionAIDialog({
             brandName,
             stylePreset,
             aspectRatio,
+            logoAnalysis: logoAnalysis ?? undefined,
           },
         }),
       })
@@ -206,6 +209,7 @@ export function CreativeDirectionAIDialog({
             brandName,
             stylePreset,
             aspectRatio,
+            logoAnalysis: logoAnalysis ?? undefined,
           },
         }),
       })

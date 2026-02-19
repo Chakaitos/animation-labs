@@ -26,8 +26,9 @@ import {
 } from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
-import { Sparkles } from 'lucide-react'
+import { Sparkles, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
+import { type LogoAnalysis } from '@/lib/validations/ai-schema'
 import { CreativeDirectionExample } from './CreativeDirectionExample'
 import { CreativeDirectionAIDialog } from './CreativeDirectionAIDialog'
 
@@ -35,6 +36,8 @@ interface StyleStepProps {
   form: UseFormReturn<VideoFormValues>
   onNext: () => void
   onBack: () => void
+  logoAnalysis?: LogoAnalysis | null
+  logoAnalysisStatus?: 'idle' | 'pending' | 'ready' | 'failed'
 }
 
 const STYLE_DESCRIPTIONS: Record<string, string> = {
@@ -49,7 +52,7 @@ const STYLE_DESCRIPTIONS: Record<string, string> = {
   custom: 'Describe your own creative direction',
 }
 
-export function StyleStep({ form, onNext, onBack }: StyleStepProps) {
+export function StyleStep({ form, onNext, onBack, logoAnalysis, logoAnalysisStatus }: StyleStepProps) {
   const selectedStyle = form.watch('style')
   const dialogueType = form.watch('dialogueType')
   const [showDialogueText, setShowDialogueText] = useState(false)
@@ -135,9 +138,22 @@ export function StyleStep({ form, onNext, onBack }: StyleStepProps) {
                   <Sparkles className="w-4 h-4 mr-2" />
                   AI Assistant
                 </Button>
-                <span className="text-xs text-muted-foreground">
-                  Get help crafting a professional creative brief
-                </span>
+                {logoAnalysisStatus === 'pending' && (
+                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    Analyzing your logo...
+                  </span>
+                )}
+                {logoAnalysisStatus === 'ready' && (
+                  <span className="text-xs text-muted-foreground">
+                    Personalized for your brand
+                  </span>
+                )}
+                {(logoAnalysisStatus === 'idle' || logoAnalysisStatus === 'failed' || !logoAnalysisStatus) && (
+                  <span className="text-xs text-muted-foreground">
+                    Get help crafting a professional creative brief
+                  </span>
+                )}
               </div>
               <CreativeDirectionExample />
               <FormControl>
@@ -173,6 +189,7 @@ export function StyleStep({ form, onNext, onBack }: StyleStepProps) {
           brandName={form.watch('brandName')}
           stylePreset={form.watch('style')}
           aspectRatio={form.watch('aspectRatio')}
+          logoAnalysis={logoAnalysis}
         />
 
         {/* Voiceover */}
