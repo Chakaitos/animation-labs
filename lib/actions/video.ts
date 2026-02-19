@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { videoSchema, DEFAULT_VIDEO_DURATION, type VideoFormValues } from '@/lib/validations/video-schema'
 import { validateImageFile } from '@/lib/utils/file-validation'
+import { moderateLogoImage } from '@/lib/utils/image-moderation'
 import { getStylePresetConfig } from '@/lib/config/style-presets'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
@@ -67,6 +68,20 @@ export async function createVideo(formData: FormData): Promise<CreateVideoResult
   const fileValidation = await validateImageFile(file)
   if (!fileValidation.valid) {
     return { error: fileValidation.error, fieldErrors: { logo: fileValidation.error } }
+  }
+
+  // 3.5: Content moderation — reject inappropriate images before storage
+  const moderation = await moderateLogoImage(file, fileValidation.mimeType!)
+  if (!moderation.approved) {
+    console.warn('Image rejected by moderation', {
+      userId: user.id,
+      category: moderation.moderationCategory,
+      fileSize: file.size,
+    })
+    return {
+      error: moderation.userMessage,
+      fieldErrors: { logo: moderation.userMessage },
+    }
   }
 
   // 4. Check credits using RPC function
