@@ -30,6 +30,22 @@ if (SENTRY_DSN && IS_PRODUCTION) {
     // We'll set custom user context in the app for email/plan info
     sendDefaultPii: true,
 
+    // Filter known noise: Supabase auth lock aborts during navigation
+    // The Web Locks API aborts pending auth operations when Next.js navigates,
+    // producing harmless AbortErrors that are not real user-facing failures.
+    beforeSend(event) {
+      const isSupabaseLockAbort =
+        event.exception?.values?.some(
+          (ex) =>
+            ex.type === 'AbortError' &&
+            ex.stacktrace?.frames?.some((f) =>
+              f.filename?.includes('@supabase/auth-js')
+            )
+        )
+      if (isSupabaseLockAbort) return null
+      return event
+    },
+
     // Replay sampling - disabled (requires paid plan)
     replaysSessionSampleRate: 0,
     replaysOnErrorSampleRate: 0,
