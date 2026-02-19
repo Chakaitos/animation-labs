@@ -17,57 +17,35 @@ export function ClientAuthHandler() {
   const type = searchParams.get('type')
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      // Check if we have hash params (implicit flow)
-      if (typeof window === 'undefined') return
+    const supabase = createClient()
 
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      const accessToken = hashParams.get('access_token')
-      const refreshToken = hashParams.get('refresh_token')
-      const type_hash = hashParams.get('type') // Some flows put type in hash
+    // Use onAuthStateChange instead of reading the hash directly.
+    // The Supabase client auto-processes the URL hash on init (detectSessionInUrl=true),
+    // which clears the hash before a manual read would see it.
+    // INITIAL_SESSION handles already-processed tokens; SIGNED_IN handles real-time sign-ins.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if ((event === 'SIGNED_IN' || event === 'INITIAL_SESSION') && session) {
+        console.log('Client: Auth state change detected, redirecting', { event, next })
 
-      if (accessToken) {
-        console.log('Client: Processing implicit flow tokens from hash', {
-          hasRefreshToken: !!refreshToken,
-          type: type || type_hash,
-          next,
-        })
+        subscription.unsubscribe()
 
-        const supabase = createClient()
-
-        // Set the session using the tokens from the hash
-        const { error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken || '',
-        })
-
-        if (error) {
-          console.error('Client: Failed to set session:', error)
-          router.push(`/auth-error?error=session-failed&message=${encodeURIComponent(error.message)}`)
-          return
-        }
-
-        console.log('Client: Session set successfully')
-
-        // For password recovery, ensure user updates password
-        // Even though they have a session, they should set a new password
         const isRecovery = type === 'recovery' ||
-                          type_hash === 'recovery' ||
                           next.includes('update-password') ||
                           next.includes('reset-password')
 
         if (isRecovery) {
           console.log('Client: Recovery flow detected, forcing password update')
-          // Force redirect to update-password page
           router.push('/update-password')
         } else {
           console.log('Client: Normal flow, redirecting to:', next)
           router.push(next)
         }
       }
-    }
+    })
 
-    handleAuthCallback()
+    return () => {
+      subscription.unsubscribe()
+    }
   }, [router, next, type])
 
   return null // This component doesn't render anything

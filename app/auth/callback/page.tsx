@@ -15,13 +15,14 @@ import { ClientAuthHandler } from './client-handler'
 export default async function AuthCallbackPage({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | string[] | undefined }
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const token_hash = searchParams.token_hash as string | undefined
-  const type = searchParams.type as EmailOtpType | undefined
-  const next = (searchParams.next as string) ?? '/dashboard'
-  const error_param = searchParams.error as string | undefined
-  const error_description = searchParams.error_description as string | undefined
+  const params = await searchParams
+  const token_hash = params.token_hash as string | undefined
+  const type = params.type as EmailOtpType | undefined
+  const next = (params.next as string) ?? '/dashboard'
+  const error_param = params.error as string | undefined
+  const error_description = params.error_description as string | undefined
 
   console.log('Auth callback page:', {
     hasTokenHash: !!token_hash,
