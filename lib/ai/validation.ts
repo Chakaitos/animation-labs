@@ -73,10 +73,12 @@ export function validateUserInput(
       'how to make',
     ]
 
-    const lowerInput = input.toLowerCase()
-    const containsOffTopic = offTopicKeywords.some((kw) =>
-      lowerInput.includes(kw)
-    )
+    // Use word-boundary regex to avoid substring false positives
+    // e.g. "war" must not match "upward", "award", "toward"
+    const containsOffTopic = offTopicKeywords.some((kw) => {
+      const pattern = new RegExp(`\\b${kw.replace(/\s+/g, '\\s+')}\\b`, 'i')
+      return pattern.test(input)
+    })
 
     if (containsOffTopic) {
       return {

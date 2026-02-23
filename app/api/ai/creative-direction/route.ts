@@ -142,12 +142,17 @@ export async function POST(req: NextRequest) {
       userMessage = userInput
     }
 
-    // 8. Add user message to conversation history
+    // 8. Build updated conversation history.
+    // conversationHistory from the client already contains the user's message as the last
+    // item — replace it with our server-canonicalized version to avoid sending two
+    // consecutive user-role messages to the Anthropic API.
+    const clientLastMessage =
+      conversationHistory[conversationHistory.length - 1]?.content || ''
     const updatedHistory = [
-      ...conversationHistory,
+      ...conversationHistory.slice(0, -1),
       {
         role: 'user' as const,
-        content: userMessage,
+        content: userMessage || clientLastMessage,
         isClarification: inputValidation.isClarifyingQuestion,
       },
     ]

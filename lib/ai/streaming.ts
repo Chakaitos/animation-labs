@@ -47,14 +47,18 @@ export function parseAIResponse(response: string): {
   // Extract options text (everything after OPTIONS:)
   const afterOptions = response.substring(optionsMatch.index + optionsMatch[0].length)
 
-  // Find all option lines (A., B., C., D., E.)
-  const optionPattern = /([A-E])\.\s*([^\n]+)/g
+  // Split options section by letter boundaries so multi-line option text is captured whole.
+  // Each block starts with "A.", "B.", etc. and runs until the next letter marker.
+  const optionBlocks = afterOptions.split(/\n(?=[A-E]\.)/).filter((s) => s.trim())
   const options: Option[] = []
-  let match
 
-  while ((match = optionPattern.exec(afterOptions)) !== null) {
+  for (const block of optionBlocks) {
+    const match = block.match(/^([A-E])\.\s*([\s\S]+)$/)
+    if (!match) continue
+
     const letter = match[1] as 'A' | 'B' | 'C' | 'D' | 'E'
-    const text = match[2].trim()
+    // Collapse multi-line text into a single line
+    const text = match[2].replace(/\n/g, ' ').replace(/\s+/g, ' ').trim()
     const isOther =
       text.toLowerCase().includes('other') ||
       text.toLowerCase().includes('describe my own') ||
@@ -63,17 +67,13 @@ export function parseAIResponse(response: string): {
     // Create short label (first 4-6 words or until first comma/period)
     let shortLabel = text
     if (!isOther) {
-      // Split by comma or period and take first part
       const firstPart = text.split(/[,.]|with |that |where /)[0].trim()
-      // Take first 6 words max
       const words = firstPart.split(' ')
       shortLabel = words.slice(0, Math.min(6, words.length)).join(' ')
       if (words.length > 6) shortLabel += '...'
     }
 
     options.push({ letter, text, shortLabel, isOther })
-
-    // Stop if we found 5 options
     if (options.length >= 5) break
   }
 

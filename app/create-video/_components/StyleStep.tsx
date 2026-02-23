@@ -131,7 +131,7 @@ export function StyleStep({ form, onNext, onBack, logoAnalysis, logoAnalysisStat
               <div className="flex items-center gap-2 mb-2">
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="default"
                   size="sm"
                   onClick={() => setAIDialogOpen(true)}
                 >
