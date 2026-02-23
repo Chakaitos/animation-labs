@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { analyzeLogoImage } from '@/lib/ai/providers/anthropic'
+import { logoAnalysisSchema } from '@/lib/validations/ai-schema'
 
 export const runtime = 'edge'
 
@@ -29,13 +30,20 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Analyze the logo
-    const analysis = await analyzeLogoImage({
+    const rawAnalysis = await analyzeLogoImage({
       imageBase64,
       mimeType,
       brandName: typeof brandName === 'string' ? brandName : undefined,
     })
 
-    return NextResponse.json(analysis)
+    // 4. Validate before returning — Claude may return unexpected values (e.g. "very high" confidence)
+    const parsed = logoAnalysisSchema.safeParse(rawAnalysis)
+    if (!parsed.success) {
+      console.warn('Logo analysis schema validation failed', { error: parsed.error })
+      return NextResponse.json({ error: 'analysis_failed', fallback: true }, { status: 422 })
+    }
+
+    return NextResponse.json(parsed.data)
   } catch (error) {
     console.error('Logo analysis error:', error)
     return NextResponse.json(

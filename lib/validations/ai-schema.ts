@@ -27,7 +27,7 @@ const messageSchema = z.object({
 
 export const aiRequestSchema = z.object({
   phase: z.number().int().min(1).max(4),
-  questionCount: z.number().int().min(0).max(3), // Main questions answered
+  questionCount: z.number().int().min(0).max(4), // Main questions answered (max 4 when Q0 is in play)
   clarificationCount: z.number().int().min(0).max(6), // Total clarifications
 
   // User input: either option selection OR custom text
@@ -41,7 +41,7 @@ export const aiRequestSchema = z.object({
     brandName: z.string().min(1).max(100),
     stylePreset: z.string(),
     aspectRatio: z.enum(['landscape', 'portrait']),
-    logoAnalysis: logoAnalysisSchema.optional(),
+    logoAnalysis: logoAnalysisSchema.optional().catch(undefined),
   }),
 })
 
