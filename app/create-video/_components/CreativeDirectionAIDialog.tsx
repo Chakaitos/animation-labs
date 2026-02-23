@@ -37,6 +37,7 @@ interface ConversationState {
   showCustomInput: boolean
   generatedDirection: string | null
   currentOptions: Option[] | null
+  brandContextNeeded: boolean // true when Q0 preamble is active; Q0 answer must not count as a main question
 }
 
 export function CreativeDirectionAIDialog({
@@ -58,6 +59,7 @@ export function CreativeDirectionAIDialog({
     showCustomInput: false,
     generatedDirection: null,
     currentOptions: null,
+    brandContextNeeded: false,
   })
 
   const [userInput, setUserInput] = useState('')
@@ -103,6 +105,7 @@ export function CreativeDirectionAIDialog({
         throw new Error('Failed to initialize conversation')
       }
 
+      const brandContextNeeded = response.headers.get('X-Brand-Context-Needed') === 'true'
       const text = await response.text()
       const { question, options } = parseAIResponse(text)
 
@@ -119,6 +122,7 @@ export function CreativeDirectionAIDialog({
         currentOptions: options,
         showOptions: !!options,
         isStreaming: false,
+        brandContextNeeded,
       }))
     } catch (error) {
       console.error('Initialization error:', error)
@@ -183,8 +187,9 @@ export function CreativeDirectionAIDialog({
     }))
 
     try {
-      // Determine if we should advance phase and question count
-      const shouldAdvanceQuestion = !isClarifyingQuestion
+      // Determine if we should advance phase and question count.
+      // Q0 brand-context answers must NOT count as a main question.
+      const shouldAdvanceQuestion = !isClarifyingQuestion && !state.brandContextNeeded
       const newQuestionCount = shouldAdvanceQuestion
         ? state.questionCount + 1
         : state.questionCount
@@ -276,6 +281,7 @@ export function CreativeDirectionAIDialog({
 
       setState((prev) => ({
         ...prev,
+        brandContextNeeded: false, // Q0 preamble is done after first AI response
         currentPhase: newPhase,
         questionCount: newQuestionCount,
         clarificationCount: newClarificationCount,

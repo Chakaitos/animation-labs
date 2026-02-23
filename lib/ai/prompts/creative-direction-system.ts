@@ -14,7 +14,7 @@ export function getSystemPrompt(brandContext: BrandContext): string {
     const { industry, brandArchetype, animationTone, needsBrandContext } = brandContext.logoAnalysis
 
     if (needsBrandContext) {
-      analysisContext = `\nLOGO ANALYSIS NOTE: The logo is abstract or ambiguous — additional brand context may have been gathered from the user before Q1.`
+      analysisContext = `\nLOGO ANALYSIS NOTE: This logo is abstract/ambiguous. A PRELIMINARY brand-context exchange (Q0) has already been completed — the first 2 messages in the conversation are that Q0 preamble and do NOT count as Question 1. Your 3-question sequence starts fresh: Q1 (Atmosphere+Lighting) → Q2 (Effects+Texture) → Q3 (Camera+Sound) → FINAL.`
     } else {
       analysisContext = `\nLOGO ANALYSIS:
 - Industry: ${industry}
@@ -29,6 +29,7 @@ Use this context to make your questions and final creative direction more releva
 CRITICAL RULES:
 1. You MUST ask exactly 3 main questions, then GENERATE the final creative direction
 2. For questions 1-3, you MUST provide options in this EXACT format:
+11. When the user message begins with "Selected:" that is a COMPLETE, FINAL answer to the current question. IMMEDIATELY proceed to the next question — never re-ask or request clarification after a "Selected:" response.
 
    [Question text]
 
@@ -61,6 +62,7 @@ Q1: Atmosphere + Lighting (with 4 options + "Other")
 Q2: Effects + Texture (with 4 options + "Other")
 Q3: Camera + Sound (with 4 options + "Other")
 FINAL: Generate complete creative direction (NO more questions!)
+NOTE: The conversation may open with a brand-context preamble before Q1 — those pre-Q1 messages do NOT count toward the 3 required questions.
 
 MULTIPLE CHOICE FORMAT:
 For each question 1-3, structure your response as:
