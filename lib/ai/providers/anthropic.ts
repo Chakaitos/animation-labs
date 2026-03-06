@@ -1,6 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { Message, LogoAnalysis } from '@/lib/validations/ai-schema'
-import { getSystemPrompt } from '@/lib/ai/prompts/creative-direction-system'
+import { LogoAnalysis } from '@/lib/validations/ai-schema'
 
 // Initialize Anthropic client only if API key is provided
 const anthropic = process.env.ANTHROPIC_API_KEY
@@ -13,18 +12,15 @@ interface BrandContext {
   brandName: string
   stylePreset: string
   aspectRatio: string
+  logoAnalysis?: LogoAnalysis
 }
 
 /**
- * Stream creative direction response from Claude
- *
- * @param messages - Conversation history
- * @param phase - Current phase (1-5)
- * @param brandContext - Brand information
+ * Stream an optimized creative direction brief from a rough user description.
+ * Single-turn: transforms raw input into a vivid, production-ready animation brief.
  */
-export async function streamCreativeDirectionResponse(
-  messages: Message[],
-  phase: number,
+export async function streamOptimizeCreativeDirection(
+  rawInput: string,
   brandContext: BrandContext
 ) {
   if (!anthropic) {
@@ -33,28 +29,39 @@ export async function streamCreativeDirectionResponse(
     )
   }
 
-  // Use Haiku for questions (phases 1-3), Sonnet for final generation (phase 4)
-  const model =
-    phase <= 3 ? 'claude-haiku-4-5-20251001' : 'claude-sonnet-4-5-20250929'
+  const { brandName, stylePreset, aspectRatio, logoAnalysis } = brandContext
 
-  // Convert our message format to Anthropic format
-  const anthropicMessages = messages.map((msg) => ({
-    role: msg.role,
-    content: msg.content,
-  }))
+  const logoAnalysisContext = logoAnalysis
+    ? `Logo analysis: ${logoAnalysis.industry} brand with a ${logoAnalysis.brandArchetype} archetype. Animation tone: ${logoAnalysis.animationTone}.`
+    : ''
+
+  const systemPrompt = `You are a creative director writing animation briefs for 8-second logo animations.
+
+Transform the user's rough description into a vivid, production-ready creative brief.
+Write in flowing prose (not bullets). Cover all 6 elements naturally:
+1. Atmosphere (mood, background, environment)
+2. Lighting (how the logo is revealed and highlighted)
+3. Effects (particles, sparks, trails, movement)
+4. Texture (shadows, depth, contrast, materials)
+5. Camera (movement, angles, perspective)
+6. Sound (audio, music, atmosphere)
+
+Rules:
+- Under 1200 characters total
+- Animation is always 8 seconds — mention naturally
+- Amplify the brand's identity, don't just restate their input
+- Be specific with colors, timing, textures, and sound descriptors
+- End with a "Sound:" clause describing audio
+- Write ONE continuous creative brief — no questions, no headers
+
+Brand: ${brandName} | Style preset: ${stylePreset} | Format: ${aspectRatio}${logoAnalysisContext ? `\n${logoAnalysisContext}` : ''}`
 
   const stream = await anthropic.messages.stream({
-    model,
-    max_tokens: phase <= 3 ? 400 : 1000, // Increased for complete responses
-    temperature: phase <= 3 ? 0.7 : 0.8,
-    system: [
-      {
-        type: 'text' as const,
-        text: getSystemPrompt(brandContext),
-        cache_control: { type: 'ephemeral' as const },
-      },
-    ],
-    messages: anthropicMessages,
+    model: 'claude-sonnet-4-5-20250929',
+    max_tokens: 800,
+    temperature: 0.8,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: rawInput }],
   })
 
   return stream

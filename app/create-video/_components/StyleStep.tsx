@@ -30,7 +30,6 @@ import { Sparkles, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { type LogoAnalysis } from '@/lib/validations/ai-schema'
 import { CreativeDirectionExample } from './CreativeDirectionExample'
-import { CreativeDirectionAIDialog } from './CreativeDirectionAIDialog'
 
 interface StyleStepProps {
   form: UseFormReturn<VideoFormValues>
@@ -56,14 +55,13 @@ export function StyleStep({ form, onNext, onBack, logoAnalysis, logoAnalysisStat
   const selectedStyle = form.watch('style')
   const dialogueType = form.watch('dialogueType')
   const [showDialogueText, setShowDialogueText] = useState(false)
-  const [aiDialogOpen, setAIDialogOpen] = useState(false)
+  const [isOptimizing, setIsOptimizing] = useState(false)
 
   useEffect(() => {
     setShowDialogueText(dialogueType === 'custom')
   }, [dialogueType])
 
   const handleNext = async () => {
-    // Validate fields for this step
     const isValid = await form.trigger([
       'style',
       'creativeDirection',
@@ -72,6 +70,62 @@ export function StyleStep({ form, onNext, onBack, logoAnalysis, logoAnalysisStat
     ])
     if (isValid) {
       onNext()
+    }
+  }
+
+  const handleOptimize = async () => {
+    const rawInput = form.getValues('creativeDirection')
+
+    if (!rawInput || rawInput.trim().length === 0) {
+      toast.error('Please describe your vision first')
+      return
+    }
+
+    setIsOptimizing(true)
+
+    try {
+      const response = await fetch('/api/ai/optimize-creative-direction', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          rawInput: rawInput.trim(),
+          brandContext: {
+            brandName: form.getValues('brandName'),
+            stylePreset: form.getValues('style'),
+            aspectRatio: form.getValues('aspectRatio'),
+            logoAnalysis: logoAnalysis ?? undefined,
+          },
+        }),
+      })
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          toast.error('Rate limit exceeded. Please try again in an hour.')
+          return
+        }
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }))
+        throw new Error(errorData.error || 'Optimization failed')
+      }
+
+      const reader = response.body?.getReader()
+      const decoder = new TextDecoder()
+      let accumulated = ''
+
+      if (reader) {
+        while (true) {
+          const { done, value } = await reader.read()
+          if (done) break
+          accumulated += decoder.decode(value, { stream: true })
+          form.setValue('creativeDirection', accumulated)
+        }
+      }
+
+      toast.success('Creative direction optimized!')
+    } catch (error) {
+      console.error('Optimize error:', error)
+      toast.error('Optimization failed. Please try again.')
+    } finally {
+      setIsOptimizing(false)
     }
   }
 
@@ -116,7 +170,7 @@ export function StyleStep({ form, onNext, onBack, logoAnalysis, logoAnalysisStat
           )}
         />
 
-        {/* Creative Direction (shown when 'custom' selected, or as optional for others) */}
+        {/* Creative Direction */}
         <FormField
           control={form.control}
           name="creativeDirection"
@@ -128,32 +182,39 @@ export function StyleStep({ form, onNext, onBack, logoAnalysis, logoAnalysisStat
                   <span className="text-muted-foreground font-normal ml-1">(optional)</span>
                 )}
               </FormLabel>
-              <div className="flex items-center gap-2 mb-2">
+              <div className="flex items-center justify-between mb-2">
+                <div>
+                  {logoAnalysisStatus === 'pending' && (
+                    <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Analyzing your logo...
+                    </span>
+                  )}
+                  {logoAnalysisStatus === 'ready' && (
+                    <span className="text-xs text-muted-foreground">
+                      Personalized for your brand
+                    </span>
+                  )}
+                </div>
                 <Button
                   type="button"
-                  variant="default"
+                  variant="outline"
                   size="sm"
-                  onClick={() => setAIDialogOpen(true)}
+                  onClick={handleOptimize}
+                  disabled={isOptimizing}
                 >
-                  <Sparkles className="w-4 h-4 mr-2" />
-                  AI Assistant
+                  {isOptimizing ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Optimizing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Optimize with AI
+                    </>
+                  )}
                 </Button>
-                {logoAnalysisStatus === 'pending' && (
-                  <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Loader2 className="w-3 h-3 animate-spin" />
-                    Analyzing your logo...
-                  </span>
-                )}
-                {logoAnalysisStatus === 'ready' && (
-                  <span className="text-xs text-muted-foreground">
-                    Personalized for your brand
-                  </span>
-                )}
-                {(logoAnalysisStatus === 'idle' || logoAnalysisStatus === 'failed' || !logoAnalysisStatus) && (
-                  <span className="text-xs text-muted-foreground">
-                    Get help crafting a professional creative brief
-                  </span>
-                )}
               </div>
               <CreativeDirectionExample />
               <FormControl>
@@ -176,20 +237,6 @@ export function StyleStep({ form, onNext, onBack, logoAnalysis, logoAnalysisStat
               <FormMessage />
             </FormItem>
           )}
-        />
-
-        <CreativeDirectionAIDialog
-          open={aiDialogOpen}
-          onOpenChange={setAIDialogOpen}
-          onComplete={(text) => {
-            form.setValue('creativeDirection', text)
-            setAIDialogOpen(false)
-            toast.success('Creative direction added! Feel free to edit it.')
-          }}
-          brandName={form.watch('brandName')}
-          stylePreset={form.watch('style')}
-          aspectRatio={form.watch('aspectRatio')}
-          logoAnalysis={logoAnalysis}
         />
 
         {/* Voiceover */}
