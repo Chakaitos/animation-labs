@@ -48,7 +48,7 @@ export const videoSchema = z
     }),
     creativeDirection: z
       .string()
-      .max(1500, 'Creative direction must be 1500 characters or less')
+      .max(2000, 'Creative direction must be 2000 characters or less')
       .optional()
       .or(z.literal('')),
     dialogueType: z.enum(DIALOGUE_OPTIONS, {
