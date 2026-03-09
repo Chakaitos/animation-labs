@@ -8,6 +8,7 @@ import { toast } from 'sonner'
 
 import { videoSchema, videoFormDefaults, DEFAULT_VIDEO_DURATION, type VideoFormValues } from '@/lib/validations/video-schema'
 import { createVideo, type CreateVideoResult } from '@/lib/actions/video'
+import { type LogoAnalysis } from '@/lib/validations/ai-schema'
 import { Form } from '@/components/ui/form'
 
 import { StepIndicator } from './StepIndicator'
@@ -24,17 +25,58 @@ export function CreateVideoForm() {
   const [step, setStep] = useState(1)
   const [file, setFile] = useState<File | null>(null)
 
+  // Logo analysis state (fires in background after upload)
+  const [logoAnalysis, setLogoAnalysis] = useState<LogoAnalysis | null>(null)
+  const [logoAnalysisStatus, setLogoAnalysisStatus] = useState<'idle' | 'pending' | 'ready' | 'failed'>('idle')
+
   // React Hook Form
   const form = useForm<VideoFormValues>({
     resolver: zodResolver(videoSchema),
     defaultValues: videoFormDefaults,
   })
 
-  // Handle file upload
+  // Handle file upload — advances to step 2 and fires background analysis
   const handleUploadComplete = useCallback((uploadedFile: File) => {
     setFile(uploadedFile)
     setStep(2)
-  }, [])
+
+    // Fire background logo analysis (non-blocking)
+    setLogoAnalysisStatus('pending')
+    setLogoAnalysis(null)
+
+    const reader = new FileReader()
+    reader.onload = async (e) => {
+      try {
+        const dataUrl = e.target?.result as string
+        // dataUrl format: "data:image/png;base64,<data>"
+        const [header, base64] = dataUrl.split(',')
+        const mimeType = header.match(/data:([^;]+)/)?.[1] || 'image/png'
+
+        const response = await fetch('/api/ai/logo-analysis', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            imageBase64: base64,
+            mimeType,
+            brandName: form.getValues('brandName') || undefined,
+          }),
+        })
+
+        if (!response.ok) {
+          setLogoAnalysisStatus('failed')
+          return
+        }
+
+        const analysis: LogoAnalysis = await response.json()
+        setLogoAnalysis(analysis)
+        setLogoAnalysisStatus('ready')
+      } catch {
+        setLogoAnalysisStatus('failed')
+      }
+    }
+    reader.onerror = () => setLogoAnalysisStatus('failed')
+    reader.readAsDataURL(uploadedFile)
+  }, [form])
 
   // Navigation helpers
   const nextStep = useCallback(() => setStep((s) => Math.min(s + 1, 4)), [])
@@ -112,6 +154,8 @@ export function CreateVideoForm() {
             form={form}
             onNext={nextStep}
             onBack={prevStep}
+            logoAnalysis={logoAnalysis}
+            logoAnalysisStatus={logoAnalysisStatus}
           />
         )}
 
