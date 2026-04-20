@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { SentryInit } from "@/components/sentry-init";
 import { SentryUserProvider } from "@/components/sentry-user-provider";
 import { validateEnv } from "@/lib/env";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Validate environment variables at startup
 // This will throw an error and prevent the app from starting if any required variables are missing
@@ -46,6 +47,7 @@ export default function RootLayout({
           <SentryUserProvider />
           {children}
           <Toaster />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>
